@@ -48,6 +48,8 @@ A module's **non-test** Go files may import, from `webtyp.com/*`:
 | `router` | `OperationModule`/`OperationRegistry`/`Context`/`Caller` | Transport-agnostic; a module implements `OperationModule`, never a concrete server |
 | `view` | `Presenter`, `view.New(...)` | UI contract; the renderer (`layout/crudview` or any other) is injected by the app |
 | `events` | `Publisher`/`Subscriber`/`Event` | Pub/sub contract; the broker (in-proc, `sse`, a queue) is injected |
+| `stock` | `Movement`/`Direction`/`Lot`/`Allocate`/`Apply` | Pure stock rules (first-expiry-first-out, never-negative arithmetic); no I/O, so it is not a concrete dependency. Used by `pharmacy_manager` and `supply_manager` |
+| `money` | `Money`/`Fact`/`Publish` | Pure money values and the accounting-ready facts a module announces through `events`; no I/O. Used by modules that move money or stock at cost |
 | `orm` | `*orm.DB`, query builder (`Create`/`Update`/`Delete`/`Query`) | Ergonomic layer over `storage.Conn` — the equivalent of `database/sql`, backend-agnostic by construction |
 | `storage` | `Conn`/`Condition`/`Query` (mostly transitive, via `orm`'s re-exports in `reexport.go`) | The actual storage **port** — `orm` never redefines it |
 | `ddl` | `CreateTable`/`Sync` (runtime schema) | Sibling of `orm` over `storage.Conn` — still backend-agnostic |
