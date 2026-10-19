@@ -1,3 +1,3 @@
-module github.com/veltylabs/stock_manager
+module github.com/veltylabs/pharmacy_manager
 
 go 1.26.8

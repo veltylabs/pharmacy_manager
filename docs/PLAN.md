@@ -1,12 +1,16 @@
 ---
-PLAN: "feat: stock_manager v1 — products and supplies, locations, batches with expiry, append-only stock movements, FEFO output, expiring-stock report, UI and demo"
+PLAN: "feat: pharmacy_manager v1 — products and supplies, locations, batches with expiry, append-only stock movements, FEFO output, expiring-stock report, UI and demo"
 TAG: v0.1.0
 EXECUTOR: jules
 REVIEWER: none
 ---
 
+> **ON HOLD — do not dispatch.** Superseded by decision D13 of the master plan (pharmacy and supplies become two modules over the `webtyp.com/stock` library): pharmacy and supplies have different
+> managers and therefore different permissions, which changes the entity (`kind` out of the form), the resources and
+> the UI groups. This plan is rewritten, for `pharmacy_manager`, once the library has a published tag.
+
 > Read AGENTS.md at the repo root before any change.
-> This is a **new module**. `gonew` created only `go.mod`, `LICENSE`, `README.md` and a stub `stock_manager.go`.
+> This is a **new module**. `gonew` created only `go.mod`, `LICENSE`, `README.md` and a stub `pharmacy_manager.go`.
 > The reference implementation to replicate, file by file, is
 > [`github.com/veltylabs/item_catalog`](https://github.com/veltylabs/item_catalog) (read its `model.go`, `mcp.go`,
 > `view.go`, `ui/`, `seed/`, `web/client.go`, `migrate/` and `tests/` before writing anything). Where this plan
@@ -36,8 +40,8 @@ public (the receipt, the payment) is a later wave: here a sale is just an **outp
 carries the id of the document that caused it (`source_document_type` / `source_document_id`, free text this module
 never interprets).
 
-Why a module separate from `item_catalog` (services and specialties): different invariants, different owners and
-permissions are granted per module (the RBAC resource prefix is the module's `ModelName`).
+Why a module separate from `item_catalog` (services and specialties): different invariants and evolution. (RBAC is
+per `(resource, action)` of each operation, not per module.)
 
 ## Design gate (public API of a new module)
 
@@ -185,7 +189,7 @@ absent or foreign tenant ⇒ `ErrNotFound`.
 
 ## Stage 1 — scaffold
 
-1. Delete the stub `stock_manager.go`.
+1. Delete the stub `pharmacy_manager.go`.
 2. Create `model.go` (the `Definition` literals, the constants, the errors, the topics, `ModelName`), run `ormc` to
    generate `model_orm.go` (never edit it), `go mod tidy`.
 3. Dependencies: the same `webtyp.com/*` set as `item_catalog/go.mod` (`fmt`, `model`, `input`, `orm`, `router`,
@@ -197,7 +201,7 @@ absent or foreign tenant ⇒ `ErrNotFound`.
 ## Stage 2 — the module
 
 `module.go`: `Deps{IDs model.IDGenerator (required), Publisher events.Publisher (optional)}`, `Module`, `New`
-(error text `"stock_manager: Deps.IDs is required"`), the service methods named in the operations table, the two readers
+(error text `"pharmacy_manager: Deps.IDs is required"`), the service methods named in the operations table, the two readers
 (`ProductExists`, `ProductCard`). `mcp.go`/`ops.go`: `ModelName()`, `MountOperations`, the handlers and
 `writeError`/`statusOf`, exactly as item_catalog's. `interfaces.go` is **not** needed (this module defines no port).
 

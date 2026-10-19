@@ -215,20 +215,18 @@ never runs `codejob` or `gopush` itself — dispatch and close are the human's c
 
 ## Domain-specific notes (edit per module — nothing above this line)
 
-`stock_manager` holds what the clinic **has**: pharmacy products and clinical supplies, the batches they come in
-(with expiry), where they are (locations) and every movement of stock. It is **not** a sales or billing module and
-it does not know services, specialties or patients: other modules refer to a product by its string id and keep
-their own snapshot of its name and price (the reservation in `appointment_booking` does the same with a service).
+`pharmacy_manager` holds the clinic's **pharmacy** (open to the public): medicines, the batches they come in (with
+expiry), where they are kept and every movement of stock. Supplies used in consultations are a **different module**
+(`supply_manager`): different managers, different permissions, different rules. The two share the rules in the
+library `webtyp.com/stock` (first-expiry-first-out, movement directions, expiry predicates) and its conformance
+suite; they do not share tables or code, and neither imports the other.
 
-- **Why a separate module from `item_catalog`:** services and products have different invariants and different
-  owners (permissions are granted per module). Decision record: `webtyp/docs/CATALOG_SPLIT_MASTER_PLAN.md`
- .
-- Products and supplies are **one entity** (`product`, with `kind` = `PHARMACY` | `SUPPLY`).
-- **All stock is held per batch.** There is no stock without a batch; a supply that has no lot uses a batch whose
-  `batch_number` is the constant `NoBatchNumber`.
-- A movement is **append-only**: it is never edited or deleted; a mistake is corrected by a new movement.
-- Stock never goes negative (`ErrInsufficientStock`) and an expired batch is never sold or used (`ErrBatchExpired`).
-- `controlled` is only a flag in this version: no logic hangs from it (controlled medicines keep their regulated
-  book outside the software).
-- This is a **pharmacy open to the public**: the legal rules (batch, expiry, controlled substances) are the
-  clinic's responsibility and are validated with its responsible pharmacist; do not invent rules the plan does not state.
+- Decision record: `CATALOG_SPLIT_MASTER_PLAN.md` in `webtyp/docs` (D1–D13).
+- **All stock is held per batch**; the expiry date is **mandatory** on every medicine batch.
+- A movement is **append-only**: a mistake is corrected by a new movement.
+- Stock never goes negative and an expired batch is never sold.
+- `controlled` is only a flag in this version: no logic hangs from it. The regulated control book of
+  narcotics and psychotropics stays outside the software until the clinic's responsible pharmacist asks for it.
+- Selling to the public (receipt, payment) is another module; here a sale is an output movement that carries the
+  id of the document that caused it.
+- Do not invent legal rules the plan does not state: they are validated with the clinic's responsible pharmacist.
