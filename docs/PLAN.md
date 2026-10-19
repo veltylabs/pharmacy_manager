@@ -3,6 +3,8 @@ PLAN: "feat: pharmacy_manager v0.1.0 — the clinic pharmacy: medicines, batches
 TAG: v0.1.0
 EXECUTOR: jules
 REVIEWER: none
+STATUS: running
+SESSION: 8351826663434488844
 ---
 
 > Read AGENTS.md at the repo root before any change.
