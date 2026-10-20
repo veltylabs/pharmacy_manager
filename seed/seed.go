@@ -1,0 +1,70 @@
+// Package seed loads demo data through the module's own methods, so every row is validated like a real one.
+package seed
+
+import (
+	pharmacymanager "github.com/veltylabs/pharmacy_manager"
+	"webtyp.com/fmt"
+	"webtyp.com/stock"
+	"webtyp.com/time"
+)
+
+// Data is what Load created, for the demos that build on it.
+type Data struct {
+	Locations []pharmacymanager.PharmacyLocation
+	Products  []pharmacymanager.PharmacyProduct
+}
+
+const (
+	locStore   = "Bodega"
+	locCounter = "Mostrador"
+
+	expiryDays     = 365 // every demo batch expires within a year
+	unitCostPesos  = 300
+	pricePesos     = 2990
+	demoQuantity   = 40
+	counterPortion = 10
+)
+
+// Load creates two locations (the counter is a sales point), three products and one batch of each received in the store.
+func Load(m *pharmacymanager.Module, tenantID string) (Data, error) {
+	data := Data{}
+	for _, l := range []pharmacymanager.PharmacyLocation{
+		{TenantId: tenantID, Name: locStore, IsActive: true},
+		{TenantId: tenantID, Name: locCounter, IsSalesPoint: true, IsActive: true},
+	} {
+		created, err := m.CreateLocation(l)
+		if err != nil {
+			return data, fmt.Err("seed: CreateLocation", l.Name, err)
+		}
+		data.Locations = append(data.Locations, created)
+	}
+
+	for _, p := range []pharmacymanager.PharmacyProduct{
+		{TenantId: tenantID, Sku: "PARA500", Name: "Paracetamol 500 mg", Unit: pharmacymanager.UnitBox, TaxTreatment: pharmacymanager.TaxTaxed, ForSale: true, Price: pricePesos, MinQuantity: 10, IsActive: true},
+		{TenantId: tenantID, Sku: "SUERO1L", Name: "Suero fisiologico 1 L", Unit: pharmacymanager.UnitPiece, TaxTreatment: pharmacymanager.TaxExempt, ForSale: true, Price: 1500, IsActive: true},
+		{TenantId: tenantID, Sku: "MUESTRA", Name: "Muestra medica", Unit: pharmacymanager.UnitBox, TaxTreatment: pharmacymanager.TaxExempt, IsActive: true},
+	} {
+		created, err := m.CreateProduct(p)
+		if err != nil {
+			return data, fmt.Err("seed: CreateProduct", p.Sku, err)
+		}
+		data.Products = append(data.Products, created)
+	}
+
+	expiry := time.Now() + expiryDays*stock.SecondsPerDay
+	for i, p := range data.Products {
+		args := pharmacymanager.ReceiveStockArgs{
+			TenantId: tenantID, ProductId: p.Id, LocationId: data.Locations[0].Id,
+			BatchNumber: "LOT-" + fmt.Convert(i+1).String(), ExpirationDate: expiry, UnitCost: unitCostPesos, Quantity: demoQuantity,
+		}
+		if _, err := m.ReceiveStock(args); err != nil {
+			return data, fmt.Err("seed: ReceiveStock", p.Sku, err)
+		}
+	}
+	if _, err := m.TransferStock(pharmacymanager.TransferStockArgs{
+		TenantId: tenantID, ProductId: data.Products[0].Id, FromLocationId: data.Locations[0].Id, ToLocationId: data.Locations[1].Id, Quantity: counterPortion,
+	}); err != nil {
+		return data, fmt.Err("seed: TransferStock", err)
+	}
+	return data, nil
+}
