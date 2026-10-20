@@ -15,6 +15,9 @@ type Data struct {
 }
 
 const (
+	// nanosPerSecond turns time.Now() (nanoseconds) into the Unix seconds of an expiry date.
+	nanosPerSecond = 1000000000
+
 	locStore   = "Bodega"
 	locCounter = "Mostrador"
 
@@ -51,7 +54,7 @@ func Load(m *pharmacymanager.Module, tenantID string) (Data, error) {
 		data.Products = append(data.Products, created)
 	}
 
-	expiry := time.Now() + expiryDays*stock.SecondsPerDay
+	expiry := time.Now()/nanosPerSecond + expiryDays*stock.SecondsPerDay
 	for i, p := range data.Products {
 		args := pharmacymanager.ReceiveStockArgs{
 			TenantId: tenantID, ProductId: p.Id, LocationId: data.Locations[0].Id,

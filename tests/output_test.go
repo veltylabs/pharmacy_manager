@@ -9,7 +9,6 @@ import (
 	"webtyp.com/orm"
 	"webtyp.com/stock"
 	"webtyp.com/storage/mem"
-	"webtyp.com/time"
 )
 
 // output builds the arguments of a RegisterOutput.
@@ -22,7 +21,7 @@ func output(productId, locationId string, t stock.Movement, quantity float64) ph
 func TestRegisterOutput_DrawsTheEarliestExpiryFirstAndSplits(t *testing.T) {
 	m := newModule(t)
 	p, loc := newProduct(t, m, "p1"), newLocation(t, m, "Store")
-	soon, later := time.Now()+10*stock.SecondsPerDay, time.Now()+60*stock.SecondsPerDay
+	soon, later := nowSec()+10*stock.SecondsPerDay, nowSec()+60*stock.SecondsPerDay
 	for _, r := range []pharmacymanager.ReceiveStockArgs{receive(p.Id, loc.Id, "LATER", later, 10), receive(p.Id, loc.Id, "SOON", soon, 4)} {
 		if _, err := m.ReceiveStock(r); err != nil {
 			t.Fatal(err)
@@ -51,8 +50,8 @@ func TestRegisterOutput_Rules(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	expired := time.Now() - 10*stock.SecondsPerDay
-	future := time.Now() + 30*stock.SecondsPerDay
+	expired := nowSec() - 10*stock.SecondsPerDay
+	future := nowSec() + 30*stock.SecondsPerDay
 	for _, r := range []pharmacymanager.ReceiveStockArgs{
 		receive(p.Id, loc.Id, "OLD", expired, 5), receive(p.Id, loc.Id, "NEW", future, 5), receive(notForSale.Id, loc.Id, "X", future, 5),
 	} {
@@ -116,7 +115,7 @@ func TestRegisterOutput_PublishesTheCostAtCost(t *testing.T) {
 		t.Fatal(err)
 	}
 	p, loc := newProduct(t, m, "p1"), newLocation(t, m, "Store")
-	args := receive(p.Id, loc.Id, "L1", time.Now()+30*stock.SecondsPerDay, 10)
+	args := receive(p.Id, loc.Id, "L1", nowSec()+30*stock.SecondsPerDay, 10)
 	args.UnitCost = 333
 	if _, err := m.ReceiveStock(args); err != nil {
 		t.Fatal(err)

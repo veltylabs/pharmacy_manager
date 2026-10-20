@@ -60,11 +60,6 @@ func (l *ledger) location(suite string) string {
 	return loc.Id
 }
 
-// neverExpires stands for "does not expire" in this module: a pharmacy batch always has an expiry date (the plan's rule),
-// so the suite's lot without expiry (0) is received with a date far beyond every other, which orders it last as the
-// suite expects; Lots() translates it back to 0.
-const neverExpires = int64(4102444800) // 2100-01-01 UTC
-
 func (l *ledger) Receive(product, location, lot string, expiry int64, quantity float64) error {
 	if expiry == 0 {
 		expiry = neverExpires

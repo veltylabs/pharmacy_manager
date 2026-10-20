@@ -5,13 +5,12 @@ import (
 
 	pharmacymanager "github.com/veltylabs/pharmacy_manager"
 	"webtyp.com/stock"
-	"webtyp.com/time"
 )
 
 func TestListExpiring(t *testing.T) {
 	m := newModule(t)
 	p, loc := newProduct(t, m, "p1"), newLocation(t, m, "Store")
-	now := time.Now()
+	now := nowSec()
 	for _, r := range []pharmacymanager.ReceiveStockArgs{
 		receive(p.Id, loc.Id, "EXPIRED", now-5*stock.SecondsPerDay, 1),
 		receive(p.Id, loc.Id, "SOON", now+10*stock.SecondsPerDay, 1),
@@ -37,7 +36,7 @@ func TestListExpiring(t *testing.T) {
 func TestListLowStock(t *testing.T) {
 	m := newModule(t)
 	store, counter := newLocation(t, m, "Store"), newLocation(t, m, "Counter")
-	future := time.Now() + 30*stock.SecondsPerDay
+	future := nowSec() + 30*stock.SecondsPerDay
 
 	newProduct(t, m, "nomin") // a product without minimum: never low
 	if _, err := m.CreateProduct(pharmacymanager.PharmacyProduct{

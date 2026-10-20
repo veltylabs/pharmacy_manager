@@ -421,7 +421,7 @@ func (m *Module) RegisterOutput(a RegisterOutputArgs) ([]PharmacyMovement, error
 			if err != nil {
 				return err
 			}
-			allocateAt := now
+			allocateAt := nowSeconds()
 			if t == stock.AdjustOut {
 				allocateAt = 0 // a write-off may take expired stock: with now = 0 no lot counts as expired
 			}
@@ -447,7 +447,7 @@ func (m *Module) RegisterOutput(a RegisterOutputArgs) ([]PharmacyMovement, error
 			if !found || level.Quantity < a.Quantity {
 				return ErrInsufficientStock
 			}
-			if t != stock.AdjustOut && (stock.Lot{Expiry: batch.ExpirationDate}).Expired(now) {
+			if t != stock.AdjustOut && (stock.Lot{Expiry: batch.ExpirationDate}).Expired(nowSeconds()) {
 				return ErrBatchExpired
 			}
 			takes = []stock.Take{{LotID: batch.Id, Quantity: a.Quantity}}
@@ -519,7 +519,7 @@ func (m *Module) TransferStock(a TransferStockArgs) ([]PharmacyMovement, error) 
 		if err != nil {
 			return err
 		}
-		takes, err := stock.Allocate(lots, a.Quantity, now)
+		takes, err := stock.Allocate(lots, a.Quantity, nowSeconds())
 		if err == stock.ErrInsufficient {
 			return ErrInsufficientStock
 		}
@@ -602,3 +602,10 @@ func (m *Module) publishCosts(movements []PharmacyMovement, unitCosts []int64) e
 	}
 	return nil
 }
+
+// nanosPerSecond converts webtyp.com/time's clock (Unix nanoseconds) to the Unix seconds of every expiry date
+// (expiration_date and webtyp.com/stock).
+const nanosPerSecond = 1000000000
+
+// nowSeconds is the current time in the unit of an expiry date. Compare an expiry only with this, never with time.Now().
+func nowSeconds() int64 { return time.Now() / nanosPerSecond }

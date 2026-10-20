@@ -7,9 +7,15 @@ import (
 	"webtyp.com/fmt"
 	"webtyp.com/orm"
 	"webtyp.com/storage/mem"
+	"webtyp.com/time"
 )
 
 const testTenant = "tenant-1"
+
+// neverExpires stands for "does not expire" in this module: a pharmacy batch always has an expiry date (the plan's rule),
+// so the suite's lot without expiry (0) is received with a date far beyond every other, which orders it last as the
+// suite expects; Lots() translates it back to 0.
+const neverExpires = int64(4102444800) // 2100-01-01 UTC
 
 // testIDGen is the test double of model.IDGenerator: a module never builds its own generator.
 type testIDGen struct{ n int }
@@ -51,3 +57,6 @@ func newLocation(t *testing.T, m *pharmacymanager.Module, name string) pharmacym
 	}
 	return l
 }
+
+// nowSec is the current time in Unix seconds, the unit of every expiry date: webtyp.com/time.Now() counts nanoseconds.
+func nowSec() int64 { return time.Now() / 1000000000 }
