@@ -1,9 +1,8 @@
 ---
 PLAN: "refactor: typed instants of webtyp/time v0.6 in pharmacy_manager — every instant field is time.Unix or time.Nano, no unit arithmetic"
+TAG: ""
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
-SESSION: 11725759280192723389
 ---
 
 > Read AGENTS.md at the repo root before any change. This plan is complete: do not guess; if something does not fit, stop and ask in the PR.
@@ -19,6 +18,12 @@ data**: a field keeps the unit it already stores (the table below says which).
 - Work on the branch codejob created. Never run `git reset`, `git checkout -- <file>`, `git clean`, `git stash` or any
   command that discards files. Commit often (`git add -A && git commit -m "..."`).
 - Do not edit `model_orm.go` by hand: it is generated (Stage 2).
+- **Never pause to ask permission or to report progress.** When the delivery check passes: commit, push and open the
+  pull request. If something still fails after you tried for 30 minutes, open the pull request anyway and list in it
+  exactly what fails (command and output). Never edit `model_orm.go` by hand: the casts `(*int64)(&m.Field)` it writes
+  in `Pointers()` are required (storage reads integers through `*int64`).
+- If `gotest` cannot run its browser WASM lane (`wasmbrowsertest` missing), run `GOOS=js GOARCH=wasm go vet ./...`
+  instead and say so in the pull request; it does not block delivery.
 - Never use `goimports` on a file that needs `webtyp.com/time`: it imports the standard library `time` instead. Write
   the import by hand: `"webtyp.com/time"`.
 
@@ -172,6 +177,22 @@ tests/setup_test.go:62: func nowSec() int64 { return time.Now() / 1000000000 }
   their `nowSec()` helper (delete it) and `time.Day` instead of `stock.SecondsPerDay`.
 - **Readers keep plain types** for other modules (skill **module-layout**): instants in their signatures become
   `time.Unix` / `time.Nano`, which is a plain type of `webtyp.com/time`, not of this module.
+
+### The tests — exact rewrites (a first attempt stalled here: follow them literally)
+
+| File:line today | Becomes |
+|---|---|
+| `tests/setup_test.go:18` `const neverExpires = int64(4102444800) // 2100-01-01 UTC` | `const neverExpires time.Unix = 4102444800 // 2100-01-01 UTC` |
+| `tests/setup_test.go:61-62` the helper `nowSec()` | delete it |
+| every `nowSec()` in `tests/*.go` | `time.NowUnix()` |
+| every `stock.SecondsPerDay` in `tests/*.go` | `time.Day` |
+| `tests/receive_test.go:11` `func receive(productId, locationId, batch string, expiry int64, quantity float64)` | `expiry time.Unix` |
+| `tests/ledger_test.go:63` `func (l *ledger) Receive(product, location, lot string, expiry int64, quantity float64) error` | `expiry time.Unix` (it implements `stocktest.Ledger` of `webtyp.com/stock` v0.1.3, whose `Receive` takes `time.Unix`) |
+| `conflict_internal_test.go` `nowSeconds() + 30*stock.SecondsPerDay` / `time.Now()` | `time.NowUnix() + 30*time.Day` / `time.NowNano()` |
+
+Each test file that now names `time.` imports `"webtyp.com/time"` (write it by hand; `goimports` picks the standard
+library). No test expectation changes. Order: Stages 0–3 on the non-test code first (`go build ./...` green), then this
+table, then `gotest`.
 
 ## Stage 4 — docs
 
