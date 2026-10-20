@@ -3,8 +3,6 @@ PLAN: "feat: pharmacy_manager v0.1.0 — the clinic pharmacy: medicines, batches
 TAG: v0.1.0
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
-SESSION: 8351826663434488844
 ---
 
 > Read AGENTS.md at the repo root before any change.
@@ -18,6 +16,11 @@ SESSION: 8351826663434488844
 > published version, **stop** and say which in the PR.
 
 ## Tools
+
+Set these in every shell that runs `go` (the `webtyp.com/*` modules are vanity paths that resolve to GitHub; without them
+the public proxy cannot fetch them): `export GOPRIVATE=webtyp.com/*,github.com/veltylabs/*` and `export GOFLAGS=-mod=mod`.
+Write `go.mod` with the requires of Stage 1 and run `go mod tidy` **before** running `ormc`. If a module still cannot be
+fetched, stop and name the module and the error in the PR; never vendor, copy or hand-write generated code.
 
 ```
 go install webtyp.com/devflow/cmd/gotest@latest
