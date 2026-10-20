@@ -1,6 +1,8 @@
 package tests
 
 import (
+	"webtyp.com/time"
+
 	"testing"
 
 	pharmacymanager "github.com/veltylabs/pharmacy_manager"
@@ -26,10 +28,10 @@ func TestEvents_OnePerMovement(t *testing.T) {
 	locA := newLocation(t, m, "A")
 	locB := newLocation(t, m, "B")
 
-	_, _ = m.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: neverExpires,
+	_, _ = m.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: time.Unix(neverExpires),
 		TenantId: testTenant, ProductId: product.Id, LocationId: locA.Id, BatchNumber: "B1", Quantity: 5,
 	})
-	_, _ = m.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: neverExpires,
+	_, _ = m.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: time.Unix(neverExpires),
 		TenantId: testTenant, ProductId: product.Id, LocationId: locA.Id, BatchNumber: "B2", Quantity: 5,
 	})
 
@@ -59,7 +61,7 @@ func TestEvents_NilPublisherIsSilent(t *testing.T) {
 	product := newProduct(t, m, "i1")
 	loc := newLocation(t, m, "Loc")
 
-	_, err := m.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: neverExpires,
+	_, err := m.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: time.Unix(neverExpires),
 		TenantId: testTenant, ProductId: product.Id, LocationId: loc.Id, BatchNumber: "B1", Quantity: 5,
 	})
 	if err != nil {
@@ -87,7 +89,7 @@ func TestEvents_FailedOperationPublishesNothing(t *testing.T) {
 	product := newProduct(t, m, "i1")
 	loc := newLocation(t, m, "Loc")
 
-	_, _ = m.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: neverExpires,
+	_, _ = m.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: time.Unix(neverExpires),
 		TenantId: testTenant, ProductId: product.Id, LocationId: loc.Id, BatchNumber: "B1", Quantity: 5,
 	})
 	nStart := n
@@ -120,7 +122,7 @@ func TestCostFacts_OnlyWithScopeAndCost(t *testing.T) {
 	locA := newLocation(t, m, "A")
 
 	// output with MoneyScope: ""
-	_, err = m.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: neverExpires,
+	_, err = m.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: time.Unix(neverExpires),
 		TenantId: testTenant, ProductId: product.Id, LocationId: locA.Id, BatchNumber: "B1", Quantity: 5, UnitCost: 100,
 	})
 	if err != nil {
@@ -140,7 +142,7 @@ func TestCostFacts_OnlyWithScopeAndCost(t *testing.T) {
 	}
 	product2 := newProduct(t, m2, "i2")
 	locC := newLocation(t, m2, "C")
-	_, err = m2.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: neverExpires,
+	_, err = m2.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: time.Unix(neverExpires),
 		TenantId: testTenant, ProductId: product2.Id, LocationId: locC.Id, BatchNumber: "B2", Quantity: 5, UnitCost: 0,
 	})
 	if err != nil {
@@ -161,7 +163,7 @@ func TestCostFacts_OnlyWithScopeAndCost(t *testing.T) {
 	product3 := newProduct(t, m3, "i3")
 	locD := newLocation(t, m3, "D")
 	locE := newLocation(t, m3, "E")
-	rec3, err := m3.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: neverExpires,
+	rec3, err := m3.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: time.Unix(neverExpires),
 		TenantId: testTenant, ProductId: product3.Id, LocationId: locD.Id, BatchNumber: "B3", Quantity: 5, UnitCost: 100,
 	})
 	if err != nil {

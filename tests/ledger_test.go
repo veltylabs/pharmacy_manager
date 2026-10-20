@@ -8,6 +8,7 @@ import (
 	pharmacymanager "github.com/veltylabs/pharmacy_manager"
 	"webtyp.com/stock"
 	"webtyp.com/stock/stocktest"
+	"webtyp.com/time"
 )
 
 // idPair joins an id chosen by the conformance suite ("prod1", "loc1", "lotA") to the id the module generated.
@@ -60,7 +61,7 @@ func (l *ledger) location(suite string) string {
 	return loc.Id
 }
 
-func (l *ledger) Receive(product, location, lot string, expiry int64, quantity float64) error {
+func (l *ledger) Receive(product, location, lot string, expiry time.Unix, quantity float64) error {
 	if expiry == 0 {
 		expiry = neverExpires
 	}

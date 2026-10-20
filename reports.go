@@ -4,6 +4,7 @@ import (
 	"slices"
 
 	"webtyp.com/stock"
+	"webtyp.com/time"
 )
 
 // ListExpiring returns the stock (quantity > 0) whose batch is expired or expires within WithinDays days, soonest first.
@@ -12,7 +13,7 @@ func (m *Module) ListExpiring(a ListExpiringArgs) ([]ExpiringStock, error) {
 	if a.WithinDays < 0 {
 		return nil, ErrDays
 	}
-	now := nowSeconds()
+	now := time.NowUnix()
 	levels, err := m.ListStock(ListStockArgs{TenantId: a.TenantId})
 	if err != nil {
 		return nil, err

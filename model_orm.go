@@ -5,6 +5,7 @@ package pharmacymanager
 import (
 	"webtyp.com/model"
 	"webtyp.com/orm"
+	"webtyp.com/time"
 )
 
 type PharmacyProduct struct {
@@ -21,7 +22,7 @@ type PharmacyProduct struct {
 	RegistryNumber string
 	MinQuantity    float64
 	IsActive       bool
-	UpdatedAt      int64
+	UpdatedAt      time.Nano
 }
 
 func (m *PharmacyProduct) ModelName() string { return "pharmacy_product" }
@@ -29,7 +30,7 @@ func (m *PharmacyProduct) ModelName() string { return "pharmacy_product" }
 func (m *PharmacyProduct) Schema() []model.Field { return PharmacyProductModel.Fields }
 
 func (m *PharmacyProduct) Pointers() []any {
-	return []any{&m.Id, &m.TenantId, &m.Sku, &m.Name, &m.Unit, &m.TaxTreatment, &m.ForSale, &m.Price, &m.Controlled, &m.Barcode, &m.RegistryNumber, &m.MinQuantity, &m.IsActive, &m.UpdatedAt}
+	return []any{&m.Id, &m.TenantId, &m.Sku, &m.Name, &m.Unit, &m.TaxTreatment, &m.ForSale, &m.Price, &m.Controlled, &m.Barcode, &m.RegistryNumber, &m.MinQuantity, &m.IsActive, (*int64)(&m.UpdatedAt)}
 }
 
 func (m *PharmacyProduct) IsNil() bool { return m == nil }
@@ -59,7 +60,7 @@ func (m *PharmacyProduct) EncodeFields(w model.FieldWriter) {
 	}
 	w.Bool("is_active", m.IsActive)
 	if m.UpdatedAt != 0 {
-		w.Int("updated_at", m.UpdatedAt)
+		w.Int("updated_at", int64(m.UpdatedAt))
 	}
 }
 
@@ -104,7 +105,7 @@ func (m *PharmacyProduct) DecodeFields(r model.FieldReader) {
 		m.IsActive = v
 	}
 	if v, ok := r.Int("updated_at"); ok {
-		m.UpdatedAt = v
+		m.UpdatedAt = time.Nano(v)
 	}
 }
 
@@ -180,7 +181,7 @@ type PharmacyLocation struct {
 	Name         string
 	IsSalesPoint bool
 	IsActive     bool
-	UpdatedAt    int64
+	UpdatedAt    time.Nano
 }
 
 func (m *PharmacyLocation) ModelName() string { return "pharmacy_location" }
@@ -188,7 +189,7 @@ func (m *PharmacyLocation) ModelName() string { return "pharmacy_location" }
 func (m *PharmacyLocation) Schema() []model.Field { return PharmacyLocationModel.Fields }
 
 func (m *PharmacyLocation) Pointers() []any {
-	return []any{&m.Id, &m.TenantId, &m.Name, &m.IsSalesPoint, &m.IsActive, &m.UpdatedAt}
+	return []any{&m.Id, &m.TenantId, &m.Name, &m.IsSalesPoint, &m.IsActive, (*int64)(&m.UpdatedAt)}
 }
 
 func (m *PharmacyLocation) IsNil() bool { return m == nil }
@@ -202,7 +203,7 @@ func (m *PharmacyLocation) EncodeFields(w model.FieldWriter) {
 	w.Bool("is_sales_point", m.IsSalesPoint)
 	w.Bool("is_active", m.IsActive)
 	if m.UpdatedAt != 0 {
-		w.Int("updated_at", m.UpdatedAt)
+		w.Int("updated_at", int64(m.UpdatedAt))
 	}
 }
 
@@ -223,7 +224,7 @@ func (m *PharmacyLocation) DecodeFields(r model.FieldReader) {
 		m.IsActive = v
 	}
 	if v, ok := r.Int("updated_at"); ok {
-		m.UpdatedAt = v
+		m.UpdatedAt = time.Nano(v)
 	}
 }
 
@@ -282,10 +283,10 @@ type PharmacyBatch struct {
 	TenantId       string
 	ProductId      string
 	BatchNumber    string
-	ExpirationDate int64
+	ExpirationDate time.Unix
 	UnitCost       int64
 	IsActive       bool
-	UpdatedAt      int64
+	UpdatedAt      time.Nano
 }
 
 func (m *PharmacyBatch) ModelName() string { return "pharmacy_batch" }
@@ -293,7 +294,7 @@ func (m *PharmacyBatch) ModelName() string { return "pharmacy_batch" }
 func (m *PharmacyBatch) Schema() []model.Field { return PharmacyBatchModel.Fields }
 
 func (m *PharmacyBatch) Pointers() []any {
-	return []any{&m.Id, &m.TenantId, &m.ProductId, &m.BatchNumber, &m.ExpirationDate, &m.UnitCost, &m.IsActive, &m.UpdatedAt}
+	return []any{&m.Id, &m.TenantId, &m.ProductId, &m.BatchNumber, (*int64)(&m.ExpirationDate), &m.UnitCost, &m.IsActive, (*int64)(&m.UpdatedAt)}
 }
 
 func (m *PharmacyBatch) IsNil() bool { return m == nil }
@@ -305,13 +306,13 @@ func (m *PharmacyBatch) EncodeFields(w model.FieldWriter) {
 	w.String("tenant_id", m.TenantId)
 	w.String("product_id", m.ProductId)
 	w.String("batch_number", m.BatchNumber)
-	w.Int("expiration_date", m.ExpirationDate)
+	w.Int("expiration_date", int64(m.ExpirationDate))
 	if m.UnitCost != 0 {
 		w.Int("unit_cost", m.UnitCost)
 	}
 	w.Bool("is_active", m.IsActive)
 	if m.UpdatedAt != 0 {
-		w.Int("updated_at", m.UpdatedAt)
+		w.Int("updated_at", int64(m.UpdatedAt))
 	}
 }
 
@@ -329,7 +330,7 @@ func (m *PharmacyBatch) DecodeFields(r model.FieldReader) {
 		m.BatchNumber = v
 	}
 	if v, ok := r.Int("expiration_date"); ok {
-		m.ExpirationDate = v
+		m.ExpirationDate = time.Unix(v)
 	}
 	if v, ok := r.Int("unit_cost"); ok {
 		m.UnitCost = v
@@ -338,7 +339,7 @@ func (m *PharmacyBatch) DecodeFields(r model.FieldReader) {
 		m.IsActive = v
 	}
 	if v, ok := r.Int("updated_at"); ok {
-		m.UpdatedAt = v
+		m.UpdatedAt = time.Nano(v)
 	}
 }
 
@@ -409,7 +410,7 @@ type PharmacyStockLevel struct {
 	BatchId    string
 	Quantity   float64
 	Revision   int64
-	UpdatedAt  int64
+	UpdatedAt  time.Nano
 }
 
 func (m *PharmacyStockLevel) ModelName() string { return "pharmacy_stock_level" }
@@ -417,7 +418,7 @@ func (m *PharmacyStockLevel) ModelName() string { return "pharmacy_stock_level" 
 func (m *PharmacyStockLevel) Schema() []model.Field { return PharmacyStockLevelModel.Fields }
 
 func (m *PharmacyStockLevel) Pointers() []any {
-	return []any{&m.Id, &m.TenantId, &m.LocationId, &m.BatchId, &m.Quantity, &m.Revision, &m.UpdatedAt}
+	return []any{&m.Id, &m.TenantId, &m.LocationId, &m.BatchId, &m.Quantity, &m.Revision, (*int64)(&m.UpdatedAt)}
 }
 
 func (m *PharmacyStockLevel) IsNil() bool { return m == nil }
@@ -432,7 +433,7 @@ func (m *PharmacyStockLevel) EncodeFields(w model.FieldWriter) {
 	w.Float("quantity", m.Quantity)
 	w.Int("revision", m.Revision)
 	if m.UpdatedAt != 0 {
-		w.Int("updated_at", m.UpdatedAt)
+		w.Int("updated_at", int64(m.UpdatedAt))
 	}
 }
 
@@ -456,7 +457,7 @@ func (m *PharmacyStockLevel) DecodeFields(r model.FieldReader) {
 		m.Revision = v
 	}
 	if v, ok := r.Int("updated_at"); ok {
-		m.UpdatedAt = v
+		m.UpdatedAt = time.Nano(v)
 	}
 }
 
@@ -529,7 +530,7 @@ type PharmacyMovement struct {
 	SourceDocumentType string
 	SourceDocumentId   string
 	Note               string
-	CreatedAt          int64
+	CreatedAt          time.Nano
 	CreatedBy          string
 }
 
@@ -538,7 +539,7 @@ func (m *PharmacyMovement) ModelName() string { return "pharmacy_movement" }
 func (m *PharmacyMovement) Schema() []model.Field { return PharmacyMovementModel.Fields }
 
 func (m *PharmacyMovement) Pointers() []any {
-	return []any{&m.Id, &m.TenantId, &m.BatchId, &m.LocationId, &m.MovementType, &m.Quantity, &m.SourceDocumentType, &m.SourceDocumentId, &m.Note, &m.CreatedAt, &m.CreatedBy}
+	return []any{&m.Id, &m.TenantId, &m.BatchId, &m.LocationId, &m.MovementType, &m.Quantity, &m.SourceDocumentType, &m.SourceDocumentId, &m.Note, (*int64)(&m.CreatedAt), &m.CreatedBy}
 }
 
 func (m *PharmacyMovement) IsNil() bool { return m == nil }
@@ -561,7 +562,7 @@ func (m *PharmacyMovement) EncodeFields(w model.FieldWriter) {
 	if m.Note != "" {
 		w.String("note", m.Note)
 	}
-	w.Int("created_at", m.CreatedAt)
+	w.Int("created_at", int64(m.CreatedAt))
 	if m.CreatedBy != "" {
 		w.String("created_by", m.CreatedBy)
 	}
@@ -596,7 +597,7 @@ func (m *PharmacyMovement) DecodeFields(r model.FieldReader) {
 		m.Note = v
 	}
 	if v, ok := r.Int("created_at"); ok {
-		m.CreatedAt = v
+		m.CreatedAt = time.Nano(v)
 	}
 	if v, ok := r.String("created_by"); ok {
 		m.CreatedBy = v
@@ -859,7 +860,7 @@ type ReceiveStockArgs struct {
 	ProductId          string
 	LocationId         string
 	BatchNumber        string
-	ExpirationDate     int64
+	ExpirationDate     time.Unix
 	UnitCost           int64
 	Quantity           float64
 	SourceDocumentType string
@@ -873,7 +874,7 @@ func (m *ReceiveStockArgs) ModelName() string { return "receive_stock_args" }
 func (m *ReceiveStockArgs) Schema() []model.Field { return ReceiveStockArgsModel.Fields }
 
 func (m *ReceiveStockArgs) Pointers() []any {
-	return []any{&m.TenantId, &m.ProductId, &m.LocationId, &m.BatchNumber, &m.ExpirationDate, &m.UnitCost, &m.Quantity, &m.SourceDocumentType, &m.SourceDocumentId, &m.Note, &m.CreatedBy}
+	return []any{&m.TenantId, &m.ProductId, &m.LocationId, &m.BatchNumber, (*int64)(&m.ExpirationDate), &m.UnitCost, &m.Quantity, &m.SourceDocumentType, &m.SourceDocumentId, &m.Note, &m.CreatedBy}
 }
 
 func (m *ReceiveStockArgs) IsNil() bool { return m == nil }
@@ -883,7 +884,7 @@ func (m *ReceiveStockArgs) EncodeFields(w model.FieldWriter) {
 	w.String("product_id", m.ProductId)
 	w.String("location_id", m.LocationId)
 	w.String("batch_number", m.BatchNumber)
-	w.Int("expiration_date", m.ExpirationDate)
+	w.Int("expiration_date", int64(m.ExpirationDate))
 	w.Int("unit_cost", m.UnitCost)
 	w.Float("quantity", m.Quantity)
 	w.String("source_document_type", m.SourceDocumentType)
@@ -906,7 +907,7 @@ func (m *ReceiveStockArgs) DecodeFields(r model.FieldReader) {
 		m.BatchNumber = v
 	}
 	if v, ok := r.Int("expiration_date"); ok {
-		m.ExpirationDate = v
+		m.ExpirationDate = time.Unix(v)
 	}
 	if v, ok := r.Int("unit_cost"); ok {
 		m.UnitCost = v
@@ -1226,8 +1227,8 @@ type ListMovementsArgs struct {
 	TenantId  string
 	ProductId string
 	BatchId   string
-	From      int64
-	To        int64
+	From      time.Nano
+	To        time.Nano
 	Limit     int64
 }
 
@@ -1236,7 +1237,7 @@ func (m *ListMovementsArgs) ModelName() string { return "list_movements_args" }
 func (m *ListMovementsArgs) Schema() []model.Field { return ListMovementsArgsModel.Fields }
 
 func (m *ListMovementsArgs) Pointers() []any {
-	return []any{&m.TenantId, &m.ProductId, &m.BatchId, &m.From, &m.To, &m.Limit}
+	return []any{&m.TenantId, &m.ProductId, &m.BatchId, (*int64)(&m.From), (*int64)(&m.To), &m.Limit}
 }
 
 func (m *ListMovementsArgs) IsNil() bool { return m == nil }
@@ -1245,8 +1246,8 @@ func (m *ListMovementsArgs) EncodeFields(w model.FieldWriter) {
 	w.String("tenant_id", m.TenantId)
 	w.String("product_id", m.ProductId)
 	w.String("batch_id", m.BatchId)
-	w.Int("from", m.From)
-	w.Int("to", m.To)
+	w.Int("from", int64(m.From))
+	w.Int("to", int64(m.To))
 	w.Int("limit", m.Limit)
 }
 
@@ -1261,10 +1262,10 @@ func (m *ListMovementsArgs) DecodeFields(r model.FieldReader) {
 		m.BatchId = v
 	}
 	if v, ok := r.Int("from"); ok {
-		m.From = v
+		m.From = time.Nano(v)
 	}
 	if v, ok := r.Int("to"); ok {
-		m.To = v
+		m.To = time.Nano(v)
 	}
 	if v, ok := r.Int("limit"); ok {
 		m.Limit = v
@@ -1378,7 +1379,7 @@ type ExpiringStock struct {
 	BatchNumber    string
 	LocationId     string
 	Quantity       float64
-	ExpirationDate int64
+	ExpirationDate time.Unix
 	Expired        bool
 }
 
@@ -1387,7 +1388,7 @@ func (m *ExpiringStock) ModelName() string { return "expiring_stock" }
 func (m *ExpiringStock) Schema() []model.Field { return ExpiringStockModel.Fields }
 
 func (m *ExpiringStock) Pointers() []any {
-	return []any{&m.ProductId, &m.ProductName, &m.BatchId, &m.BatchNumber, &m.LocationId, &m.Quantity, &m.ExpirationDate, &m.Expired}
+	return []any{&m.ProductId, &m.ProductName, &m.BatchId, &m.BatchNumber, &m.LocationId, &m.Quantity, (*int64)(&m.ExpirationDate), &m.Expired}
 }
 
 func (m *ExpiringStock) IsNil() bool { return m == nil }
@@ -1399,7 +1400,7 @@ func (m *ExpiringStock) EncodeFields(w model.FieldWriter) {
 	w.String("batch_number", m.BatchNumber)
 	w.String("location_id", m.LocationId)
 	w.Float("quantity", m.Quantity)
-	w.Int("expiration_date", m.ExpirationDate)
+	w.Int("expiration_date", int64(m.ExpirationDate))
 	w.Bool("expired", m.Expired)
 }
 
@@ -1423,7 +1424,7 @@ func (m *ExpiringStock) DecodeFields(r model.FieldReader) {
 		m.Quantity = v
 	}
 	if v, ok := r.Int("expiration_date"); ok {
-		m.ExpirationDate = v
+		m.ExpirationDate = time.Unix(v)
 	}
 	if v, ok := r.Bool("expired"); ok {
 		m.Expired = v

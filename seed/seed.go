@@ -4,7 +4,6 @@ package seed
 import (
 	pharmacymanager "github.com/veltylabs/pharmacy_manager"
 	"webtyp.com/fmt"
-	"webtyp.com/stock"
 	"webtyp.com/time"
 )
 
@@ -15,9 +14,6 @@ type Data struct {
 }
 
 const (
-	// nanosPerSecond turns time.Now() (nanoseconds) into the Unix seconds of an expiry date.
-	nanosPerSecond = 1000000000
-
 	locStore   = "Bodega"
 	locCounter = "Mostrador"
 
@@ -54,7 +50,7 @@ func Load(m *pharmacymanager.Module, tenantID string) (Data, error) {
 		data.Products = append(data.Products, created)
 	}
 
-	expiry := time.Now()/nanosPerSecond + expiryDays*stock.SecondsPerDay
+	expiry := time.NowUnix() + expiryDays*time.Day
 	for i, p := range data.Products {
 		args := pharmacymanager.ReceiveStockArgs{
 			TenantId: tenantID, ProductId: p.Id, LocationId: data.Locations[0].Id,

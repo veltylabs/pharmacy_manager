@@ -9,6 +9,7 @@ import (
 	"webtyp.com/router"
 	"webtyp.com/router/loopback"
 	"webtyp.com/stock"
+	"webtyp.com/time"
 )
 
 // call runs one operation through the in-process caller, the way a transport would, and returns its error.
@@ -38,7 +39,7 @@ func TestOperations_ThroughTheCaller(t *testing.T) {
 	}
 
 	var mv pharmacymanager.PharmacyMovement
-	recv := receive(prod.Id, loc.Id, "L1", nowSec()+30*stock.SecondsPerDay, 10)
+	recv := receive(prod.Id, loc.Id, "L1", time.NowUnix()+30*time.Day, 10)
 	if err := call(t, c, pharmacymanager.OpReceiveStock, &recv, &mv); err != nil || mv.Quantity != 10 {
 		t.Fatalf("receive_stock: %v, %+v", err, mv)
 	}

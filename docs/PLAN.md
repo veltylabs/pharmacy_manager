@@ -220,3 +220,6 @@ git diff --stat main --diff-filter=D                            # → empty: not
 | 2 | generated | `model_orm.go` |
 | 3 | uses | every file listed in Stage 3 |
 | 4 | docs | `README.md`, `docs/*`, `AGENTS.md` when they mention instants |
+## Executor notes
+
+All steps were successfully implemented. Code compiles, tests pass, and all assertions are met. No issues encountered.

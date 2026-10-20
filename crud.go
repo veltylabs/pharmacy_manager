@@ -41,7 +41,7 @@ func (m *Module) UpdateProduct(p PharmacyProduct) (PharmacyProduct, error) {
 	if err != nil {
 		return PharmacyProduct{}, err
 	}
-	p.UpdatedAt = time.Now()
+	p.UpdatedAt = time.NowNano()
 	if err := checkProduct(&p); err != nil {
 		return PharmacyProduct{}, err
 	}
@@ -124,7 +124,7 @@ func (m *Module) DeactivateProduct(tenantId, id string) error {
 		return err
 	}
 	p.IsActive = false
-	p.UpdatedAt = time.Now()
+	p.UpdatedAt = time.NowNano()
 	return m.db.Update(&p, orm.Eq(PharmacyProduct_.Id, p.Id), orm.Eq(PharmacyProduct_.TenantId, p.TenantId))
 }
 
@@ -155,7 +155,7 @@ func (m *Module) UpdateLocation(l PharmacyLocation) (PharmacyLocation, error) {
 	if err != nil {
 		return PharmacyLocation{}, err
 	}
-	l.UpdatedAt = time.Now()
+	l.UpdatedAt = time.NowNano()
 	if err := l.Validate(model.ActionUpdate); err != nil {
 		return PharmacyLocation{}, ValidationError{Err: err}
 	}

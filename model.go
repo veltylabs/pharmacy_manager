@@ -40,7 +40,7 @@ var PharmacyProductModel = model.Definition{
 		{Name: "registry_number", Type: input.Text(), Label: "Health registry number", OmitEmpty: true, Permitted: model.Permitted{Letters: true, Numbers: true, Extra: []rune{'-', '/'}, Minimum: 1, Maximum: 30}},
 		{Name: "min_quantity", Type: input.Decimal(), Label: "Minimum quantity", OmitEmpty: true},
 		{Name: "is_active", Type: input.Checkbox(), Label: "Active"},
-		{Name: "updated_at", Type: model.Int(), OmitEmpty: true},
+		{Name: "updated_at", Type: model.NanoTime(), OmitEmpty: true},
 	},
 }
 
@@ -53,7 +53,7 @@ var PharmacyLocationModel = model.Definition{
 		{Name: "name", Type: input.Text(), Label: "Name", NotNull: true, Permitted: model.Permitted{Letters: true, Numbers: true, Spaces: true, Tilde: true, Minimum: 1, Maximum: 100}},
 		{Name: "is_sales_point", Type: input.Checkbox(), Label: "Sales point"},
 		{Name: "is_active", Type: input.Checkbox(), Label: "Active"},
-		{Name: "updated_at", Type: model.Int(), OmitEmpty: true},
+		{Name: "updated_at", Type: model.NanoTime(), OmitEmpty: true},
 	},
 }
 
@@ -65,10 +65,10 @@ var PharmacyBatchModel = model.Definition{
 		{Name: "tenant_id", Type: model.Text(), NotNull: true},
 		{Name: "product_id", Type: model.Text(), Ref: &PharmacyProductModel, DB: &model.FieldDB{RefColumn: "id"}, NotNull: true},
 		{Name: "batch_number", Type: model.Text(), NotNull: true},
-		{Name: "expiration_date", Type: model.Int()},
+		{Name: "expiration_date", Type: model.UnixTime()},
 		{Name: "unit_cost", Type: model.Int(), OmitEmpty: true},
 		{Name: "is_active", Type: model.Bool()},
-		{Name: "updated_at", Type: model.Int(), OmitEmpty: true},
+		{Name: "updated_at", Type: model.NanoTime(), OmitEmpty: true},
 	},
 }
 
@@ -83,7 +83,7 @@ var PharmacyStockLevelModel = model.Definition{
 		{Name: "batch_id", Type: model.Text(), Ref: &PharmacyBatchModel, DB: &model.FieldDB{RefColumn: "id"}, NotNull: true},
 		{Name: "quantity", Type: model.Float()},
 		{Name: "revision", Type: model.Int()},
-		{Name: "updated_at", Type: model.Int(), OmitEmpty: true},
+		{Name: "updated_at", Type: model.NanoTime(), OmitEmpty: true},
 	},
 }
 
@@ -101,7 +101,7 @@ var PharmacyMovementModel = model.Definition{
 		{Name: "source_document_type", Type: model.Text(), OmitEmpty: true},
 		{Name: "source_document_id", Type: model.Text(), OmitEmpty: true},
 		{Name: "note", Type: model.Text(), OmitEmpty: true},
-		{Name: "created_at", Type: model.Int()},
+		{Name: "created_at", Type: model.NanoTime()},
 		{Name: "created_by", Type: model.Text(), OmitEmpty: true},
 	},
 }
@@ -150,7 +150,7 @@ var ReceiveStockArgsModel = model.Definition{
 		{Name: "product_id", Type: model.Text()},
 		{Name: "location_id", Type: model.Text()},
 		{Name: "batch_number", Type: model.Text()},
-		{Name: "expiration_date", Type: model.Int()},
+		{Name: "expiration_date", Type: model.UnixTime()},
 		{Name: "unit_cost", Type: model.Int()},
 		{Name: "quantity", Type: model.Float()},
 		{Name: "source_document_type", Type: model.Text()},
@@ -217,8 +217,8 @@ var ListMovementsArgsModel = model.Definition{
 		{Name: "tenant_id", Type: model.Text()},
 		{Name: "product_id", Type: model.Text()},
 		{Name: "batch_id", Type: model.Text()},
-		{Name: "from", Type: model.Int()},
-		{Name: "to", Type: model.Int()},
+		{Name: "from", Type: model.NanoTime()},
+		{Name: "to", Type: model.NanoTime()},
 		{Name: "limit", Type: model.Int()},
 	},
 }
@@ -250,7 +250,7 @@ var ExpiringStockModel = model.Definition{
 		{Name: "batch_number", Type: model.Text()},
 		{Name: "location_id", Type: model.Text()},
 		{Name: "quantity", Type: model.Float()},
-		{Name: "expiration_date", Type: model.Int()},
+		{Name: "expiration_date", Type: model.UnixTime()},
 		{Name: "expired", Type: model.Bool()},
 	},
 }
