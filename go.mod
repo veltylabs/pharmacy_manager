@@ -19,7 +19,7 @@ require (
 	webtyp.com/svg v0.3.28
 	webtyp.com/time v0.6.2
 	webtyp.com/unixid v0.3.1
-	webtyp.com/view v0.6.38
+	webtyp.com/view v0.6.40
 )
 
 require (
@@ -27,7 +27,6 @@ require (
 	webtyp.com/color v0.1.2 // indirect
 	webtyp.com/components v0.8.38 // indirect
 	webtyp.com/css v0.4.30 // indirect
-	webtyp.com/date v0.0.11 // indirect
 	webtyp.com/escape v0.1.0 // indirect
 	webtyp.com/font v0.0.5 // indirect
 	webtyp.com/form v0.4.43 // indirect
