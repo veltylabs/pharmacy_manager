@@ -2,8 +2,10 @@
 PLAN: "refactor: typed instants of webtyp/time v0.6 in pharmacy_manager — every instant field is time.Unix or time.Nano, no unit arithmetic"
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
+STATUS: review
 SESSION: 6169595951258077777
+PR: https://github.com/veltylabs/pharmacy_manager/pull/1
+REVIEWED_COMMIT: a33705c40ac2467069a84f8219e13b8d3493aa61
 ---
 
 > Read AGENTS.md at the repo root before any change. This plan is complete: do not guess; if something does not fit, stop and ask in the PR.
