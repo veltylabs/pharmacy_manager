@@ -43,6 +43,7 @@ const (
 	ErrLocationInactive     domainError = "pharmacy: the location is inactive"
 	ErrNoRecords            domainError = "pharmacy: no records to save"
 	ErrNoIds                domainError = "pharmacy: no ids given"
+	ErrUnknownField         domainError = "pharmacy: unknown field in the update"
 	ErrDays                 domainError = "pharmacy: the days cannot be negative"
 )
 
