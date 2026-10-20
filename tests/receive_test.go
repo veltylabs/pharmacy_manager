@@ -5,10 +5,11 @@ import (
 
 	pharmacymanager "github.com/veltylabs/pharmacy_manager"
 	"webtyp.com/stock"
+	"webtyp.com/time"
 )
 
 // receive builds the arguments of a ReceiveStock for a product and a location; the tests change what they exercise.
-func receive(productId, locationId, batch string, expiry int64, quantity float64) pharmacymanager.ReceiveStockArgs {
+func receive(productId, locationId, batch string, expiry time.Unix, quantity float64) pharmacymanager.ReceiveStockArgs {
 	return pharmacymanager.ReceiveStockArgs{
 		TenantId: testTenant, ProductId: productId, LocationId: locationId, BatchNumber: batch, ExpirationDate: expiry, Quantity: quantity,
 	}
@@ -17,7 +18,7 @@ func receive(productId, locationId, batch string, expiry int64, quantity float64
 func TestReceiveStock_AddsUpAndWritesTheLedger(t *testing.T) {
 	m := newModule(t)
 	p, loc := newProduct(t, m, "p1"), newLocation(t, m, "Store")
-	future := nowSec() + 30*stock.SecondsPerDay
+	future := time.NowUnix() + 30*time.Day
 
 	first, err := m.ReceiveStock(receive(p.Id, loc.Id, "L1", future, 10))
 	if err != nil {
@@ -39,7 +40,7 @@ func TestReceiveStock_AddsUpAndWritesTheLedger(t *testing.T) {
 func TestReceiveStock_Rules(t *testing.T) {
 	m := newModule(t)
 	p, loc := newProduct(t, m, "p1"), newLocation(t, m, "Store")
-	future := nowSec() + 30*stock.SecondsPerDay
+	future := time.NowUnix() + 30*time.Day
 
 	cases := []struct {
 		name string

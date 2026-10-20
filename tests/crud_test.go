@@ -1,6 +1,8 @@
 package tests
 
 import (
+	"webtyp.com/time"
+
 	"testing"
 
 	pharmacymanager "github.com/veltylabs/pharmacy_manager"
@@ -123,7 +125,7 @@ func TestDeactivateProduct(t *testing.T) {
 		}
 	}
 
-	_, err = m.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: neverExpires,
+	_, err = m.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: time.Unix(neverExpires),
 		TenantId: testTenant, ProductId: a1.Id, LocationId: l1.Id, BatchNumber: "B1", Quantity: 10,
 	})
 	if err != pharmacymanager.ErrProductInactive {
@@ -137,7 +139,7 @@ func TestDeleteProducts(t *testing.T) {
 	a2 := newProduct(t, m, "with-batch")
 	l1 := newLocation(t, m, "Loc1")
 
-	_, err := m.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: neverExpires,
+	_, err := m.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: time.Unix(neverExpires),
 		TenantId: testTenant, ProductId: a2.Id, LocationId: l1.Id, BatchNumber: "B1", Quantity: 10,
 	})
 	if err != nil {
@@ -326,7 +328,7 @@ func TestDeleteLocations(t *testing.T) {
 	holding := newLocation(t, m, "Holding")
 	product := newProduct(t, m, "i1")
 
-	_, err := m.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: neverExpires,
+	_, err := m.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: time.Unix(neverExpires),
 		TenantId: testTenant, ProductId: product.Id, LocationId: holding.Id, BatchNumber: "B1", Quantity: 10,
 	})
 	if err != nil {
@@ -355,7 +357,7 @@ func TestInactiveLocationRefusesReceipts(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	_, err = m.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: neverExpires,
+	_, err = m.ReceiveStock(pharmacymanager.ReceiveStockArgs{ExpirationDate: time.Unix(neverExpires),
 		TenantId: testTenant, ProductId: product.Id, LocationId: loc.Id, BatchNumber: "B1", Quantity: 10,
 	})
 	if err != pharmacymanager.ErrLocationInactive {
