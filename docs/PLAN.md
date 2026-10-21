@@ -2,7 +2,8 @@
 PLAN: "feat(ui): describe pharmacy screens with platformd.Describe (H8b)"
 EXECUTOR: jules
 REVIEWER: none
-STATUS: dispatch
+STATUS: running
+SESSION: 10868670966356070953
 ---
 
 > Read AGENTS.md at the repo root before any change.
