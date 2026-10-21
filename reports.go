@@ -3,9 +3,41 @@ package pharmacymanager
 import (
 	"slices"
 
+	"webtyp.com/fmt"
+	"webtyp.com/notify"
 	"webtyp.com/stock"
 	"webtyp.com/time"
 )
+
+// ReviewExpiring raises one alert when batches with stock are expired or expire within withinDays,
+// and returns them. The application calls it once a day; this module has no scheduler.
+func (m *Module) ReviewExpiring(tenantId string, withinDays int) ([]ExpiringStock, error) {
+	rows, err := m.ListExpiring(ListExpiringArgs{TenantId: tenantId, WithinDays: int64(withinDays)})
+	if err != nil {
+		return nil, err
+	}
+	if len(rows) == 0 {
+		return rows, nil
+	}
+	var expired, soon int
+	for _, row := range rows {
+		if row.Expired {
+			expired++
+		} else {
+			soon++
+		}
+	}
+	alertErr := m.raise(notify.Alert{
+		Code:    AlertExpiring,
+		Subject: textExpiringName,
+		Body:    fmt.Sprintf(msgExpiring, expired, soon, withinDays),
+		Source:  notify.Ref{Type: alertSourceReview, ID: time.FormatISO8601(time.NowUnix())[:10]},
+	})
+	if alertErr != nil {
+		return rows, alertErr
+	}
+	return rows, nil
+}
 
 // ListExpiring returns the stock (quantity > 0) whose batch is expired or expires within WithinDays days, soonest first.
 // The rule is stock.Lot.ExpiresWithin; this module does not repeat it.
@@ -58,9 +90,6 @@ func (m *Module) ListLowStock(a ListLowStockArgs) ([]LowStock, error) {
 	}
 	var out []LowStock
 	for _, p := range products {
-		if p.MinQuantity <= 0 {
-			continue
-		}
 		levels, err := m.ListStock(ListStockArgs{TenantId: a.TenantId, ProductId: p.Id})
 		if err != nil {
 			return nil, err
@@ -69,7 +98,7 @@ func (m *Module) ListLowStock(a ListLowStockArgs) ([]LowStock, error) {
 		for _, level := range levels {
 			total += level.Quantity
 		}
-		if total <= p.MinQuantity {
+		if stock.Low(total, p.MinQuantity) {
 			out = append(out, LowStock{ProductId: p.Id, ProductName: p.Name, Total: total, MinQuantity: p.MinQuantity})
 		}
 	}

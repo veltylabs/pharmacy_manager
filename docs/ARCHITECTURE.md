@@ -27,6 +27,7 @@ Diagram: [diagrams/database.md](diagrams/database.md).
 - **A movement is append-only**: there is no update and no delete; a mistake is corrected by a new movement. Its `quantity` is always greater than zero; the direction comes from the movement type.
 - **Every stock change is one transaction** with an optimistic revision check on the stock level (`ErrConflict` when the row changed).
 - **Cost**: a batch has an optional `unit_cost` (whole pesos per unit, 0 = unknown). With `Deps.Publisher` and `Deps.MoneyScope` set, each output movement whose batch has a cost publishes one `money.Consumed` fact (cost × quantity, rounded half away from zero). A purchase is never a fact of this module.
+- **Alerts**: raises an alert when a product crosses below its minimum, and another when the application runs the daily `ReviewExpiring` review of batches.
 - **Events**: one `pharmacy.movement.registered` per movement, after the commit.
 - **Tenancy**: every query of a stock operation filters by `tenant_id`; the operations the generic view drives resolve the row by id and use the tenant the row stores.
 - Units: `PIECE`, `BOX`, `TABLET`, `ML`, `GRAM`. Tax treatment: `TAXED` or `EXEMPT` (the rate is the law's and belongs to the accounting configuration, not here). Prices are whole pesos, tax included.

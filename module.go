@@ -4,6 +4,7 @@ import (
 	"webtyp.com/events"
 	"webtyp.com/fmt"
 	"webtyp.com/model"
+	"webtyp.com/notify"
 	"webtyp.com/money"
 	"webtyp.com/orm"
 	"webtyp.com/stock"
@@ -17,8 +18,10 @@ const (
 	// sourceType is the Ref.Type of the cost facts: the movement is their cause.
 	sourceType = "pharmacy_movement"
 
-	msgNeedIDs     = "pharmacy: Deps.IDs is required"
-	msgPublishCost = "pharmacy: the stock change was saved but its cost fact could not be published:"
+	msgNeedIDs      = "pharmacy: Deps.IDs is required"
+	msgPublishCost  = "pharmacy: the stock change was saved but its cost fact could not be published:"
+	msgBelowMinimum = "%v %s left; minimum %v."
+	msgExpiring     = "%d expired batches and %d expiring within %d days."
 )
 
 // Deps are what the module needs from the application that composes it.
@@ -26,20 +29,22 @@ type Deps struct {
 	IDs        model.IDGenerator // required: the module never builds a generator
 	Publisher  events.Publisher  // optional: nil disables the events and the cost facts
 	MoneyScope string            // optional: the area of the business the cost facts belong to; "" disables the cost facts
+	AlertArea  string            // optional: the application's notify.Area code for this module's alerts; "" disables them
 }
 
 type Module struct {
-	db    *orm.DB
-	ids   model.IDGenerator
-	pub   events.Publisher
-	scope string
+	db        *orm.DB
+	ids       model.IDGenerator
+	pub       events.Publisher
+	scope     string
+	alertArea string
 }
 
 func New(db *orm.DB, deps Deps) (*Module, error) {
 	if deps.IDs == nil {
 		return nil, fmt.Err(msgNeedIDs)
 	}
-	return &Module{db: db, ids: deps.IDs, pub: deps.Publisher, scope: deps.MoneyScope}, nil
+	return &Module{db: db, ids: deps.IDs, pub: deps.Publisher, scope: deps.MoneyScope, alertArea: deps.AlertArea}, nil
 }
 
 func (m *Module) ModelName() string { return ModelName }
@@ -400,10 +405,14 @@ func (m *Module) RegisterOutput(a RegisterOutputArgs) ([]PharmacyMovement, error
 	if t != stock.Sale && t != stock.InternalUse && t != stock.AdjustOut {
 		return nil, ErrMovementType
 	}
+	before, err := m.totalProduct(a.TenantId, a.ProductId)
+	if err != nil {
+		return nil, err
+	}
 	now := time.NowNano()
 	var out []PharmacyMovement
 	var costs []int64 // unit cost of the batch of each movement, same order as out
-	err := m.db.Tx(func(tx *orm.DB) error {
+	err = m.db.Tx(func(tx *orm.DB) error {
 		product, err := getProduct(tx, a.TenantId, a.ProductId)
 		if err != nil {
 			return err
@@ -487,6 +496,27 @@ func (m *Module) RegisterOutput(a RegisterOutputArgs) ([]PharmacyMovement, error
 	}
 	if err := m.publishCosts(out, costs); err != nil {
 		return out, err
+	}
+	if len(out) > 0 {
+		product, err := m.GetProduct(a.TenantId, a.ProductId)
+		if err != nil {
+			return out, err
+		}
+		after, err := m.totalProduct(a.TenantId, a.ProductId)
+		if err != nil {
+			return out, err
+		}
+		if stock.CrossedLow(before, after, product.MinQuantity) {
+			alertErr := m.raise(notify.Alert{
+				Code:    AlertBelowMinimum,
+				Subject: product.Name,
+				Body:    fmt.Sprintf(msgBelowMinimum, after, product.Unit, product.MinQuantity),
+				Source:  notify.Ref{Type: alertSourceProduct, ID: product.Id},
+			})
+			if alertErr != nil {
+				return out, alertErr
+			}
+		}
 	}
 	return out, nil
 }

@@ -2,8 +2,10 @@
 PLAN: "feat: raise notify alerts — below minimum when an output crosses it, and the daily expiry review"
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
+STATUS: review
 SESSION: 2078816032640775252
+PR: https://github.com/veltylabs/pharmacy_manager/pull/2
+REVIEWED_COMMIT: ccb23c90e80bd2d529c8cd37c65dbc2eb1a6e986
 ---
 
 > Read AGENTS.md at the repo root before any change.
@@ -221,3 +223,7 @@ git diff --stat main
 | 4 | `lang.json` | `es` filled |
 | 5 | `tests/alerts_test.go` | green |
 | 6 | `README.md`, `docs/ARCHITECTURE.md` | docs match |
+
+## Executor notes
+- All steps completed successfully.
+- Tests implemented, build passes.
