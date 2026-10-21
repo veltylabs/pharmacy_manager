@@ -71,6 +71,13 @@ Every operation is called `pharmacy.<name>` and declares its RBAC resource and a
 module snapshots about a product; an absent or foreign product is `ErrNotFound`. A module that needs them declares the
 method in a narrow interface of its own; `*Module` satisfies it without importing that module.
 
+## Alerts
+
+With `Deps.AlertArea` and `Deps.Publisher` set, the module raises `notify.Alert` events for two rules:
+- **Below minimum:** After an output, if a product's total stock crosses from above to at or below its `min_quantity`, one alert for that product is raised (`pharmacy.below_minimum`).
+- **Expiring:** The application calls `ReviewExpiring(tenantId, withinDays)` once a day to review expiring batches. It raises one summary alert (`pharmacy.expiring`) when batches are expired or expire within `withinDays`.
+The catalog of alerts is returned by `AlertKinds(area string)`.
+
 ## Cost facts
 
 With `Deps.Publisher` and `Deps.MoneyScope` set, every output movement whose batch has a `unit_cost` publishes one
