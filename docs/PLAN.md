@@ -2,8 +2,10 @@
 PLAN: "feat(ui): describe pharmacy screens with platformd.Describe (H8b)"
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
+STATUS: review
 SESSION: 10868670966356070953
+PR: https://github.com/veltylabs/pharmacy_manager/pull/4
+REVIEWED_COMMIT: 6f74fb644b949d94ab4572583d14b0f441e8c0b3
 ---
 
 > Read AGENTS.md at the repo root before any change.
