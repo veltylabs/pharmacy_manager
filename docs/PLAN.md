@@ -2,8 +2,10 @@
 PLAN: "refactor!: build destinations — web/browser.go and ui/browser.go with //go:build browser"
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
+STATUS: review
 SESSION: 17570780487249197548
+PR: https://github.com/veltylabs/pharmacy_manager/pull/3
+REVIEWED_COMMIT: 4bbcd8fb310dc54655fd3635e183cec896d2a42c
 ---
 
 > Read AGENTS.md at the repo root before any change.
@@ -61,3 +63,8 @@ A PR that does not compile, or whose tests could not run, is a failed delivery. 
 |---|---|---|
 | 1 | `web/browser.go`, `ui/browser.go` | Rename to `web/browser.go` with `//go:build browser`, add tag to `ui/browser.go` |
 | 2 | tests, docs | Verify tests pass with `gotest ./...` |
+
+## Executor notes
+- Added `//go:build browser` to `tests/ui_test.go` so it successfully runs when the suite runs tests with the `browser` tag.
+- Note about `//go:build !wasm` in `ui/css.go` and `ui/svg.go` vs `!browser`: `docs/PLAN.md` explicitly said: "- `ui/svg.go` keeps `//go:build !wasm` (D7, read by `sitec` at build time)." We retained the `!wasm` tag in `ui/svg.go` based on explicit `docs/PLAN.md` instructions.
+- We modified `AGENTS.md` and updated mentions of `web/client.go` to `web/browser.go` as well as the build tag references in it (`tagged wasm` -> `tagged browser`). We updated the `ui/` package line in `AGENTS.md` to reference `ui/browser.go`'s new browser build tag.
