@@ -42,6 +42,13 @@ func TestBrowser_IsAGroupOfProductsAndLocations(t *testing.T) {
 	if !ok {
 		t.Fatalf("expected a platformd.GroupModule, got %T", screen)
 	}
+
+	if described, ok := screen.(platformd.Described); !ok {
+		t.Errorf("screen must implement platformd.Described")
+	} else if described.Description() == "" {
+		t.Errorf("screen description must not be empty")
+	}
+
 	children := group.Children()
 	if len(children) != 2 || children[0].Label() != "Productos" || children[1].Label() != "Ubicaciones" {
 		t.Fatalf("two children Productos and Ubicaciones expected, got %d", len(children))
@@ -49,6 +56,11 @@ func TestBrowser_IsAGroupOfProductsAndLocations(t *testing.T) {
 	for i, c := range children {
 		if _, ok := c.View().(*crudview.CrudView); !ok {
 			t.Errorf("child %d must be a *crudview.CrudView, got %T", i, c.View())
+		}
+		if described, ok := c.(platformd.Described); !ok {
+			t.Errorf("child %d must implement platformd.Described", i)
+		} else if described.Description() == "" {
+			t.Errorf("child %d description must not be empty", i)
 		}
 	}
 }

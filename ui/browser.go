@@ -5,10 +5,17 @@ package ui
 import (
 	pharmacymanager "github.com/veltylabs/pharmacy_manager"
 	"webtyp.com/fmt"
+	"webtyp.com/lang"
 	"webtyp.com/layout/crudview"
 	"webtyp.com/layout/platformd"
 	"webtyp.com/model"
 	"webtyp.com/router"
+)
+
+const (
+	descPharmacy  lang.Text = "Pharmacy management: catalog of medications, expiration dates and storage locations."
+	descProducts  lang.Text = "Medications and pharmaceuticals catalog: presentation, active ingredients, unit and sale conditions."
+	descLocations lang.Text = "Storage locations, shelves and warehouses for medications custody."
 )
 
 // Browser builds the screen of the module for the app's modules/browser.go: the group "Farmacia" with its two children,
@@ -56,8 +63,8 @@ func Browser(caller router.Caller, ids model.IDGenerator, tenantID string) (plat
 		return nil, err
 	}
 
-	return platformd.NewGroupUIModule(ID, Label, IconPharmacy, []platformd.UIModule{
-		platformd.NewUIModule(ID+".products", "Productos", IconProducts, productsView),
-		platformd.NewUIModule(ID+".locations", "Ubicaciones", IconLocations, locationsView),
-	}), nil
+	return platformd.Describe(platformd.NewGroupUIModule(ID, Label, IconPharmacy, []platformd.UIModule{
+		platformd.Describe(platformd.NewUIModule(ID+".products", "Productos", IconProducts, productsView), descProducts),
+		platformd.Describe(platformd.NewUIModule(ID+".locations", "Ubicaciones", IconLocations, locationsView), descLocations),
+	}), descPharmacy), nil
 }
