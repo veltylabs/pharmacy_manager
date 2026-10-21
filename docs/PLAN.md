@@ -2,8 +2,10 @@
 PLAN: "refactor!: build destinations — web/browser.go and ui/browser.go with //go:build browser"
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
+STATUS: review
 SESSION: 17570780487249197548
+PR: https://github.com/veltylabs/pharmacy_manager/pull/3
+REVIEWED_COMMIT: 4bbcd8fb310dc54655fd3635e183cec896d2a42c
 ---
 
 > Read AGENTS.md at the repo root before any change.
