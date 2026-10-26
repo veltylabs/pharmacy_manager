@@ -10,7 +10,6 @@ import (
 	. "webtyp.com/dom"
 	"webtyp.com/events/mock"
 	. "webtyp.com/html"
-	"webtyp.com/layout/platformd"
 	"webtyp.com/orm"
 	"webtyp.com/router/loopback"
 	"webtyp.com/storage/mem"
@@ -44,20 +43,11 @@ func main() {
 	}
 
 	caller := loopback.WithTenant(demoTenantID, pm)
-	screen, err := ui.Browser(caller, ids, demoTenantID)
-	if err != nil {
-		panic(err)
-	}
+	screens := ui.Screens(caller)
 
-	homeMod := platformd.NewUIModule("home", "Inicio", ui.IconPharmacy, Div().Text("Vista de Inicio (Dummy)"))
-	settingsMod := platformd.NewUIModule("settings", "Ajustes", ui.IconPharmacy, Div().Text("Vista de Ajustes (Dummy)"))
-
-	p := &platformd.Platform{
-		AppName:   "WebTyp App Demo",
-		User:      demoUser{},
-		Modules:   []platformd.UIModule{homeMod, screen, settingsMod},
-		DefaultID: ui.ID,
+	Append("body", Div().Text("UI Demo - See console for loaded screens"))
+	for _, screen := range screens {
+		Append("body", Div().Text(string(screen.Label)))
 	}
-	Append("body", p)
 	select {}
 }

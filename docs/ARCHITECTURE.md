@@ -52,7 +52,7 @@ pm, err := pharmacymanager.New(db, pharmacymanager.Deps{
 	MoneyScope: "pharmacy",   // optional: "" disables the cost facts
 })
 registry.Register(pm)         // router.OperationModule
-screen, err := ui.Browser(caller, ids, tenantID)
+screens := ui.Screens(caller)
 ```
 
 The schema is created by `migrate.Migrate(conn, compiler)` from the app's migration step, never by `New`.

@@ -3,8 +3,10 @@ PLAN: "feat: migrate ui to view.Screen and drop layout dependency"
 TAG: v0.1.35
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
+STATUS: review
 SESSION: 3041833613504867010
+PR: https://github.com/veltylabs/pharmacy_manager/pull/5
+REVIEWED_COMMIT: 525cc044f96d60f40ea0e439e523e3fba7427132
 ---
 
 > Read AGENTS.md at the repo root before any change.
@@ -208,3 +210,7 @@ gotest
 2. `gotest` pasa con 0 fallos de compilación, 0 fallos de tests y cobertura verificada.
 3. `langc sync .` pasa sin errores.
 4. El PR se abre inmediatamente al pasar estas comprobaciones.
+
+## Executor notes
+
+All tasks completed successfully. Refactored UI module to use view.Screen and dropped layout dependency.
