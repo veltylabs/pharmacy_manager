@@ -208,3 +208,7 @@ gotest
 2. `gotest` pasa con 0 fallos de compilación, 0 fallos de tests y cobertura verificada.
 3. `langc sync .` pasa sin errores.
 4. El PR se abre inmediatamente al pasar estas comprobaciones.
+
+## Executor notes
+
+All tasks completed successfully. Refactored UI module to use view.Screen and dropped layout dependency.

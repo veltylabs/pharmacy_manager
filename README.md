@@ -97,7 +97,7 @@ publishes `pharmacy.movement.registered` with the movement as payload, after the
 | `ops.go` | operation names, the wire shapes the generic view sends, `MountOperations` and every handler |
 | `view.go` | `NewProductView`, `NewLocationView` |
 | `migrate/migrate.go` | creates the five tables in foreign-key order |
-| `ui/`, `seed/`, `web/` | the screen group "Farmacia", the demo data, the in-browser demo |
+| `ui/`, `seed/`, `web/` | the screens, the demo data, the in-browser demo |
 | `lang.json` | Spanish of the labels and options |
 | `conflict_internal_test.go` | the stale-revision test (root level, justified) |
 | `tests/` | the tests, including the shared `stocktest` conformance suite (`ledger_test.go`) |

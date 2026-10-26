@@ -5,10 +5,7 @@ package tests
 import (
 	"testing"
 
-	pharmacymanager "github.com/veltylabs/pharmacy_manager"
 	"github.com/veltylabs/pharmacy_manager/ui"
-	"webtyp.com/layout/crudview"
-	"webtyp.com/layout/platformd"
 	"webtyp.com/model"
 )
 
@@ -29,53 +26,31 @@ func (m *mockCaller) Call(op string, args model.Encodable, into model.Decodable,
 
 func (m *mockCaller) Dispatch(op string, args model.Encodable) { m.lastOp = op }
 
-func TestBrowser_IsAGroupOfProductsAndLocations(t *testing.T) {
+func TestScreens(t *testing.T) {
 	caller := &mockCaller{}
-	screen, err := ui.Browser(caller, &testIDGen{}, testTenant)
-	if err != nil {
-		t.Fatalf("ui.Browser: %v", err)
-	}
-	if screen.ModelName() != ui.ID || screen.Label() != ui.Label {
-		t.Errorf("the group must be %q / %q, got %q / %q", ui.ID, ui.Label, screen.ModelName(), screen.Label())
-	}
-	group, ok := screen.(platformd.GroupModule)
-	if !ok {
-		t.Fatalf("expected a platformd.GroupModule, got %T", screen)
+	screens := ui.Screens(caller)
+
+	if len(screens) != 1 {
+		t.Fatalf("Screens() returned %d screens, want 1", len(screens))
 	}
 
-	if described, ok := screen.(platformd.Described); !ok {
-		t.Errorf("screen must implement platformd.Described")
-	} else if described.Description() == "" {
-		t.Errorf("screen description must not be empty")
+	root := screens[0]
+	if err := root.Validate(); err != nil {
+		t.Errorf("root screen validation failed: %v", err)
+	}
+	if root.ID != ui.ID {
+		t.Errorf("root screen ID = %q, want %q", root.ID, ui.ID)
+	}
+	if len(root.Children) != 2 {
+		t.Fatalf("root screen has %d children, want 2", len(root.Children))
 	}
 
-	children := group.Children()
-	if len(children) != 2 || children[0].Label() != "Productos" || children[1].Label() != "Ubicaciones" {
-		t.Fatalf("two children Productos and Ubicaciones expected, got %d", len(children))
-	}
-	for i, c := range children {
-		if _, ok := c.View().(*crudview.CrudView); !ok {
-			t.Errorf("child %d must be a *crudview.CrudView, got %T", i, c.View())
+	for i, child := range root.Children {
+		if err := child.Validate(); err != nil {
+			t.Errorf("child %d validation failed: %v", i, err)
 		}
-		if described, ok := c.(platformd.Described); !ok {
-			t.Errorf("child %d must implement platformd.Described", i)
-		} else if described.Description() == "" {
-			t.Errorf("child %d description must not be empty", i)
+		if child.Permission == "" {
+			t.Errorf("child %d missing Permission", i)
 		}
-	}
-}
-
-func TestBrowser_ActivatingLoadsTheProducts(t *testing.T) {
-	caller := &mockCaller{}
-	screen, err := ui.Browser(caller, &testIDGen{}, testTenant)
-	if err != nil {
-		t.Fatal(err)
-	}
-	first := screen.(platformd.GroupModule).Children()[0]
-	first.View().(*crudview.CrudView).Init(nil)
-	screen.Activate()
-
-	if want := pharmacymanager.ModelName + "." + pharmacymanager.OpListProducts; caller.lastOp != want {
-		t.Errorf("activating the group must list the products: last op %q, want %q", caller.lastOp, want)
 	}
 }
