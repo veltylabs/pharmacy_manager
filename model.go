@@ -29,8 +29,8 @@ var PharmacyProductModel = model.Definition{
 	Fields: model.Fields{
 		{Name: "id", Type: model.Text(), DB: &model.FieldDB{PK: true}, OmitEmpty: true},
 		{Name: "tenant_id", Type: model.Text(), NotNull: true},
-		{Name: "sku", Type: input.Text(), Label: "SKU", NotNull: true, Row: model.RowDetail, Permitted: model.Permitted{Letters: true, Numbers: true, Extra: []rune{'-'}, Minimum: 1, Maximum: 50}},
-		{Name: "name", Type: input.Text(), Label: "Name", NotNull: true, Row: model.RowTitle, Permitted: model.Permitted{Letters: true, Numbers: true, Spaces: true, Tilde: true, Extra: []rune{'.', ',', '(', ')', '-', '/', '%', '+'}, Minimum: 1, Maximum: 255}},
+		{Name: "sku", Type: input.Text(), Label: "SKU", NotNull: true, Item: model.ItemDescription, Permitted: model.Permitted{Letters: true, Numbers: true, Extra: []rune{'-'}, Minimum: 1, Maximum: 50}},
+		{Name: "name", Type: input.Text(), Label: "Name", NotNull: true, Item: model.ItemLabel, Permitted: model.Permitted{Letters: true, Numbers: true, Spaces: true, Tilde: true, Extra: []rune{'.', ',', '(', ')', '-', '/', '%', '+'}, Minimum: 1, Maximum: 255}},
 		{Name: "unit", Type: input.Select(), Label: "Unit", NotNull: true},
 		{Name: "tax_treatment", Type: input.Select(), Label: "Tax treatment", NotNull: true},
 		{Name: "for_sale", Type: input.Checkbox(), Label: "For sale"},
@@ -50,7 +50,7 @@ var PharmacyLocationModel = model.Definition{
 	Fields: model.Fields{
 		{Name: "id", Type: model.Text(), DB: &model.FieldDB{PK: true}, OmitEmpty: true},
 		{Name: "tenant_id", Type: model.Text(), NotNull: true},
-		{Name: "name", Type: input.Text(), Label: "Name", NotNull: true, Row: model.RowTitle, Permitted: model.Permitted{Letters: true, Numbers: true, Spaces: true, Tilde: true, Minimum: 1, Maximum: 100}},
+		{Name: "name", Type: input.Text(), Label: "Name", NotNull: true, Item: model.ItemLabel, Permitted: model.Permitted{Letters: true, Numbers: true, Spaces: true, Tilde: true, Minimum: 1, Maximum: 100}},
 		{Name: "is_sales_point", Type: input.Checkbox(), Label: "Sales point"},
 		{Name: "is_active", Type: input.Checkbox(), Label: "Active"},
 		{Name: "updated_at", Type: model.NanoTime(), OmitEmpty: true},
