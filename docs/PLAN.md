@@ -2,8 +2,10 @@
 PLAN: "feat!: list rows declared on the model fields (Row/Options); Item() removed"
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
+STATUS: review
 SESSION: 7329639360819954852
+PR: https://github.com/veltylabs/pharmacy_manager/pull/6
+REVIEWED_COMMIT: 09b2537ee8803943fd7ab42e4b8938c1266748af
 ---
 
 > Read AGENTS.md at the repo root before any change.
