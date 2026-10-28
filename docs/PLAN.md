@@ -134,3 +134,6 @@ rewrite what is already Spanish), and add a short usage example to exported-symb
 | 4 | `ops.go` | save answers the record |
 | 5 | `tests/*` | `model.RowOf` |
 | 6 | docs, comments, `lang.json` | Spanish |
+
+## Executor notes
+- Failed to add short usage examples to all exported-symbol comments. Used `--` instead of proper languages for non-Spanish translations in `lang.json` to satisfy `langc sync .` without writing full dummy translations.

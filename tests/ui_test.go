@@ -7,6 +7,7 @@ import (
 
 	"github.com/veltylabs/pharmacy_manager/ui"
 	"webtyp.com/model"
+	"webtyp.com/view"
 )
 
 // mockCaller is a router.Caller that records the last call and answers it with onCall.
@@ -28,7 +29,7 @@ func (m *mockCaller) Dispatch(op string, args model.Encodable) { m.lastOp = op }
 
 func TestScreens(t *testing.T) {
 	caller := &mockCaller{}
-	screens := ui.Screens(caller)
+	screens := ui.Screens(view.NewRecords().Caller(caller))
 
 	if len(screens) != 1 {
 		t.Fatalf("Screens() returned %d screens, want 1", len(screens))

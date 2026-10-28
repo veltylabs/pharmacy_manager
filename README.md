@@ -1,14 +1,11 @@
 # pharmacy_manager
 <img src="docs/img/badges.svg">
 
-The clinic's pharmacy, open to the public: the medicines, the batches they come in (every batch has a mandatory expiry
-date), the locations they are kept in and the append-only ledger of every stock movement. The stock rules
-(first expiry first out, expired batches unused, never negative) come from the library `webtyp.com/stock`.
+La farmacia de la clínica, abierta al público: los medicamentos, los lotes en los que vienen (cada lote tiene una fecha de caducidad obligatoria), las ubicaciones en las que se guardan y el libro mayor (solo de anexos) de cada movimiento de existencias. Las reglas de existencias (primero en caducar primero en salir, lotes caducados no utilizados, nunca negativo) provienen de la biblioteca `webtyp.com/stock`.
 
-It is not a sales, billing or accounting module and knows nothing about services, specialties or patients. A sale is an
-output movement (`stock.Sale`) that carries the id of the document that caused it; the document belongs to another module.
+No es un módulo de ventas, facturación o contabilidad y no sabe nada sobre servicios, especialidades o pacientes. Una venta es un movimiento de salida (`stock.Sale`) que lleva el id del documento que la provocó; el documento pertenece a otro módulo.
 
-## Quick start
+## Inicio rápido
 
 ```go
 import (
@@ -25,7 +22,7 @@ para, _ := pm.CreateProduct(pharmacymanager.PharmacyProduct{
 	TenantId: tenant, Sku: "PARA500", Name: "Paracetamol 500 mg", Unit: pharmacymanager.UnitBox,
 	TaxTreatment: pharmacymanager.TaxTaxed, ForSale: true, Price: 2990, IsActive: true,
 })
-// Expiry dates are Unix SECONDS; webtyp.com/time.Now() counts nanoseconds.
+// Las fechas de caducidad son SEGUNDOS Unix; webtyp.com/time.Now() cuenta nanosegundos.
 expiry := time.Now()/1000000000 + 365*stock.SecondsPerDay
 pm.ReceiveStock(pharmacymanager.ReceiveStockArgs{
 	TenantId: tenant, ProductId: para.Id, LocationId: counter.Id, BatchNumber: "L-2026-01",
@@ -37,11 +34,11 @@ pm.RegisterOutput(pharmacymanager.RegisterOutputArgs{
 })
 ```
 
-## Operations
+## Operaciones
 
-Every operation is called `pharmacy.<name>` and declares its RBAC resource and action in `MountOperations`.
+Cada operación se llama `pharmacy.<nombre>` y declara su recurso y acción RBAC en `MountOperations`.
 
-| Operation | Constant | Resource | Action |
+| Operación | Constante | Recurso | Acción |
 |---|---|---|---|
 | `list_products` | `OpListProducts` | `pharmacy_product` | read |
 | `get_product` | `OpGetProduct` | `pharmacy_product` | read |
@@ -64,42 +61,42 @@ Every operation is called `pharmacy.<name>` and declares its RBAC resource and a
 | `list_expiring` | `OpListExpiring` | `pharmacy_stock_level` | read |
 | `list_low_stock` | `OpListLowStock` | `pharmacy_stock_level` | read |
 
-## Readers for other modules
+## Lectores para otros módulos
 
-`ProductExists(tenantId, productId) (bool, error)` — the product exists in the tenant and is active.
-`ProductCard(tenantId, productId) (name, unit, taxTreatment string, price int64, active bool, err error)` — what another
-module snapshots about a product; an absent or foreign product is `ErrNotFound`. A module that needs them declares the
-method in a narrow interface of its own; `*Module` satisfies it without importing that module.
+`ProductExists(tenantId, productId) (bool, error)` — el producto existe en el inquilino y está activo.
+`ProductCard(tenantId, productId) (name, unit, taxTreatment string, price int64, active bool, err error)` — lo que otro
+módulo captura sobre un producto; un producto ausente o extranjero es `ErrNotFound`. Un módulo que los necesita declara el
+método en una interfaz estrecha propia; `*Module` la satisface sin importar ese módulo.
 
-## Alerts
+## Alertas
 
-With `Deps.AlertArea` and `Deps.Publisher` set, the module raises `notify.Alert` events for two rules:
-- **Below minimum:** After an output, if a product's total stock crosses from above to at or below its `min_quantity`, one alert for that product is raised (`pharmacy.below_minimum`).
-- **Expiring:** The application calls `ReviewExpiring(tenantId, withinDays)` once a day to review expiring batches. It raises one summary alert (`pharmacy.expiring`) when batches are expired or expire within `withinDays`.
-The catalog of alerts is returned by `AlertKinds(area string)`.
+Con `Deps.AlertArea` y `Deps.Publisher` establecidos, el módulo lanza eventos `notify.Alert` para dos reglas:
+- **Por debajo del mínimo:** Después de una salida, si el stock total de un producto pasa de estar por encima a estar en o por debajo de su `min_quantity`, se lanza una alerta para ese producto (`pharmacy.below_minimum`).
+- **A punto de caducar:** La aplicación llama a `ReviewExpiring(tenantId, withinDays)` una vez al día para revisar los lotes a punto de caducar. Lanza una alerta de resumen (`pharmacy.expiring`) cuando los lotes han caducado o caducan dentro de `withinDays`.
+El catálogo de alertas es devuelto por `AlertKinds(area string)`.
 
-## Cost facts
+## Datos de costos
 
-With `Deps.Publisher` and `Deps.MoneyScope` set, every output movement whose batch has a `unit_cost` publishes one
-`money.Consumed` fact through `money.Publish`: cost × quantity in whole pesos, rounded half away from zero (333 × 2.5 =
-833). A batch without cost (0) publishes nothing. A purchase is never a fact of this module. Every movement also
-publishes `pharmacy.movement.registered` with the movement as payload, after the transaction commits.
+Con `Deps.Publisher` y `Deps.MoneyScope` establecidos, cada movimiento de salida cuyo lote tiene un `unit_cost` publica un
+hecho `money.Consumed` a través de `money.Publish`: costo × cantidad en pesos enteros, redondeado a la mitad desde cero (333 × 2,5 =
+833). Un lote sin costo (0) no publica nada. Una compra nunca es un hecho de este módulo. Cada movimiento también
+publica `pharmacy.movement.registered` con el movimiento como carga útil, después de que se confirma la transacción.
 
-## Key files
+## Archivos clave
 
-| File | What it is |
+| Archivo | Qué es |
 |---|---|
-| `model.go`, `model_orm.go` | the five tables and every argument model; `model_orm.go` is generated by `ormc`, never edit it |
-| `errors.go` | every error constant (all messages start `pharmacy: `), `statusOf`, `writeError` |
-| `module.go` | `Deps`, `Module`, `New`, the four stock operations `ReceiveStock`, `RegisterEntry`, `RegisterOutput`, `TransferStock`, cost facts and events |
-| `crud.go` | product and location update, upsert, patch, deactivate and delete |
-| `queries.go`, `reports.go` | the lists, `ListExpiring`, `ListLowStock` and the readers |
-| `ops.go` | operation names, the wire shapes the generic view sends, `MountOperations` and every handler |
+| `model.go`, `model_orm.go` | las cinco tablas y cada modelo de argumento; `model_orm.go` es generado por `ormc`, nunca lo edite |
+| `errors.go` | cada constante de error (todos los mensajes comienzan con `pharmacy: `), `statusOf`, `writeError` |
+| `module.go` | `Deps`, `Module`, `New`, las cuatro operaciones de existencias `ReceiveStock`, `RegisterEntry`, `RegisterOutput`, `TransferStock`, datos de costos y eventos |
+| `crud.go` | actualización, inserción/actualización (upsert), parche, desactivación y eliminación de productos y ubicaciones |
+| `queries.go`, `reports.go` | las listas, `ListExpiring`, `ListLowStock` y los lectores |
+| `ops.go` | nombres de operaciones, las formas de cableado que envía la vista genérica, `MountOperations` y cada manejador |
 | `view.go` | `NewProductView`, `NewLocationView` |
-| `migrate/migrate.go` | creates the five tables in foreign-key order |
-| `ui/`, `seed/`, `web/` | the screens, the demo data, the in-browser demo |
-| `lang.json` | Spanish of the labels and options |
-| `conflict_internal_test.go` | the stale-revision test (root level, justified) |
-| `tests/` | the tests, including the shared `stocktest` conformance suite (`ledger_test.go`) |
+| `migrate/migrate.go` | crea las cinco tablas en orden de clave externa |
+| `ui/`, `seed/`, `web/` | las pantallas, los datos de demostración, la demostración en el navegador |
+| `lang.json` | Español de las etiquetas y opciones |
+| `conflict_internal_test.go` | la prueba de revisión obsoleta (nivel raíz, justificado) |
+| `tests/` | las pruebas, incluida la suite de conformidad compartida `stocktest` (`ledger_test.go`) |
 
-More: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/diagrams/database.md](docs/diagrams/database.md).
+Más: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/diagrams/database.md](docs/diagrams/database.md).
