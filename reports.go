@@ -9,8 +9,9 @@ import (
 	"webtyp.com/time"
 )
 
-// ReviewExpiring raises one alert when batches with stock are expired or expire within withinDays,
-// and returns them. The application calls it once a day; this module has no scheduler.
+// ReviewExpiring lanza una alerta cuando los lotes con existencias han caducado o caducan dentro de withinDays (días),
+// y los devuelve. La aplicación lo llama una vez al día; este módulo no tiene programador.
+// Ejemplo: expiring, err := module.ReviewExpiring("tenant1", 30)
 func (m *Module) ReviewExpiring(tenantId string, withinDays int) ([]ExpiringStock, error) {
 	rows, err := m.ListExpiring(ListExpiringArgs{TenantId: tenantId, WithinDays: int64(withinDays)})
 	if err != nil {
@@ -39,8 +40,9 @@ func (m *Module) ReviewExpiring(tenantId string, withinDays int) ([]ExpiringStoc
 	return rows, nil
 }
 
-// ListExpiring returns the stock (quantity > 0) whose batch is expired or expires within WithinDays days, soonest first.
-// The rule is stock.Lot.ExpiresWithin; this module does not repeat it.
+// ListExpiring devuelve las existencias (cantidad > 0) cuyo lote ha caducado o caduca dentro de WithinDays (días), los más próximos primero.
+// La regla es stock.Lot.ExpiresWithin; este módulo no la repite.
+// Ejemplo: expiring, err := module.ListExpiring(ListExpiringArgs{TenantId: "t1", WithinDays: 30})
 func (m *Module) ListExpiring(a ListExpiringArgs) ([]ExpiringStock, error) {
 	if a.WithinDays < 0 {
 		return nil, ErrDays
@@ -81,8 +83,9 @@ func (m *Module) ListExpiring(a ListExpiringArgs) ([]ExpiringStock, error) {
 	return out, nil
 }
 
-// ListLowStock returns the active products with a minimum quantity (> 0) whose total, over every location and batch, is at
-// or below it, by name. A later alert module calls it; this module raises no alert.
+// ListLowStock devuelve los productos activos con una cantidad mínima (> 0) cuyo total, en todas las ubicaciones y lotes, está en
+// o por debajo de ella, por nombre. Un módulo de alertas posterior lo llama; este módulo no lanza alertas.
+// Ejemplo: low, err := module.ListLowStock(ListLowStockArgs{TenantId: "t1"})
 func (m *Module) ListLowStock(a ListLowStockArgs) ([]LowStock, error) {
 	products, err := m.ListProducts(ListProductsArgs{TenantId: a.TenantId, ActiveOnly: true})
 	if err != nil {
@@ -105,8 +108,9 @@ func (m *Module) ListLowStock(a ListLowStockArgs) ([]LowStock, error) {
 	return out, nil
 }
 
-// ProductExists tells whether a product exists in the tenant and is active. Other modules declare the same method in a
-// narrow interface of their own; *Module satisfies it without importing them.
+// ProductExists indica si un producto existe en el inquilino y está activo. Otros módulos declaran el mismo método en una
+// interfaz estrecha propia; *Module la satisface sin importarlos.
+// Ejemplo: exists, err := module.ProductExists("tenant1", "prod1")
 func (m *Module) ProductExists(tenantId, productId string) (bool, error) {
 	p, err := getProduct(m.db, tenantId, productId)
 	if err == ErrProductNotFound {
@@ -118,7 +122,8 @@ func (m *Module) ProductExists(tenantId, productId string) (bool, error) {
 	return p.IsActive, nil
 }
 
-// ProductCard returns what another module snapshots about a product. An absent or foreign product is ErrNotFound.
+// ProductCard devuelve lo que otro módulo captura sobre un producto. Un producto ausente o extranjero es ErrNotFound.
+// Ejemplo: name, unit, tax, price, active, err := module.ProductCard("tenant1", "prod1")
 func (m *Module) ProductCard(tenantId, productId string) (name, unit, taxTreatment string, price int64, active bool, err error) {
 	p, err := getProduct(m.db, tenantId, productId)
 	if err == ErrProductNotFound {
