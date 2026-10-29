@@ -4,8 +4,8 @@ import (
 	"webtyp.com/events"
 	"webtyp.com/fmt"
 	"webtyp.com/model"
-	"webtyp.com/notify"
 	"webtyp.com/money"
+	"webtyp.com/notify"
 	"webtyp.com/orm"
 	"webtyp.com/stock"
 	"webtyp.com/time"
@@ -60,7 +60,7 @@ func (m *Module) CreateProduct(p PharmacyProduct) (PharmacyProduct, error) {
 		return PharmacyProduct{}, err
 	}
 	if err := p.Validate(model.ActionCreate); err != nil {
-		return PharmacyProduct{}, ValidationError{Err: err}
+		return PharmacyProduct{}, err
 	}
 	if _, found, err := m.productBySKU(m.db, p.TenantId, p.Sku); err != nil {
 		return PharmacyProduct{}, err
@@ -130,7 +130,7 @@ func (m *Module) CreateLocation(l PharmacyLocation) (PharmacyLocation, error) {
 	}
 	l.UpdatedAt = time.NowNano()
 	if err := l.Validate(model.ActionCreate); err != nil {
-		return PharmacyLocation{}, ValidationError{Err: err}
+		return PharmacyLocation{}, err
 	}
 	var proxy PharmacyLocation
 	qb := m.db.Query(&proxy).Where(PharmacyLocation_.Name).Eq(l.Name).Where(PharmacyLocation_.TenantId).Eq(l.TenantId)
@@ -238,7 +238,7 @@ func applyToLevel(tx *orm.DB, level *PharmacyStockLevel, expectedRevision int64,
 		return ErrInsufficientStock
 	}
 	if err != nil {
-		return ValidationError{Err: err}
+		return err
 	}
 	got.Quantity = newQuantity
 	got.Revision++
@@ -290,7 +290,7 @@ func lotsAt(db *orm.DB, tenantId, productId, locationId string) ([]stock.Lot, er
 // the quantity to the (location, batch) level and appends a stock.Purchase movement, all in one transaction.
 func (m *Module) ReceiveStock(a ReceiveStockArgs) (PharmacyMovement, error) {
 	if a.Quantity <= 0 {
-		return PharmacyMovement{}, ValidationError{Err: stock.ErrQuantity}
+		return PharmacyMovement{}, &model.FieldError{Field: "quantity", Err: stock.ErrQuantity}
 	}
 	if a.BatchNumber == "" {
 		return PharmacyMovement{}, ErrBatchNumber
@@ -358,7 +358,7 @@ func (m *Module) ReceiveStock(a ReceiveStockArgs) (PharmacyMovement, error) {
 // RegisterEntry adds to an EXISTING batch: an inbound correction of a count (stock.AdjustIn).
 func (m *Module) RegisterEntry(a RegisterEntryArgs) (PharmacyMovement, error) {
 	if a.Quantity <= 0 {
-		return PharmacyMovement{}, ValidationError{Err: stock.ErrQuantity}
+		return PharmacyMovement{}, &model.FieldError{Field: "quantity", Err: stock.ErrQuantity}
 	}
 	now := time.NowNano()
 	var mv PharmacyMovement
@@ -399,7 +399,7 @@ func (m *Module) RegisterEntry(a RegisterEntryArgs) (PharmacyMovement, error) {
 // error: the stock change is already saved.
 func (m *Module) RegisterOutput(a RegisterOutputArgs) ([]PharmacyMovement, error) {
 	if a.Quantity <= 0 {
-		return nil, ValidationError{Err: stock.ErrQuantity}
+		return nil, &model.FieldError{Field: "quantity", Err: stock.ErrQuantity}
 	}
 	t := stock.Movement(a.MovementType)
 	if t != stock.Sale && t != stock.InternalUse && t != stock.AdjustOut {
@@ -441,7 +441,7 @@ func (m *Module) RegisterOutput(a RegisterOutputArgs) ([]PharmacyMovement, error
 				return ErrInsufficientStock
 			}
 			if err != nil {
-				return ValidationError{Err: err}
+				return err
 			}
 		} else {
 			batch, err := getBatch(tx, a.TenantId, a.BatchId)
@@ -526,7 +526,7 @@ func (m *Module) RegisterOutput(a RegisterOutputArgs) ([]PharmacyMovement, error
 // destination, one transaction.
 func (m *Module) TransferStock(a TransferStockArgs) ([]PharmacyMovement, error) {
 	if a.Quantity <= 0 {
-		return nil, ValidationError{Err: stock.ErrQuantity}
+		return nil, &model.FieldError{Field: "quantity", Err: stock.ErrQuantity}
 	}
 	if a.FromLocationId == a.ToLocationId {
 		return nil, ErrSameLocation
@@ -556,7 +556,7 @@ func (m *Module) TransferStock(a TransferStockArgs) ([]PharmacyMovement, error) 
 			return ErrInsufficientStock
 		}
 		if err != nil {
-			return ValidationError{Err: err}
+			return err
 		}
 		for _, take := range takes {
 			src, found, err := levelAt(tx, a.TenantId, a.FromLocationId, take.LotID)
