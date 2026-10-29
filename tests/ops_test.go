@@ -12,6 +12,46 @@ import (
 	"webtyp.com/time"
 )
 
+
+
+
+type saveLocationsReq struct{ Records []pharmacymanager.PharmacyLocation }
+func (a *saveLocationsReq) ModelName() string { return "save_locations_req" }
+func (a *saveLocationsReq) Schema() []model.Field { return nil }
+func (a *saveLocationsReq) Pointers() []any { return nil }
+func (a *saveLocationsReq) IsNil() bool { return a == nil }
+func (a *saveLocationsReq) EncodeFields(w model.FieldWriter) {
+	arr := w.Array("records", len(a.Records))
+	for i := range a.Records {
+		arr.Object(&a.Records[i])
+	}
+}
+
+type saveProductsReq struct{ Records []pharmacymanager.PharmacyProduct }
+func (a *saveProductsReq) ModelName() string { return "save_products_req" }
+func (a *saveProductsReq) Schema() []model.Field { return nil }
+func (a *saveProductsReq) Pointers() []any { return nil }
+func (a *saveProductsReq) IsNil() bool { return a == nil }
+func (a *saveProductsReq) EncodeFields(w model.FieldWriter) {
+	arr := w.Array("records", len(a.Records))
+	for i := range a.Records {
+		arr.Object(&a.Records[i])
+	}
+}
+
+type deleteIdsReq struct{ Ids []string }
+func (a *deleteIdsReq) ModelName() string { return "delete_ids_req" }
+func (a *deleteIdsReq) Schema() []model.Field { return nil }
+func (a *deleteIdsReq) Pointers() []any { return nil }
+func (a *deleteIdsReq) IsNil() bool { return a == nil }
+func (a *deleteIdsReq) EncodeFields(w model.FieldWriter) {
+	arr := w.Array("ids", len(a.Ids))
+	for _, id := range a.Ids {
+		arr.String(id)
+	}
+}
+
+
 // call runs one operation through the in-process caller, the way a transport would, and returns its error.
 func call(t *testing.T, c router.Caller, op string, args model.Encodable, out model.Decodable) error {
 	t.Helper()
@@ -25,14 +65,14 @@ func TestOperations_ThroughTheCaller(t *testing.T) {
 	c := loopback.New(m)
 
 	var loc pharmacymanager.PharmacyLocation
-	if err := call(t, c, pharmacymanager.OpUpsertLocation, &pharmacymanager.UpsertLocationArgs{Records: []pharmacymanager.PharmacyLocation{
+	if err := call(t, c, pharmacymanager.OpUpsertLocation, &saveLocationsReq{Records: []pharmacymanager.PharmacyLocation{
 		{TenantId: testTenant, Name: "Store", IsActive: true},
 	}}, &loc); err != nil || loc.Id == "" {
 		t.Fatalf("upsert_location: %v, %+v", err, loc)
 	}
 
 	var prod pharmacymanager.PharmacyProduct
-	if err := call(t, c, pharmacymanager.OpUpsertProduct, &pharmacymanager.UpsertProductArgs{Records: []pharmacymanager.PharmacyProduct{
+	if err := call(t, c, pharmacymanager.OpUpsertProduct, &saveProductsReq{Records: []pharmacymanager.PharmacyProduct{
 		{TenantId: testTenant, Sku: "p1", Name: "Paracetamol 500 mg", Unit: pharmacymanager.UnitBox, TaxTreatment: pharmacymanager.TaxTaxed, ForSale: true, Price: 1500, IsActive: true},
 	}}, &prod); err != nil || prod.Id == "" {
 		t.Fatalf("upsert_product: %v, %+v", err, prod)
@@ -66,11 +106,11 @@ func TestOperations_ThroughTheCaller(t *testing.T) {
 	}
 
 	// the view's delete: ids only; a product with batches cannot go
-	err := call(t, c, pharmacymanager.OpDeleteProduct, &pharmacymanager.DeleteIdsArgs{Ids: []string{prod.Id}}, nil)
+	err := call(t, c, pharmacymanager.OpDeleteProduct, &deleteIdsReq{Ids: []string{prod.Id}}, nil)
 	if err == nil || !strings.Contains(err.Error(), string(pharmacymanager.ErrProductInUse)) {
 		t.Errorf("deleting a product with batches: got %v, want ErrProductInUse", err)
 	}
-	if err := call(t, c, pharmacymanager.OpDeleteLocation, &pharmacymanager.DeleteIdsArgs{Ids: []string{loc.Id}}, nil); err == nil || !strings.Contains(err.Error(), string(pharmacymanager.ErrLocationInUse)) {
+	if err := call(t, c, pharmacymanager.OpDeleteLocation, &deleteIdsReq{Ids: []string{loc.Id}}, nil); err == nil || !strings.Contains(err.Error(), string(pharmacymanager.ErrLocationInUse)) {
 		t.Errorf("deleting a location with stock: got %v, want ErrLocationInUse", err)
 	}
 }

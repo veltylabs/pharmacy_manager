@@ -3,7 +3,9 @@
 package tests
 
 import (
+	"strings"
 	"testing"
+	"webtyp.com/model"
 
 	pharmacymanager "github.com/veltylabs/pharmacy_manager"
 	"webtyp.com/stock"
@@ -81,7 +83,7 @@ func (l *ledger) Receive(product, location, lot string, expiry time.Unix, quanti
 
 // mapErr translates the module's errors to the suite's: only "not enough stock" differs.
 func mapErr(err error) error {
-	if err == pharmacymanager.ErrInsufficientStock {
+	if model.KindOf(err) == model.ErrorInvalid && strings.Contains(err.Error(), string(pharmacymanager.ErrInsufficientStock)) {
 		return stock.ErrInsufficient
 	}
 	return err

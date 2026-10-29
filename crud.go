@@ -46,7 +46,7 @@ func (m *Module) UpdateProduct(p PharmacyProduct) (PharmacyProduct, error) {
 		return PharmacyProduct{}, err
 	}
 	if err := p.Validate(model.ActionUpdate); err != nil {
-		return PharmacyProduct{}, ValidationError{Err: err}
+		return PharmacyProduct{}, err
 	}
 	if p.Sku != existing.Sku {
 		if _, found, err := m.productBySKU(m.db, p.TenantId, p.Sku); err != nil {
@@ -66,7 +66,7 @@ func (m *Module) UpsertProduct(p PharmacyProduct) (PharmacyProduct, error) {
 	if p.Id == "" {
 		return m.CreateProduct(p)
 	}
-	if _, err := getProduct(m.db, p.TenantId, p.Id); err == ErrProductNotFound {
+	if _, err := getProduct(m.db, p.TenantId, p.Id); model.KindOf(err) == model.ErrorNotFound {
 		return m.CreateProduct(p)
 	} else if err != nil {
 		return PharmacyProduct{}, err
@@ -107,7 +107,7 @@ func (m *Module) PatchProducts(ids, fields []string, rec PharmacyProduct) error 
 			case "is_active":
 				current.IsActive = rec.IsActive
 			default:
-				return ValidationError{Err: ErrUnknownField}
+				return &model.FieldError{Field: "<unknown>", Err: ErrUnknownField}
 			}
 		}
 		if _, err := m.UpdateProduct(current); err != nil {
@@ -157,7 +157,7 @@ func (m *Module) UpdateLocation(l PharmacyLocation) (PharmacyLocation, error) {
 	}
 	l.UpdatedAt = time.NowNano()
 	if err := l.Validate(model.ActionUpdate); err != nil {
-		return PharmacyLocation{}, ValidationError{Err: err}
+		return PharmacyLocation{}, err
 	}
 	if l.Name != existing.Name {
 		var proxy PharmacyLocation
@@ -179,7 +179,7 @@ func (m *Module) UpsertLocation(l PharmacyLocation) (PharmacyLocation, error) {
 	if l.Id == "" {
 		return m.CreateLocation(l)
 	}
-	if _, err := getLocation(m.db, l.TenantId, l.Id); err == ErrLocationNotFound {
+	if _, err := getLocation(m.db, l.TenantId, l.Id); model.KindOf(err) == model.ErrorNotFound {
 		return m.CreateLocation(l)
 	} else if err != nil {
 		return PharmacyLocation{}, err
@@ -203,7 +203,7 @@ func (m *Module) PatchLocations(ids, fields []string, rec PharmacyLocation) erro
 			case "is_active":
 				current.IsActive = rec.IsActive
 			default:
-				return ValidationError{Err: ErrUnknownField}
+				return &model.FieldError{Field: "<unknown>", Err: ErrUnknownField}
 			}
 		}
 		if _, err := m.UpdateLocation(current); err != nil {

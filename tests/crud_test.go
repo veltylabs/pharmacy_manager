@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"webtyp.com/model"
 	"webtyp.com/time"
 
 	"testing"
@@ -100,7 +101,7 @@ func TestPatchProducts(t *testing.T) {
 	}
 
 	err = m.PatchProducts([]string{a1.Id}, []string{"bogus"}, pharmacymanager.PharmacyProduct{Name: "Patched Name"})
-	if vErr, ok := err.(pharmacymanager.ValidationError); !ok || vErr.Err != pharmacymanager.ErrUnknownField {
+	if fErr, ok := err.(*model.FieldError); !ok || fErr.Err != error(pharmacymanager.ErrUnknownField) {
 		t.Errorf("expected ValidationError with ErrUnknownField, got %v", err)
 	}
 }
@@ -252,7 +253,7 @@ func TestCreateProduct_Rules(t *testing.T) {
 	p.Name = ""
 	if _, err := m.CreateProduct(p); err == nil {
 		t.Error("an empty name must be refused")
-	} else if _, ok := err.(pharmacymanager.ValidationError); !ok {
+	} else if _, ok := err.(*model.FieldError); !ok {
 		t.Errorf("empty name: got %T %v, want a ValidationError", err, err)
 	}
 	p = base()

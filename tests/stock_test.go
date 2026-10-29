@@ -2,6 +2,7 @@ package tests
 
 import (
 	"testing"
+	"webtyp.com/model"
 
 	pharmacymanager "github.com/veltylabs/pharmacy_manager"
 	"webtyp.com/stock"
@@ -119,7 +120,7 @@ func TestRegisterEntry(t *testing.T) {
 	_, err = m.RegisterEntry(pharmacymanager.RegisterEntryArgs{
 		TenantId: testTenant, ProductId: product.Id, LocationId: loc.Id, BatchId: rec.BatchId, Quantity: 0,
 	})
-	if _, ok := err.(pharmacymanager.ValidationError); !ok {
+	if _, ok := err.(*model.FieldError); !ok {
 		t.Errorf("expected ValidationError, got %v", err)
 	}
 }
