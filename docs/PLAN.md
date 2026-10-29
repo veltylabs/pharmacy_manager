@@ -2,7 +2,8 @@
 PLAN: "refactor: module review — errors via rpc.WriteError, resources from tables, screens via view.MountSave, foreign keys, translations"
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
+STATUS: review
+PR: https://github.com/veltylabs/pharmacy_manager/pull/8
 SESSION: 6139283624002153992
 ---
 
