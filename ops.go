@@ -7,7 +7,7 @@ import (
 	"webtyp.com/view"
 )
 
-// Operation names, as the transport and the view see them: "<ModelName>.<name>".
+// Nombres de operación, como el transporte y la vista los ven: "<ModelName>.<name>".
 const (
 	OpListProducts      = "list_products"
 	OpGetProduct        = "get_product"
@@ -33,9 +33,9 @@ const (
 	OpListLowStock   = "list_low_stock"
 )
 
-// ---- the wire shapes of the operations the generic view drives (webtyp.com/view sends exactly these) ----
+// ---- las formas de cable de las operaciones que la vista genérica maneja (webtyp.com/view envía exactamente estas) ----
 
-// UpdateProductArgs is what view's update sends: the ids, the names of the fields to change and a record with their values.
+// UpdateProductArgs es lo que el update de la vista envía: los ids, los nombres de los campos a cambiar y un registro con sus valores.
 type UpdateProductArgs struct {
 	Ids    []string
 	Fields []string
@@ -57,7 +57,7 @@ func (a *UpdateProductArgs) DecodeFields(r model.FieldReader) {
 	r.Object("record", &a.Record)
 }
 
-// UpdateLocationArgs is the same shape for a location.
+// UpdateLocationArgs es la misma forma para una ubicación.
 type UpdateLocationArgs struct {
 	Ids    []string
 	Fields []string
@@ -99,7 +99,7 @@ func readStrings(r model.FieldReader, name string) []string {
 }
 
 
-// MountOperations registers every operation with the RBAC resource and action it needs and the type of its arguments.
+// MountOperations registra cada operación con el recurso RBAC y la acción que necesita y el tipo de sus argumentos.
 func (m *Module) MountOperations(reg router.OperationRegistry) {
 	reg.Operation(OpListProducts, m.opListProducts).Requires(model.ResourceOf(&PharmacyProductModel), model.Read).Accepts(&ListProductsArgs{})
 	reg.Operation(OpGetProduct, m.opGetProduct).Requires(model.ResourceOf(&PharmacyProductModel), model.Read).Accepts(&IdArgs{})
@@ -127,9 +127,9 @@ func (m *Module) MountOperations(reg router.OperationRegistry) {
 
 var _ router.OperationModule = (*Module)(nil)
 
-// ---- handlers: decode, call the method, encode; every failure goes through writeError ----
+// ---- manejadores: decode, call the method, encode; cada falla pasa por writeError ----
 
-// answer encodes v, or answers the failure.
+// answer codifica v, o responde el fallo.
 
 func (m *Module) opListProducts(ctx router.Context) {
 	var args ListProductsArgs

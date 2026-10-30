@@ -2,8 +2,10 @@
 PLAN: "fix: migrate with ddl.Sync so a new field reaches an existing table"
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
+STATUS: review
 SESSION: 5152698160806541756
+PR: https://github.com/veltylabs/pharmacy_manager/pull/9
+REVIEWED_COMMIT: 19cfe328fa0ef8e22f98f143e672b2093bce28af
 ---
 
 > Read AGENTS.md at the repo root before any change.

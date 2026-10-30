@@ -14,7 +14,8 @@ const (
 	descLocations lang.Text = "Storage locations: warehouses, dispensing rooms and quarantine."
 )
 
-// Screens declares the screens this module provides to the host app's menu.
+// Screens declara las pantallas que este módulo provee al menú de la app anfitriona.
+// Ejemplo: screens := Screens(caller)
 func Screens(caller router.Caller) []view.Screen {
 	return []view.Screen{{
 		ID:    ID,

@@ -1,4 +1,4 @@
-// Root-level test (justified): exercises the unexported applyToLevel — the public API cannot force a stale revision.
+// Test a nivel de raíz (justificado): prueba el no exportado applyToLevel — la API pública no puede forzar una revisión obsoleta.
 
 package pharmacymanager
 
@@ -45,13 +45,13 @@ func TestApplyToLevel_StaleRevisionIsAConflict(t *testing.T) {
 	level := stocks[0]
 	read := level.Revision // what a concurrent writer read
 
-	// somebody else changes the row first: the revision moves on
+	// alguien más cambia la fila primero: la revisión avanza
 	err = m.db.Tx(func(tx *orm.DB) error { return applyToLevel(tx, &level, read, stock.In, 1, time.NowNano()) })
 	if err != nil {
 		t.Fatalf("the first writer must succeed: %v", err)
 	}
 
-	// the second writer still holds the old revision
+	// el segundo escritor todavía tiene la revisión vieja
 	stale := level
 	err = m.db.Tx(func(tx *orm.DB) error { return applyToLevel(tx, &stale, read, stock.In, 1, time.NowNano()) })
 	if err != ErrConflict {

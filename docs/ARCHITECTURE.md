@@ -55,7 +55,7 @@ registry.Register(pm)         // router.OperationModule
 screens := ui.Screens(caller)
 ```
 
-The schema is created by `migrate.Migrate(conn, compiler)` from the app's migration step, never by `New`.
+El esquema se concilia con `migrate.Migrate` usando `ddl.Sync` desde el paso de migración de la app (flujo: https://github.com/webtyp/ddl/blob/main/docs/diagrams/SYNC_FLOW.md).
 
 ## Operations the generic view drives
 

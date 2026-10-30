@@ -8,7 +8,7 @@ import (
 	"webtyp.com/time"
 )
 
-// receive builds the arguments of a ReceiveStock for a product and a location; the tests change what they exercise.
+// receive construye los argumentos de un ReceiveStock para un producto y una ubicación; los tests cambian lo que prueban.
 func receive(productId, locationId, batch string, expiry time.Unix, quantity float64) pharmacymanager.ReceiveStockArgs {
 	return pharmacymanager.ReceiveStockArgs{
 		TenantId: testTenant, ProductId: productId, LocationId: locationId, BatchNumber: batch, ExpirationDate: expiry, Quantity: quantity,

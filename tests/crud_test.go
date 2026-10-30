@@ -59,7 +59,7 @@ func TestUpdateProduct(t *testing.T) {
 	a1 := newProduct(t, m, "a1")
 	a2 := newProduct(t, m, "a2")
 
-	// Update name of a1
+	// Actualizar nombre de a1
 	a1.Name = "New Name"
 	updated, err := m.UpdateProduct(a1)
 	if err != nil {
@@ -69,7 +69,7 @@ func TestUpdateProduct(t *testing.T) {
 		t.Errorf("expected name to change")
 	}
 
-	// Update a1 to have a2's sku
+	// Actualizar a1 para tener el sku de a2
 	a1.Sku = a2.Sku
 	_, err = m.UpdateProduct(a1)
 	if err != pharmacymanager.ErrSkuExists {
@@ -366,5 +366,5 @@ func TestInactiveLocationRefusesReceipts(t *testing.T) {
 	}
 }
 func init() {
-	// dummy use of newLocation just to avoid unused
+	// uso ficticio de newLocation solo para evitar sin usar
 }

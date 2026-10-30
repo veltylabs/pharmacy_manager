@@ -12,12 +12,12 @@ import (
 
 const testTenant = "tenant-1"
 
-// neverExpires stands for "does not expire" in this module: a pharmacy batch always has an expiry date (the plan's rule),
-// so the suite's lot without expiry (0) is received with a date far beyond every other, which orders it last as the
-// suite expects; Lots() translates it back to 0.
+// neverExpires significa "no caduca" en este módulo: un lote de farmacia siempre tiene fecha de caducidad (regla del plan),
+// así que el lote de la suite sin caducidad (0) se recibe con una fecha mucho más allá de cualquier otra, lo que lo ordena último como la
+// suite espera; Lots() lo traduce de vuelta a 0.
 const neverExpires time.Unix = 4102444800 // 2100-01-01 UTC
 
-// testIDGen is the test double of model.IDGenerator: a module never builds its own generator.
+// testIDGen es el doble de prueba de model.IDGenerator: un módulo nunca construye su propio generador.
 type testIDGen struct{ n int }
 
 func (g *testIDGen) NewID() string {
@@ -25,7 +25,7 @@ func (g *testIDGen) NewID() string {
 	return "id-" + fmt.Convert(g.n).String()
 }
 
-// newModule is a Module over an in-memory database, without events.
+// newModule es un Module sobre una base de datos en memoria, sin eventos.
 func newModule(t *testing.T) *pharmacymanager.Module {
 	t.Helper()
 	m, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{IDs: &testIDGen{}})
@@ -35,7 +35,7 @@ func newModule(t *testing.T) *pharmacymanager.Module {
 	return m
 }
 
-// newProduct creates an active, taxed, for-sale product (price 1000) and fails the test if it cannot.
+// newProduct crea un producto activo, gravado, a la venta (precio 1000) y falla el test si no puede.
 func newProduct(t *testing.T, m *pharmacymanager.Module, sku string) pharmacymanager.PharmacyProduct {
 	t.Helper()
 	p, err := m.CreateProduct(pharmacymanager.PharmacyProduct{
@@ -48,7 +48,7 @@ func newProduct(t *testing.T, m *pharmacymanager.Module, sku string) pharmacyman
 	return p
 }
 
-// newLocation creates an active location and fails the test if it cannot.
+// newLocation crea una ubicación activa y falla el test si no puede.
 func newLocation(t *testing.T, m *pharmacymanager.Module, name string) pharmacymanager.PharmacyLocation {
 	t.Helper()
 	l, err := m.CreateLocation(pharmacymanager.PharmacyLocation{TenantId: testTenant, Name: name, IsActive: true})

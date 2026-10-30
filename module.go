@@ -11,11 +11,11 @@ import (
 	"webtyp.com/time"
 )
 
-// TopicMovementRegistered is published once per stock movement, after the transaction commits. Payload: *PharmacyMovement.
+// TopicMovementRegistered se publica una vez por movimiento de stock, después de que la transacción se confirma. Payload: *PharmacyMovement.
 const TopicMovementRegistered = "pharmacy.movement.registered"
 
 const (
-	// sourceType is the Ref.Type of the cost facts: the movement is their cause.
+	// sourceType es el Ref.Type de los hechos de costo: el movimiento es su causa.
 	sourceType = "pharmacy_movement"
 
 	msgNeedIDs      = "pharmacy: Deps.IDs is required"
@@ -24,7 +24,7 @@ const (
 	msgExpiring     = "%d expired batches and %d expiring within %d days."
 )
 
-// Deps are what the module needs from the application that composes it.
+// Deps son lo que el módulo necesita de la aplicación que lo compone.
 type Deps struct {
 	IDs        model.IDGenerator // required: the module never builds a generator
 	Publisher  events.Publisher  // optional: nil disables the events and the cost facts
@@ -40,6 +40,7 @@ type Module struct {
 	alertArea string
 }
 
+// Ejemplo: pm, err := New(db, deps)
 func New(db *orm.DB, deps Deps) (*Module, error) {
 	if deps.IDs == nil {
 		return nil, fmt.Err(msgNeedIDs)
@@ -49,8 +50,9 @@ func New(db *orm.DB, deps Deps) (*Module, error) {
 
 func (m *Module) ModelName() string { return ModelName }
 
-// ---- products and locations (the pattern the rest of the CRUD follows) ----
+// ---- productos y ubicaciones (el patrón que sigue el resto del CRUD) ----
 
+// Ejemplo: pm.CreateProduct(...)
 func (m *Module) CreateProduct(p PharmacyProduct) (PharmacyProduct, error) {
 	if p.Id == "" {
 		p.Id = m.ids.NewID()
@@ -73,7 +75,7 @@ func (m *Module) CreateProduct(p PharmacyProduct) (PharmacyProduct, error) {
 	return p, nil
 }
 
-// checkProduct applies the rules of a product that the field constraints cannot express.
+// checkProduct aplica las reglas de un producto que las restricciones de campo no pueden expresar.
 func checkProduct(p *PharmacyProduct) error {
 	switch p.Unit {
 	case UnitPiece, UnitBox, UnitTablet, UnitMl, UnitGram:
@@ -94,6 +96,7 @@ func checkProduct(p *PharmacyProduct) error {
 	return nil
 }
 
+// Ejemplo: pm.GetProduct(...)
 func (m *Module) GetProduct(tenantId, id string) (PharmacyProduct, error) {
 	return getProduct(m.db, tenantId, id)
 }
@@ -124,6 +127,7 @@ func (m *Module) productBySKU(db *orm.DB, tenantId, sku string) (PharmacyProduct
 	return *got, true, nil
 }
 
+// Ejemplo: pm.CreateLocation(...)
 func (m *Module) CreateLocation(l PharmacyLocation) (PharmacyLocation, error) {
 	if l.Id == "" {
 		l.Id = m.ids.NewID()
@@ -145,6 +149,7 @@ func (m *Module) CreateLocation(l PharmacyLocation) (PharmacyLocation, error) {
 	return l, nil
 }
 
+// Ejemplo: pm.GetLocation(...)
 func (m *Module) GetLocation(tenantId, id string) (PharmacyLocation, error) {
 	return getLocation(m.db, tenantId, id)
 }
@@ -162,7 +167,7 @@ func getLocation(db *orm.DB, tenantId, id string) (PharmacyLocation, error) {
 	return *got, nil
 }
 
-// ---- batches and stock levels ----
+// ---- lotes y niveles de stock ----
 
 func getBatch(db *orm.DB, tenantId, id string) (PharmacyBatch, error) {
 	var b PharmacyBatch
@@ -190,7 +195,7 @@ func batchByNumber(db *orm.DB, tenantId, productId, number string) (PharmacyBatc
 	return *got, true, nil
 }
 
-// levelAt is the stock level row of a batch in a location; found is false when the batch was never there.
+// levelAt es la fila de nivel de stock de un lote en una ubicación; found es falso cuando el lote nunca estuvo allí.
 func levelAt(db *orm.DB, tenantId, locationId, batchId string) (PharmacyStockLevel, bool, error) {
 	var l PharmacyStockLevel
 	qb := db.Query(&l).Where(PharmacyStockLevel_.LocationId).Eq(locationId).Where(PharmacyStockLevel_.BatchId).Eq(batchId).Where(PharmacyStockLevel_.TenantId).Eq(tenantId)
@@ -204,7 +209,7 @@ func levelAt(db *orm.DB, tenantId, locationId, batchId string) (PharmacyStockLev
 	return *got, true, nil
 }
 
-// levelOrCreate returns the level row of a batch in a location, creating it at quantity 0 and revision 0.
+// levelOrCreate devuelve la fila de nivel de stock de un lote en una ubicación, creándola en cantidad 0 y revision 0.
 func (m *Module) levelOrCreate(tx *orm.DB, tenantId, locationId, batchId string, now time.Nano) (PharmacyStockLevel, error) {
 	level, found, err := levelAt(tx, tenantId, locationId, batchId)
 	if err != nil {
@@ -220,9 +225,9 @@ func (m *Module) levelOrCreate(tx *orm.DB, tenantId, locationId, batchId string,
 	return level, nil
 }
 
-// applyToLevel changes the quantity of a stock level by `quantity` in direction d, guarded by the revision the caller
-// read: if the row changed since (expectedRevision differs from the stored one) it is ErrConflict and nothing is
-// written. stock.Apply keeps the quantity from going negative (ErrInsufficientStock).
+// applyToLevel cambia la cantidad de un nivel de stock por `quantity` en dirección d, guardado por la revisión que el llamador
+// leyó: si la fila cambió desde entonces (expectedRevision difiere de la almacenada) es ErrConflict y nada es
+// escrito. stock.Apply mantiene la cantidad sin ser negativa (ErrInsufficientStock).
 func applyToLevel(tx *orm.DB, level *PharmacyStockLevel, expectedRevision int64, d stock.Direction, quantity float64, now time.Nano) error {
 	var current PharmacyStockLevel
 	qb := tx.Query(&current).Where(PharmacyStockLevel_.Id).Eq(level.Id).Where(PharmacyStockLevel_.TenantId).Eq(level.TenantId)
@@ -250,7 +255,7 @@ func applyToLevel(tx *orm.DB, level *PharmacyStockLevel, expectedRevision int64,
 	return nil
 }
 
-// addMovement appends one ledger entry inside the transaction.
+// addMovement añade una entrada al libro mayor dentro de la transacción.
 func (m *Module) addMovement(tx *orm.DB, tenantId, batchId, locationId string, t stock.Movement, quantity float64, docType, docId, note, by string, now time.Nano) (PharmacyMovement, error) {
 	mv := PharmacyMovement{
 		Id: m.ids.NewID(), TenantId: tenantId, BatchId: batchId, LocationId: locationId, MovementType: string(t), Quantity: quantity,
@@ -262,8 +267,8 @@ func (m *Module) addMovement(tx *orm.DB, tenantId, batchId, locationId string, t
 	return mv, nil
 }
 
-// lotsAt turns the stock of a product in a location into the lots webtyp.com/stock allocates from: one Lot per batch
-// that has a level row there, with the batch's expiry and the level's quantity.
+// lotsAt convierte el stock de un producto en una ubicación en los lotes que webtyp.com/stock asigna de: un Lot por lote
+// que tiene una fila de nivel allí, con la caducidad del lote y la cantidad del nivel.
 func lotsAt(db *orm.DB, tenantId, productId, locationId string) ([]stock.Lot, error) {
 	var proxy PharmacyBatch
 	batches, err := ReadAllPharmacyBatch(db.Query(&proxy).Where(PharmacyBatch_.ProductId).Eq(productId).Where(PharmacyBatch_.TenantId).Eq(tenantId))
@@ -284,10 +289,11 @@ func lotsAt(db *orm.DB, tenantId, productId, locationId string) ([]stock.Lot, er
 	return lots, nil
 }
 
-// ---- the four stock operations ----
+// ---- las cuatro operaciones de stock ----
 
-// ReceiveStock adds stock of a product to a location: it finds or creates the batch (the expiry date is mandatory), adds
-// the quantity to the (location, batch) level and appends a stock.Purchase movement, all in one transaction.
+// ReceiveStock añade stock de un producto a una ubicación: encuentra o crea el lote (la fecha de caducidad es obligatoria), añade
+// la cantidad al nivel (location, batch) y añade un movimiento stock.Purchase, todo en una transacción.
+// Ejemplo: pm.ReceiveStock(...)
 func (m *Module) ReceiveStock(a ReceiveStockArgs) (PharmacyMovement, error) {
 	if a.Quantity <= 0 {
 		return PharmacyMovement{}, &model.FieldError{Field: "quantity", Err: stock.ErrQuantity}
@@ -355,7 +361,8 @@ func (m *Module) ReceiveStock(a ReceiveStockArgs) (PharmacyMovement, error) {
 	return mv, nil
 }
 
-// RegisterEntry adds to an EXISTING batch: an inbound correction of a count (stock.AdjustIn).
+// RegisterEntry añade a un lote EXISTENTE: una corrección entrante de un conteo (stock.AdjustIn).
+// Ejemplo: pm.RegisterEntry(...)
 func (m *Module) RegisterEntry(a RegisterEntryArgs) (PharmacyMovement, error) {
 	if a.Quantity <= 0 {
 		return PharmacyMovement{}, &model.FieldError{Field: "quantity", Err: stock.ErrQuantity}
@@ -393,10 +400,11 @@ func (m *Module) RegisterEntry(a RegisterEntryArgs) (PharmacyMovement, error) {
 	return mv, nil
 }
 
-// RegisterOutput takes stock out: a sale, an internal use or a write-off. Without a batch id the batches are drawn by
-// first expiry first out (stock.Allocate); only a write-off (stock.AdjustOut) may take expired stock. It returns one
-// movement per batch used. If the cost fact cannot be published after the commit, the movements are returned WITH the
-// error: the stock change is already saved.
+// RegisterOutput saca stock: una venta, uso interno o descarte. Sin un id de lote, los lotes son extraídos por
+// primero en caducar primero en salir (stock.Allocate); solo un descarte (stock.AdjustOut) puede tomar stock caducado. Devuelve un
+// movimiento por lote usado. Si el hecho de costo no puede ser publicado después de la confirmación, los movimientos se devuelven CON el
+// error: el cambio de stock ya está guardado.
+// Ejemplo: pm.RegisterOutput(...)
 func (m *Module) RegisterOutput(a RegisterOutputArgs) ([]PharmacyMovement, error) {
 	if a.Quantity <= 0 {
 		return nil, &model.FieldError{Field: "quantity", Err: stock.ErrQuantity}
@@ -521,9 +529,10 @@ func (m *Module) RegisterOutput(a RegisterOutputArgs) ([]PharmacyMovement, error
 	return out, nil
 }
 
-// TransferStock moves stock of a product between two locations, drawing the batches by first expiry first out and
-// putting the same batches in the destination: stock.TransferOut movements at the origin, stock.TransferIn at the
-// destination, one transaction.
+// TransferStock mueve stock de un producto entre dos ubicaciones, extrayendo los lotes por primero en caducar primero en salir y
+// poniendo los mismos lotes en el destino: movimientos stock.TransferOut en el origen, stock.TransferIn en el
+// destino, una transacción.
+// Ejemplo: pm.TransferStock(...)
 func (m *Module) TransferStock(a TransferStockArgs) ([]PharmacyMovement, error) {
 	if a.Quantity <= 0 {
 		return nil, &model.FieldError{Field: "quantity", Err: stock.ErrQuantity}
@@ -597,7 +606,7 @@ func (m *Module) TransferStock(a TransferStockArgs) ([]PharmacyMovement, error) 
 	return out, nil
 }
 
-// ---- events and cost facts ----
+// ---- eventos y hechos de costo ----
 
 func (m *Module) publish(mv PharmacyMovement) {
 	if m.pub != nil {
@@ -605,8 +614,8 @@ func (m *Module) publish(mv PharmacyMovement) {
 	}
 }
 
-// publishCosts announces what an output consumed, at cost: one money.Consumed fact per movement whose batch has a unit cost.
-// It does nothing unless the application gave a Publisher and a MoneyScope.
+// publishCosts anuncia lo que un retiro consumió, al costo: un hecho money.Consumed por movimiento cuyo lote tiene costo unitario.
+// No hace nada a menos que la aplicación diera un Publisher y un MoneyScope.
 func (m *Module) publishCosts(movements []PharmacyMovement, unitCosts []int64) error {
 	if m.pub == nil || m.scope == "" {
 		return nil

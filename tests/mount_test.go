@@ -9,7 +9,7 @@ import (
 )
 
 // TestMount_EveryOperationDeclaresItsResourceAndAction: an operation without Requires would be unreachable (zero Access is
-// guarded) and must fail the build of the app, so the module must mount all of them with a resource and an action.
+// guardado) y debe fallar la compilación de la app, así que el módulo debe montar todas ellas con un recurso y una acción.
 func TestMount_EveryOperationDeclaresItsResourceAndAction(t *testing.T) {
 	var _ router.OperationModule = newModule(t) // the module is an OperationModule
 

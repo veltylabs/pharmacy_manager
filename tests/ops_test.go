@@ -52,7 +52,7 @@ func (a *deleteIdsReq) EncodeFields(w model.FieldWriter) {
 }
 
 
-// call runs one operation through the in-process caller, the way a transport would, and returns its error.
+// call ejecuta una operación a través del caller en proceso, de la forma en que lo haría un transporte, y devuelve su error.
 func call(t *testing.T, c router.Caller, op string, args model.Encodable, out model.Decodable) error {
 	t.Helper()
 	var got error
@@ -95,7 +95,7 @@ func TestOperations_ThroughTheCaller(t *testing.T) {
 		t.Fatalf("register_output: %v, %d movements", err, len(sold))
 	}
 
-	// the view's update: ids + the fields to change + a record with the values
+	// la actualización de la vista: ids + los campos a cambiar + un registro con los valores
 	if err := call(t, c, pharmacymanager.OpUpdateProduct, &pharmacymanager.UpdateProductArgs{
 		Ids: []string{prod.Id}, Fields: []string{"name"}, Record: pharmacymanager.PharmacyProduct{Name: "Paracetamol 1 g"},
 	}, nil); err != nil {
@@ -105,7 +105,7 @@ func TestOperations_ThroughTheCaller(t *testing.T) {
 		t.Errorf("only the name must change: %+v, %v", got, err)
 	}
 
-	// the view's delete: ids only; a product with batches cannot go
+	// la eliminación de la vista: solo ids; un producto con lotes no puede ir
 	err := call(t, c, pharmacymanager.OpDeleteProduct, &deleteIdsReq{Ids: []string{prod.Id}}, nil)
 	if err == nil || !strings.Contains(err.Error(), string(pharmacymanager.ErrProductInUse)) {
 		t.Errorf("deleting a product with batches: got %v, want ErrProductInUse", err)
