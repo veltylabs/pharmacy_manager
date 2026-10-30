@@ -93,7 +93,7 @@ publica `pharmacy.movement.registered` con el movimiento como carga útil, despu
 | `queries.go`, `reports.go` | las listas, `ListExpiring`, `ListLowStock` y los lectores |
 | `ops.go` | nombres de operaciones, las formas de cableado que envía la vista genérica, `MountOperations` y cada manejador |
 | `view.go` | `NewProductView`, `NewLocationView` |
-| `migrate/migrate.go` | crea las cinco tablas en orden de clave externa |
+| `migrate/migrate.go` | concilia el esquema usando ddl.Sync (flujo: https://github.com/webtyp/ddl/blob/main/docs/diagrams/SYNC_FLOW.md) |
 | `ui/`, `seed/`, `web/` | las pantallas, los datos de demostración, la demostración en el navegador |
 | `lang.json` | Español de las etiquetas y opciones |
 | `conflict_internal_test.go` | la prueba de revisión obsoleta (nivel raíz, justificado) |

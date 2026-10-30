@@ -13,11 +13,11 @@ import (
 	"webtyp.com/time"
 )
 
-// idPair joins an id chosen by the conformance suite ("prod1", "loc1", "lotA") to the id the module generated.
-// A slice scanned linearly, never a map: no module code or test uses map[K]V.
+// idPair une un id elegido por la suite de conformidad ("prod1", "loc1", "lotA") al id generado por el módulo.
+// Un slice escaneado linealmente, nunca un map: ningún código o test de módulo usa map[K]V.
 type idPair struct{ Suite, DB string }
 
-// ledger adapts a Module to stocktest.Ledger so that the shared stock rules run against this module.
+// ledger adapta un Module a stocktest.Ledger para que las reglas de stock compartidas se ejecuten contra este módulo.
 type ledger struct {
 	t         *testing.T
 	m         *pharmacymanager.Module
@@ -81,7 +81,7 @@ func (l *ledger) Receive(product, location, lot string, expiry time.Unix, quanti
 	return nil
 }
 
-// mapErr translates the module's errors to the suite's: only "not enough stock" differs.
+// mapErr traduce los errores del módulo a los de la suite: solo "no enough stock" difiere.
 func mapErr(err error) error {
 	if model.KindOf(err) == model.ErrorInvalid && strings.Contains(err.Error(), string(pharmacymanager.ErrInsufficientStock)) {
 		return stock.ErrInsufficient
@@ -147,8 +147,8 @@ func (l *ledger) Entries(product string) ([]stocktest.Entry, error) {
 	return out, nil
 }
 
-// TestStockConformance runs the shared stock rules (first expiry first out, expired lots unused, atomic failures,
-// transfers, ledger balance, never negative) against this module.
+// TestStockConformance ejecuta las reglas de stock compartidas (primero en caducar primero en salir, lotes caducados sin usar, fallas atómicas,
+// transferencias, balance del libro mayor, nunca negativo) contra este módulo.
 func TestStockConformance(t *testing.T) {
 	stocktest.Run(t, func(t *testing.T) stocktest.Ledger {
 		return &ledger{t: t, m: newModule(t)}

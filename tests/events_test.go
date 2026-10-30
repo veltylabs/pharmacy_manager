@@ -135,7 +135,7 @@ func TestCostFacts_OnlyWithScopeAndCost(t *testing.T) {
 		t.Fatalf("setup: %v", err)
 	}
 
-	// output of a batch with cost 0 and MoneyScope: "x"
+	// retiro de un lote con costo 0 y MoneyScope: "x"
 	m2, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{IDs: &testIDGen{}, Publisher: broker, MoneyScope: "x"})
 	if err != nil {
 		t.Fatalf("setup: %v", err)
@@ -155,7 +155,7 @@ func TestCostFacts_OnlyWithScopeAndCost(t *testing.T) {
 		t.Fatalf("setup: %v", err)
 	}
 
-	// transfer and entry with cost and scope
+	// transferencia y entrada con costo y alcance
 	m3, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{IDs: &testIDGen{}, Publisher: broker, MoneyScope: "x"})
 	if err != nil {
 		t.Fatalf("setup: %v", err)

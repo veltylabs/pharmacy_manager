@@ -11,8 +11,9 @@ const (
 	titleLocations = "Locations"
 )
 
-// NewProductView builds the Presenter of the products: the engine a renderer (crudview or any other) wraps. The app picks
-// the renderer; this module imports only view, model and router.
+// NewProductView construye el Presenter de los productos: el motor que un renderizador (crudview u otro) envuelve. La app elige
+// el renderizador; este módulo solo importa view, model y router.
+// Ejemplo: view := NewProductView(caller)
 func NewProductView(caller router.Caller, opts ...view.Option) view.Presenter {
 	b := view.NewCallerLister(view.NewRecords().Caller(caller),
 		view.Ops{Module: ModelName, List: OpListProducts, Save: OpUpsertProduct, Update: OpUpdateProduct, Delete: OpDeleteProduct},
@@ -21,7 +22,8 @@ func NewProductView(caller router.Caller, opts ...view.Option) view.Presenter {
 	return view.New(b, &PharmacyProduct{}, allOpts...)
 }
 
-// NewLocationView builds the Presenter of the locations.
+// NewLocationView construye el Presenter de las ubicaciones.
+// Ejemplo: view := NewLocationView(caller)
 func NewLocationView(caller router.Caller, opts ...view.Option) view.Presenter {
 	b := view.NewCallerLister(view.NewRecords().Caller(caller),
 		view.Ops{Module: ModelName, List: OpListLocations, Save: OpUpsertLocation, Update: OpUpdateLocation, Delete: OpDeleteLocation},

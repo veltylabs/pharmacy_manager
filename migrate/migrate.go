@@ -1,5 +1,5 @@
-// Package migrate reconciles the schema this module owns. It is a package of its own, never called by New, so that nothing
-// on a WASM build's import path pulls webtyp.com/ddl: schema work is deploy-time work.
+// Package migrate reconcilia el esquema del que este módulo es dueño. Es un paquete propio, nunca llamado por New, para que nada
+// en la ruta de importación de una build WASM arrastre webtyp.com/ddl: el trabajo de esquema es trabajo de deploy-time.
 package migrate
 
 import (
@@ -7,21 +7,17 @@ import (
 	"webtyp.com/ddl"
 )
 
-// Migrate creates the five tables in foreign-key order: product and location first, then the batch that references the
-// product, then the stock level and the movement that reference location and batch.
+// Migrate crea las cinco tablas en orden de clave externa: producto y ubicación primero, luego el lote que referencia al
+// producto, luego el nivel de stock y el movimiento que referencian ubicación y lote.
+// Ejemplo: err := Migrate(conn, compiler)
 func Migrate(conn ddl.Execer, ddlCompiler ddl.Compiler) error {
-	d := ddl.New(conn, ddlCompiler)
-	if err := d.CreateTable(&pharmacymanager.PharmacyProduct{}); err != nil {
-		return err
-	}
-	if err := d.CreateTable(&pharmacymanager.PharmacyLocation{}); err != nil {
-		return err
-	}
-	if err := d.CreateTable(&pharmacymanager.PharmacyBatch{}); err != nil {
-		return err
-	}
-	if err := d.CreateTable(&pharmacymanager.PharmacyStockLevel{}); err != nil {
-		return err
-	}
-	return d.CreateTable(&pharmacymanager.PharmacyMovement{})
+	// Sync y no CreateTable: crea la tabla que falta y además agrega las columnas que un modelo
+	// ganó, así un campo nuevo llega a una base ya instalada. Flujo: https://github.com/webtyp/ddl/blob/main/docs/diagrams/SYNC_FLOW.md
+	return ddl.New(conn, ddlCompiler).Sync(
+		&pharmacymanager.PharmacyProduct{},
+		&pharmacymanager.PharmacyLocation{},
+		&pharmacymanager.PharmacyBatch{},
+		&pharmacymanager.PharmacyStockLevel{},
+		&pharmacymanager.PharmacyMovement{},
+	)
 }

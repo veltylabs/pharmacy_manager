@@ -5,10 +5,10 @@ import (
 	"webtyp.com/model"
 )
 
-// ModelName is the wire and RBAC prefix of the module: operations are called "<ModelName>.<op>".
+// ModelName es el prefijo wire y RBAC del módulo: las operaciones se llaman "<ModelName>.<op>".
 const ModelName = "pharmacy"
 
-// Units a product is counted in. The select of the form takes its options from these (ui/browser.go, SetOptions).
+// Unidades en las que se cuenta un producto. El select del formulario toma sus opciones de aquí (ui/browser.go, SetOptions).
 const (
 	UnitPiece  = "PIECE"
 	UnitBox    = "BOX"
@@ -17,13 +17,13 @@ const (
 	UnitGram   = "GRAM"
 )
 
-// Tax treatment of a product. The rate (19 %) is the law's and belongs to the accounting configuration, not here.
+// Tratamiento fiscal de un producto. La tasa (19 %) es de ley y pertenece a la configuración contable, no aquí.
 const (
 	TaxTaxed  = "TAXED"
 	TaxExempt = "EXEMPT"
 )
 
-// PharmacyProductModel is a medicine or article the pharmacy stocks. Prices are whole Chilean pesos, tax included.
+// PharmacyProductModel es una medicina o artículo que la farmacia almacena. Los precios son en pesos chilenos enteros, impuestos incluidos.
 var PharmacyProductModel = model.Definition{
 	Name: "pharmacy_product",
 	Fields: model.Fields{
@@ -44,7 +44,7 @@ var PharmacyProductModel = model.Definition{
 	},
 }
 
-// PharmacyLocationModel is a place stock is kept: a storeroom, the counter.
+// PharmacyLocationModel es un lugar donde se mantiene el stock: un almacén, el mostrador.
 var PharmacyLocationModel = model.Definition{
 	Name: "pharmacy_location",
 	Fields: model.Fields{
@@ -57,7 +57,7 @@ var PharmacyLocationModel = model.Definition{
 	},
 }
 
-// PharmacyBatchModel is one lot of one product. expiration_date and unit_cost are Unix seconds UTC and whole pesos per unit.
+// PharmacyBatchModel es un lote de un producto. expiration_date y unit_cost son segundos Unix UTC y pesos enteros por unidad.
 var PharmacyBatchModel = model.Definition{
 	Name: "pharmacy_batch",
 	Fields: model.Fields{
@@ -72,8 +72,8 @@ var PharmacyBatchModel = model.Definition{
 	},
 }
 
-// PharmacyStockLevelModel is how much of one batch is in one location. One row per (location, batch); revision guards
-// concurrent updates.
+// PharmacyStockLevelModel es cuánto de un lote hay en una ubicación. Una fila por (ubicación, lote); revision guarda
+// actualizaciones concurrentes.
 var PharmacyStockLevelModel = model.Definition{
 	Name: "pharmacy_stock_level",
 	Fields: model.Fields{
@@ -87,8 +87,8 @@ var PharmacyStockLevelModel = model.Definition{
 	},
 }
 
-// PharmacyMovementModel is one append-only entry of the stock ledger. quantity is always > 0; the direction comes from
-// movement_type (webtyp.com/stock). There is no update and no delete: a mistake is corrected by a new movement.
+// PharmacyMovementModel es una entrada solo-adición del libro mayor de stock. quantity es siempre > 0; la dirección viene de
+// movement_type (webtyp.com/stock). No hay update ni delete: un error se corrige con un nuevo movimiento.
 var PharmacyMovementModel = model.Definition{
 	Name: "pharmacy_movement",
 	Fields: model.Fields{
@@ -106,7 +106,7 @@ var PharmacyMovementModel = model.Definition{
 	},
 }
 
-// Arguments of the operations. Each has tenant_id first, like service_catalog's.
+// Argumentos de las operaciones. Cada uno tiene tenant_id primero, como los de service_catalog.
 
 var ListProductsArgsModel = model.Definition{
 	Name: "list_products_args",
@@ -118,7 +118,7 @@ var ListProductsArgsModel = model.Definition{
 	},
 }
 
-// IdArgsModel is the argument of every operation that names one record: get, deactivate, delete (product, location).
+// IdArgsModel es el argumento de cada operación que nombra un registro: get, deactivate, delete (product, location).
 var IdArgsModel = model.Definition{
 	Name: "id_args",
 	Fields: model.Fields{
@@ -238,9 +238,9 @@ var ListLowStockArgsModel = model.Definition{
 	},
 }
 
-// Results that are not a table.
+// Resultados que no son una tabla.
 
-// ExpiringStockModel is one row of list_expiring: stock that expires within the asked days, or already expired.
+// ExpiringStockModel es una fila de list_expiring: stock que caduca dentro de los días solicitados, o ya caducado.
 var ExpiringStockModel = model.Definition{
 	Name: "expiring_stock",
 	Fields: model.Fields{
@@ -255,7 +255,7 @@ var ExpiringStockModel = model.Definition{
 	},
 }
 
-// LowStockModel is one row of list_low_stock: an active product whose total is at or below its min_quantity.
+// LowStockModel es una fila de list_low_stock: un producto activo cuyo total está en o por debajo de su min_quantity.
 var LowStockModel = model.Definition{
 	Name: "low_stock",
 	Fields: model.Fields{

@@ -6,11 +6,11 @@ import (
 	"webtyp.com/time"
 )
 
-// The operations that the generic view drives (save, update by ids and fields, delete by ids) carry no tenant on the wire:
-// the records carry theirs, and an id alone names one row, so these helpers resolve a row by id and then work with the
-// tenant the row itself stores. Everything that takes a tenant argument elsewhere in this module filters by it.
+// Las operaciones que la vista genérica maneja (save, update por ids y fields, delete por ids) no llevan inquilino en el cable:
+// los registros llevan el suyo, y un id solo nombra una fila, por lo que estos ayudantes resuelven una fila por id y luego trabajan con el
+// inquilino que la propia fila almacena. Todo lo que toma un argumento de inquilino en otra parte de este módulo filtra por él.
 
-// productByID returns a product whatever its tenant, so that an operation sent by id alone can find its tenant.
+// productByID devuelve un producto sin importar su inquilino, para que una operación enviada solo por id pueda encontrar su inquilino.
 func (m *Module) productByID(id string) (PharmacyProduct, error) {
 	var p PharmacyProduct
 	got, err := ReadOnePharmacyProduct(m.db.Query(&p).Where(PharmacyProduct_.Id).Eq(id), &p)
@@ -35,7 +35,8 @@ func (m *Module) locationByID(id string) (PharmacyLocation, error) {
 	return *got, nil
 }
 
-// UpdateProduct replaces a product with the record given: same id and tenant, every field validated again.
+// UpdateProduct reemplaza un producto con el registro dado: mismo id e inquilino, cada campo validado nuevamente.
+// Ejemplo: pm.UpdateProduct(...)
 func (m *Module) UpdateProduct(p PharmacyProduct) (PharmacyProduct, error) {
 	existing, err := getProduct(m.db, p.TenantId, p.Id)
 	if err != nil {
@@ -61,7 +62,8 @@ func (m *Module) UpdateProduct(p PharmacyProduct) (PharmacyProduct, error) {
 	return p, nil
 }
 
-// UpsertProduct creates the product when it has no id or the id is unknown, otherwise updates it.
+// UpsertProduct crea el producto cuando no tiene id o el id es desconocido, de lo contrario lo actualiza.
+// Ejemplo: pm.UpsertProduct(...)
 func (m *Module) UpsertProduct(p PharmacyProduct) (PharmacyProduct, error) {
 	if p.Id == "" {
 		return m.CreateProduct(p)
@@ -74,8 +76,9 @@ func (m *Module) UpsertProduct(p PharmacyProduct) (PharmacyProduct, error) {
 	return m.UpdateProduct(p)
 }
 
-// PatchProducts applies to the products named by ids only the fields named by fields, taking the values from rec: the
-// shape of the view's "update" operation. A field this module does not know is a ValidationError.
+// PatchProducts aplica a los productos nombrados por ids solo los campos nombrados por fields, tomando los valores de rec: la
+// forma de la operación "update" de la vista. Un campo que este módulo no conoce es un ValidationError.
+// Ejemplo: pm.PatchProducts(...)
 func (m *Module) PatchProducts(ids, fields []string, rec PharmacyProduct) error {
 	for _, id := range ids {
 		current, err := m.productByID(id)
@@ -117,7 +120,8 @@ func (m *Module) PatchProducts(ids, fields []string, rec PharmacyProduct) error 
 	return nil
 }
 
-// DeactivateProduct hides a product from new receipts without touching its history.
+// DeactivateProduct oculta un producto de nuevos recibos sin tocar su historia.
+// Ejemplo: pm.DeactivateProduct(...)
 func (m *Module) DeactivateProduct(tenantId, id string) error {
 	p, err := getProduct(m.db, tenantId, id)
 	if err != nil {
@@ -128,7 +132,8 @@ func (m *Module) DeactivateProduct(tenantId, id string) error {
 	return m.db.Update(&p, orm.Eq(PharmacyProduct_.Id, p.Id), orm.Eq(PharmacyProduct_.TenantId, p.TenantId))
 }
 
-// DeleteProducts removes products by id, each only if it has no batch (ErrProductInUse): the ledger keeps its history.
+// DeleteProducts elimina productos por id, cada uno solo si no tiene lote (ErrProductInUse): el libro mayor mantiene su historia.
+// Ejemplo: pm.DeleteProducts(...)
 func (m *Module) DeleteProducts(ids []string) error {
 	for _, id := range ids {
 		p, err := m.productByID(id)
@@ -149,7 +154,8 @@ func (m *Module) DeleteProducts(ids []string) error {
 	return nil
 }
 
-// UpdateLocation replaces a location with the record given.
+// UpdateLocation reemplaza una ubicación con el registro dado.
+// Ejemplo: pm.UpdateLocation(...)
 func (m *Module) UpdateLocation(l PharmacyLocation) (PharmacyLocation, error) {
 	existing, err := getLocation(m.db, l.TenantId, l.Id)
 	if err != nil {
@@ -174,7 +180,8 @@ func (m *Module) UpdateLocation(l PharmacyLocation) (PharmacyLocation, error) {
 	return l, nil
 }
 
-// UpsertLocation creates the location when it has no id or the id is unknown, otherwise updates it.
+// UpsertLocation crea la ubicación cuando no tiene id o el id es desconocido, de lo contrario la actualiza.
+// Ejemplo: pm.UpsertLocation(...)
 func (m *Module) UpsertLocation(l PharmacyLocation) (PharmacyLocation, error) {
 	if l.Id == "" {
 		return m.CreateLocation(l)
@@ -187,7 +194,8 @@ func (m *Module) UpsertLocation(l PharmacyLocation) (PharmacyLocation, error) {
 	return m.UpdateLocation(l)
 }
 
-// PatchLocations applies to the locations named by ids only the fields named by fields, taking the values from rec.
+// PatchLocations aplica a las ubicaciones nombradas por ids solo los campos nombrados por fields, tomando los valores de rec.
+// Ejemplo: pm.PatchLocations(...)
 func (m *Module) PatchLocations(ids, fields []string, rec PharmacyLocation) error {
 	for _, id := range ids {
 		current, err := m.locationByID(id)
@@ -213,7 +221,8 @@ func (m *Module) PatchLocations(ids, fields []string, rec PharmacyLocation) erro
 	return nil
 }
 
-// DeleteLocations removes locations by id, each only if no stock level row references it (ErrLocationInUse).
+// DeleteLocations elimina ubicaciones por id, cada una solo si ninguna fila de nivel de stock la referencia (ErrLocationInUse).
+// Ejemplo: pm.DeleteLocations(...)
 func (m *Module) DeleteLocations(ids []string) error {
 	for _, id := range ids {
 		l, err := m.locationByID(id)

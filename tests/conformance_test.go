@@ -8,7 +8,7 @@ import (
 	"webtyp.com/view/mock"
 )
 
-// TestViewConformance runs the shared behaviour of a view.Presenter against the engine this module's views are built on.
+// TestViewConformance ejecuta el comportamiento compartido de un view.Presenter contra el motor en el que se construyen las vistas de este módulo.
 func TestViewConformance(t *testing.T) {
 	conformance.Run(t, conformance.Factory{
 		New: func(t *testing.T, p view.Presenter) conformance.Driver {

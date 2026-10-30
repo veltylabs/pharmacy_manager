@@ -16,10 +16,10 @@ import (
 	"webtyp.com/unixid"
 )
 
-// demoTenantID is the only tenant of this in-browser demo.
+// demoTenantID es el único inquilino de esta demo en el navegador.
 const demoTenantID = "demo"
 
-// demoUser is the fixed identity the demo shell shows: the demo has no login.
+// demoUser es la identidad fija que muestra el shell de la demo: la demo no tiene login.
 type demoUser struct{}
 
 func (demoUser) UserName() string    { return "Demo" }

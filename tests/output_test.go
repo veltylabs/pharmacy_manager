@@ -12,7 +12,7 @@ import (
 	"webtyp.com/time"
 )
 
-// output builds the arguments of a RegisterOutput.
+// output construye los argumentos de un RegisterOutput.
 func output(productId, locationId string, t stock.Movement, quantity float64) pharmacymanager.RegisterOutputArgs {
 	return pharmacymanager.RegisterOutputArgs{
 		TenantId: testTenant, ProductId: productId, LocationId: locationId, Quantity: quantity, MovementType: string(t),
@@ -100,7 +100,7 @@ func batchIDOf(t *testing.T, m *pharmacymanager.Module, productId, number string
 	return ""
 }
 
-// recordingSink is a money.Sink that keeps what it accepts.
+// recordingSink es un money.Sink que mantiene lo que acepta.
 type recordingSink struct{ facts []money.Fact }
 
 func (s *recordingSink) Accept(f money.Fact) error { s.facts = append(s.facts, f); return nil }

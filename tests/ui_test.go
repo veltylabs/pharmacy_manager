@@ -10,7 +10,7 @@ import (
 	"webtyp.com/view"
 )
 
-// mockCaller is a router.Caller that records the last call and answers it with onCall.
+// mockCaller es un router.Caller que graba la última llamada y la responde con onCall.
 type mockCaller struct {
 	lastOp string
 	onCall func(op string, args model.Encodable, into model.Decodable) error

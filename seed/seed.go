@@ -1,4 +1,4 @@
-// Package seed loads demo data through the module's own methods, so every row is validated like a real one.
+// Package seed carga datos de demo usando los métodos propios del módulo, así cada fila es validada como una real.
 package seed
 
 import (
@@ -7,7 +7,7 @@ import (
 	"webtyp.com/time"
 )
 
-// Data is what Load created, for the demos that build on it.
+// Data es lo que Load creó, para las demos que se construyen sobre ello.
 type Data struct {
 	Locations []pharmacymanager.PharmacyLocation
 	Products  []pharmacymanager.PharmacyProduct
@@ -24,7 +24,8 @@ const (
 	counterPortion = 10
 )
 
-// Load creates two locations (the counter is a sales point), three products and one batch of each received in the store.
+// Load crea dos ubicaciones (el mostrador es punto de venta), tres productos y un lote de cada uno recibido en la tienda.
+// Ejemplo: data, err := Load(pm, tenant)
 func Load(m *pharmacymanager.Module, tenantID string) (Data, error) {
 	data := Data{}
 	for _, l := range []pharmacymanager.PharmacyLocation{
