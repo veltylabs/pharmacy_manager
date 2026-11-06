@@ -2,8 +2,10 @@
 PLAN: "feat!: paged lists searched on the server (view v0.6.64)"
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
+STATUS: review
 SESSION: 6547912706389808389
+PR: https://github.com/veltylabs/pharmacy_manager/pull/10
+REVIEWED_COMMIT: ee6c1b8da9852d42e611a073e0c87783efd8781d
 ---
 
 > Read AGENTS.md at the repo root before any change.
