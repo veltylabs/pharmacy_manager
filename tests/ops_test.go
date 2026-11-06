@@ -10,6 +10,7 @@ import (
 	"webtyp.com/router/loopback"
 	"webtyp.com/stock"
 	"webtyp.com/time"
+	"webtyp.com/view"
 )
 
 
@@ -114,3 +115,43 @@ func TestOperations_ThroughTheCaller(t *testing.T) {
 		t.Errorf("deleting a location with stock: got %v, want ErrLocationInUse", err)
 	}
 }
+
+func TestPharmacy_ListAcceptsListArgs(t *testing.T) {
+	m := newModule(t)
+	c := loopback.New(m)
+
+	p1 := newProduct(t, m, "SKU1")
+	p2 := newProduct(t, m, "SKU2")
+	p3 := newProduct(t, m, "SKU3")
+
+	// 1. Limit = 1
+	var list1 pharmacymanager.PharmacyProductList
+	if err := call(t, c, pharmacymanager.OpListProducts, &view.ListArgs{Limit: 1}, &list1); err != nil {
+		t.Fatalf("call Limit: 1 failed: %v", err)
+	}
+	if len(list1) != 1 {
+		t.Fatalf("expected 1 product, got %d", len(list1))
+	}
+
+	// 2. Search
+	var list2 pharmacymanager.PharmacyProductList
+	if err := call(t, c, pharmacymanager.OpListProducts, &view.ListArgs{Search: p2.Name, Limit: 10}, &list2); err != nil {
+		t.Fatalf("call Search failed: %v", err)
+	}
+	if len(list2) != 1 || list2[0].Id != p2.Id {
+		t.Fatalf("expected product %s, got %+v", p2.Id, list2)
+	}
+
+	// 3. After
+	var list3 pharmacymanager.PharmacyProductList
+	if err := call(t, c, pharmacymanager.OpListProducts, &view.ListArgs{After: p1.Id, Limit: 10}, &list3); err != nil {
+		t.Fatalf("call After failed: %v", err)
+	}
+	for _, item := range list3 {
+		if item.Id == p1.Id {
+			t.Fatalf("item %s should not appear in after list", p1.Id)
+		}
+	}
+	_ = p3
+}
+
