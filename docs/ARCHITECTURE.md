@@ -57,8 +57,8 @@ screens := ui.Screens(caller)
 
 El esquema se concilia con `migrate.Migrate` usando `ddl.Sync` desde el paso de migración de la app (flujo: https://github.com/webtyp/ddl/blob/main/docs/diagrams/SYNC_FLOW.md).
 
-## Operations the generic view drives
+## Operaciones que maneja la vista genérica
 
-`upsert_*`, `update_*` and `delete_*` carry exactly what `webtyp.com/view` sends (`{records}`, `{ids, fields, record}`,
-`{ids}`) and therefore no `tenant_id`: they resolve each row by its id and work with the tenant the row itself stores.
-Every other operation takes `tenant_id` and filters by it.
+`upsert_*`, `update_*` y `delete_*` llevan exactamente lo que envía `webtyp.com/view` (`{records}`, `{ids, fields, record}`,
+`{ids}`) y por lo tanto no llevan `tenant_id`: resuelven cada fila por su id y trabajan con el inquilino que la propia fila almacena.
+Cada otra operación toma `tenant_id` y filtra por él. Las listas se cargan según lo declara su `view.Page` y buscan en el servidor.

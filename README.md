@@ -95,6 +95,7 @@ publica `pharmacy.movement.registered` con el movimiento como carga útil, despu
 | `view.go` | `NewProductView`, `NewLocationView` |
 | `migrate/migrate.go` | concilia el esquema usando ddl.Sync (flujo: https://github.com/webtyp/ddl/blob/main/docs/diagrams/SYNC_FLOW.md) |
 | `ui/`, `seed/`, `web/` | las pantallas, los datos de demostración, la demostración en el navegador |
+| Listas | las listas se cargan según lo declara su `view.Page` y buscan en el servidor. |
 | `lang.json` | Español de las etiquetas y opciones |
 | `conflict_internal_test.go` | la prueba de revisión obsoleta (nivel raíz, justificado) |
 | `tests/` | las pruebas, incluida la suite de conformidad compartida `stocktest` (`ledger_test.go`) |

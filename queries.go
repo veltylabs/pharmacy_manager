@@ -146,6 +146,30 @@ func (m *Module) ListProducts(a ListProductsArgs) ([]PharmacyProduct, error) {
 	return page(out, int(a.Offset), int(a.Limit)), nil
 }
 
+func (m *Module) listProducts(search, after string, limit int64) ([]PharmacyProduct, error) {
+	var proxy PharmacyProduct
+	qb := m.db.Query(&proxy)
+	if m.tenantID != "" {
+		qb = qb.Where(PharmacyProduct_.TenantId).Eq(m.tenantID)
+	}
+	if search != "" {
+		qb = qb.Where(PharmacyProduct_.Name).Like("%" + search + "%")
+	}
+	if after != "" {
+		qb = qb.Where(PharmacyProduct_.Id).Gt(after)
+	}
+	qb = qb.OrderBy(PharmacyProduct_.Id).Asc().Limit(int(limit))
+	list, err := ReadAllPharmacyProduct(qb)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]PharmacyProduct, len(list))
+	for i, p := range list {
+		out[i] = *p
+	}
+	return out, nil
+}
+
 // ListLocations devuelve las ubicaciones de un inquilino, por nombre.
 // Ejemplo: locs, err := module.ListLocations(ListLocationsArgs{TenantId: "t1"})
 func (m *Module) ListLocations(a ListLocationsArgs) ([]PharmacyLocation, error) {
@@ -163,6 +187,30 @@ func (m *Module) ListLocations(a ListLocationsArgs) ([]PharmacyLocation, error) 
 		out[i] = *l
 	}
 	slices.SortFunc(out, func(x, y PharmacyLocation) int { return compareText(x.Name, y.Name) })
+	return out, nil
+}
+
+func (m *Module) listLocations(search, after string, limit int64) ([]PharmacyLocation, error) {
+	var proxy PharmacyLocation
+	qb := m.db.Query(&proxy)
+	if m.tenantID != "" {
+		qb = qb.Where(PharmacyLocation_.TenantId).Eq(m.tenantID)
+	}
+	if search != "" {
+		qb = qb.Where(PharmacyLocation_.Name).Like("%" + search + "%")
+	}
+	if after != "" {
+		qb = qb.Where(PharmacyLocation_.Id).Gt(after)
+	}
+	qb = qb.OrderBy(PharmacyLocation_.Id).Asc().Limit(int(limit))
+	list, err := ReadAllPharmacyLocation(qb)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]PharmacyLocation, len(list))
+	for i, l := range list {
+		out[i] = *l
+	}
 	return out, nil
 }
 

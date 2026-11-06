@@ -27,6 +27,7 @@ const (
 // Deps son lo que el módulo necesita de la aplicación que lo compone.
 type Deps struct {
 	IDs        model.IDGenerator // required: the module never builds a generator
+	TenantID   string            // optional: the installation's tenant
 	Publisher  events.Publisher  // optional: nil disables the events and the cost facts
 	MoneyScope string            // optional: the area of the business the cost facts belong to; "" disables the cost facts
 	AlertArea  string            // optional: the application's notify.Area code for this module's alerts; "" disables them
@@ -35,6 +36,7 @@ type Deps struct {
 type Module struct {
 	db        *orm.DB
 	ids       model.IDGenerator
+	tenantID  string
 	pub       events.Publisher
 	scope     string
 	alertArea string
@@ -45,7 +47,7 @@ func New(db *orm.DB, deps Deps) (*Module, error) {
 	if deps.IDs == nil {
 		return nil, fmt.Err(msgNeedIDs)
 	}
-	return &Module{db: db, ids: deps.IDs, pub: deps.Publisher, scope: deps.MoneyScope, alertArea: deps.AlertArea}, nil
+	return &Module{db: db, ids: deps.IDs, tenantID: deps.TenantID, pub: deps.Publisher, scope: deps.MoneyScope, alertArea: deps.AlertArea}, nil
 }
 
 func (m *Module) ModelName() string { return ModelName }

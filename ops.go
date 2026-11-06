@@ -101,7 +101,7 @@ func readStrings(r model.FieldReader, name string) []string {
 
 // MountOperations registra cada operación con el recurso RBAC y la acción que necesita y el tipo de sus argumentos.
 func (m *Module) MountOperations(reg router.OperationRegistry) {
-	reg.Operation(OpListProducts, m.opListProducts).Requires(model.ResourceOf(&PharmacyProductModel), model.Read).Accepts(&ListProductsArgs{})
+	reg.Operation(OpListProducts, m.opListProducts).Requires(model.ResourceOf(&PharmacyProductModel), model.Read).Accepts(&view.ListArgs{})
 	reg.Operation(OpGetProduct, m.opGetProduct).Requires(model.ResourceOf(&PharmacyProductModel), model.Read).Accepts(&IdArgs{})
 	reg.Operation(OpCreateProduct, m.opCreateProduct).Requires(model.ResourceOf(&PharmacyProductModel), model.Create).Accepts(&PharmacyProduct{})
 	reg.Operation(OpUpdateProduct, m.opUpdateProduct).Requires(model.ResourceOf(&PharmacyProductModel), model.Update).Accepts(&UpdateProductArgs{})
@@ -109,7 +109,7 @@ func (m *Module) MountOperations(reg router.OperationRegistry) {
 	reg.Operation(OpDeactivateProduct, m.opDeactivateProduct).Requires(model.ResourceOf(&PharmacyProductModel), model.Update).Accepts(&IdArgs{})
 	view.MountDelete(reg, OpDeleteProduct, m.DeleteProducts).Requires(model.ResourceOf(&PharmacyProductModel), model.Delete)
 
-	reg.Operation(OpListLocations, m.opListLocations).Requires(model.ResourceOf(&PharmacyLocationModel), model.Read).Accepts(&ListLocationsArgs{})
+	reg.Operation(OpListLocations, m.opListLocations).Requires(model.ResourceOf(&PharmacyLocationModel), model.Read).Accepts(&view.ListArgs{})
 	view.MountSave(reg, OpUpsertLocation, func(l *PharmacyLocation) error { out, err := m.UpsertLocation(*l); if err == nil { *l = out }; return err }).Requires(model.ResourceOf(&PharmacyLocationModel), model.Create|model.Update)
 	reg.Operation(OpUpdateLocation, m.opUpdateLocation).Requires(model.ResourceOf(&PharmacyLocationModel), model.Update).Accepts(&UpdateLocationArgs{})
 	view.MountDelete(reg, OpDeleteLocation, m.DeleteLocations).Requires(model.ResourceOf(&PharmacyLocationModel), model.Delete)
@@ -132,12 +132,12 @@ var _ router.OperationModule = (*Module)(nil)
 // answer codifica v, o responde el fallo.
 
 func (m *Module) opListProducts(ctx router.Context) {
-	var args ListProductsArgs
+	var args view.ListArgs
 	if err := ctx.Decode(&args); err != nil {
 		rpc.WriteError(ctx, ErrCannotRead)
 		return
 	}
-	items, err := m.ListProducts(args)
+	items, err := m.listProducts(args.Search, args.After, view.Cap(args.Limit))
 	list := make(PharmacyProductList, len(items))
 	for i := range items {
 		list[i] = &items[i]
@@ -212,12 +212,12 @@ func (m *Module) opDeactivateProduct(ctx router.Context) {
 }
 
 func (m *Module) opListLocations(ctx router.Context) {
-	var args ListLocationsArgs
+	var args view.ListArgs
 	if err := ctx.Decode(&args); err != nil {
 		rpc.WriteError(ctx, ErrCannotRead)
 		return
 	}
-	items, err := m.ListLocations(args)
+	items, err := m.listLocations(args.Search, args.After, view.Cap(args.Limit))
 	list := make(PharmacyLocationList, len(items))
 	for i := range items {
 		list[i] = &items[i]
