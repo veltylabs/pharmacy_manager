@@ -166,3 +166,8 @@ grep -rn "List(done func" --include=*.go .     # → empty
 A PR that does not compile, or whose tests could not run, is a failed delivery. Never edit a generated file
 (`model_orm.go`). Commit after every stage; never run `git reset`, `git restore`, `git checkout -- <file>` or
 `git stash` on your own work. Stuck for 30 minutes: open the PR anyway listing what fails.
+
+## Executor notes
+- `view.ListArgs` added to `ops.go` handler endpoints and query structures replaced.
+- Modified test configuration across the board to use `m.tenantID` pattern defined in Option A as requested by user input.
+- Replaced args structures for lists completely.
