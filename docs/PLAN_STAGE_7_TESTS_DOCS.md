@@ -12,7 +12,7 @@
 | `tests/migrate_test.go` | If the `Exec` double of its connection no longer compiles, make it `Exec(string, ...any) (storage.Result, error)` returning `nil, nil` (import `webtyp.com/storage`); never change what a test asserts. The test of the tables list now expects the sixth table `pharmacy_operation` last. |
 | `tests/mount_test.go` | **Rewrite** with `TestMount_MatchesDefinition` below (the old test mounted by hand). |
 | `tests/ui_test.go` (`browser` tag) | Keep; the `mockCaller` double takes `router.Operation`: `Call(op router.Operation, args model.Encodable, into model.Decodable, done func(err error))`, `Dispatch(op router.Operation, args model.Encodable)`, and `lastOp` is a `router.Operation` (import `webtyp.com/router`). |
-| `tests/screen_save_test.go` | Keep and fix: the caller is `crud.LoopbackActingAs(nil, "u1", m)` (not `loopback.ActingAs`); records carry NO `TenantId` (a server field) and no `Id`. |
+| `tests/screen_save_test.go` | Keep and fix (`crud.LoopbackActingAs` lives in `webtyp.com/crud`, already in `go.mod`; `webtyp.com/router/loopback` must not be imported anywhere — no `go get` is needed): the caller is `crud.LoopbackActingAs(nil, "u1", m)` (not `loopback.ActingAs`); records carry NO `TenantId` (a server field) and no `Id`. |
 | `tests/ops_test.go` | **Delete** (it tests the removed handlers `op*`). `grep -rn "mock.Router\|MountOperations(r" tests` → empty. |
 
 ## 7.2 New crud tests, `tests/rules_test.go` (package `tests`), with these helpers
