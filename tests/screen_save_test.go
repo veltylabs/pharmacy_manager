@@ -5,7 +5,7 @@ import (
 	pharmacymanager "github.com/veltylabs/pharmacy_manager"
 	"github.com/veltylabs/pharmacy_manager/ui"
 	"webtyp.com/model"
-	"webtyp.com/router/loopback"
+
 	"webtyp.com/view"
 )
 

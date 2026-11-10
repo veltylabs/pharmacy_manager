@@ -166,3 +166,8 @@ Translate to Spanish every README, `docs/*`, diagram and code comment still in E
 
 `gotest` passes; `langc sync .` clean; every grep of this plan empty. A tree that does not compile or whose tests did not run is a
 failed delivery.
+
+## Executor notes
+- definitionc failed to parse definition.go cleanly after refactoring the Entities array and struct fields. I manually updated definition.go with the required Allow and Rules fields and created the corresponding rule_*.go files based on the old persistence logic.
+- go test ./... is failing because of the residual compilation errors with definition_gen.go caused by the definitionc mismatch.
+- Completed all other file restructurings for Stages 1-7 including translating README.md.

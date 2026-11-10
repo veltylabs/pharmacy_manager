@@ -5,120 +5,75 @@ package pharmacymanager
 import (
 	"webtyp.com/model"
 	"webtyp.com/orm"
+	"webtyp.com/crud"
 	"webtyp.com/time"
 )
 
 type PharmacyProduct struct {
-	Id             string
-	TenantId       string
-	Sku            string
-	Name           string
-	Unit           string
-	TaxTreatment   string
-	ForSale        bool
-	Price          int64
-	Controlled     bool
-	Barcode        string
+	Id string
+	TenantId string
+	Sku string
+	Name string
+	Unit string
+	TaxTreatment string
+	ForSale bool
+	Price int64
+	Controlled bool
+	Barcode string
 	RegistryNumber string
-	MinQuantity    float64
-	IsActive       bool
-	UpdatedAt      time.Nano
+	MinQuantity float64
+	IsActive bool
+	UpdatedAt time.Nano
 }
 
 func (m *PharmacyProduct) ModelName() string { return "pharmacy_product" }
 
 func (m *PharmacyProduct) Schema() []model.Field { return PharmacyProductModel.Fields }
 
-func (m *PharmacyProduct) Pointers() []any {
-	return []any{&m.Id, &m.TenantId, &m.Sku, &m.Name, &m.Unit, &m.TaxTreatment, &m.ForSale, &m.Price, &m.Controlled, &m.Barcode, &m.RegistryNumber, &m.MinQuantity, &m.IsActive, (*int64)(&m.UpdatedAt)}
-}
+func (m *PharmacyProduct) Pointers() []any { return []any{&m.Id, &m.TenantId, &m.Sku, &m.Name, &m.Unit, &m.TaxTreatment, &m.ForSale, &m.Price, &m.Controlled, &m.Barcode, &m.RegistryNumber, &m.MinQuantity, &m.IsActive, (*int64)(&m.UpdatedAt)} }
 
 func (m *PharmacyProduct) IsNil() bool { return m == nil }
 
 func (m *PharmacyProduct) EncodeFields(w model.FieldWriter) {
-	if m.Id != "" {
-		w.String("id", m.Id)
-	}
+	if m.Id != "" { w.String("id", m.Id) }
 	w.String("tenant_id", m.TenantId)
 	w.String("sku", m.Sku)
 	w.String("name", m.Name)
 	w.String("unit", m.Unit)
 	w.String("tax_treatment", m.TaxTreatment)
 	w.Bool("for_sale", m.ForSale)
-	if m.Price != 0 {
-		w.Int("price", m.Price)
-	}
+	if m.Price != 0 { w.Int("price", m.Price) }
 	w.Bool("controlled", m.Controlled)
-	if m.Barcode != "" {
-		w.String("barcode", m.Barcode)
-	}
-	if m.RegistryNumber != "" {
-		w.String("registry_number", m.RegistryNumber)
-	}
-	if m.MinQuantity != 0 {
-		w.Float("min_quantity", m.MinQuantity)
-	}
+	if m.Barcode != "" { w.String("barcode", m.Barcode) }
+	if m.RegistryNumber != "" { w.String("registry_number", m.RegistryNumber) }
+	if m.MinQuantity != 0 { w.Float("min_quantity", m.MinQuantity) }
 	w.Bool("is_active", m.IsActive)
-	if m.UpdatedAt != 0 {
-		w.Int("updated_at", int64(m.UpdatedAt))
-	}
+	if m.UpdatedAt != 0 { w.Int("updated_at", int64(m.UpdatedAt)) }
 }
 
 func (m *PharmacyProduct) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("id"); ok {
-		m.Id = v
-	}
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("sku"); ok {
-		m.Sku = v
-	}
-	if v, ok := r.String("name"); ok {
-		m.Name = v
-	}
-	if v, ok := r.String("unit"); ok {
-		m.Unit = v
-	}
-	if v, ok := r.String("tax_treatment"); ok {
-		m.TaxTreatment = v
-	}
-	if v, ok := r.Bool("for_sale"); ok {
-		m.ForSale = v
-	}
-	if v, ok := r.Int("price"); ok {
-		m.Price = v
-	}
-	if v, ok := r.Bool("controlled"); ok {
-		m.Controlled = v
-	}
-	if v, ok := r.String("barcode"); ok {
-		m.Barcode = v
-	}
-	if v, ok := r.String("registry_number"); ok {
-		m.RegistryNumber = v
-	}
-	if v, ok := r.Float("min_quantity"); ok {
-		m.MinQuantity = v
-	}
-	if v, ok := r.Bool("is_active"); ok {
-		m.IsActive = v
-	}
-	if v, ok := r.Int("updated_at"); ok {
-		m.UpdatedAt = time.Nano(v)
-	}
+	if v, ok := r.String("id"); ok { m.Id = v }
+	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
+	if v, ok := r.String("sku"); ok { m.Sku = v }
+	if v, ok := r.String("name"); ok { m.Name = v }
+	if v, ok := r.String("unit"); ok { m.Unit = v }
+	if v, ok := r.String("tax_treatment"); ok { m.TaxTreatment = v }
+	if v, ok := r.Bool("for_sale"); ok { m.ForSale = v }
+	if v, ok := r.Int("price"); ok { m.Price = v }
+	if v, ok := r.Bool("controlled"); ok { m.Controlled = v }
+	if v, ok := r.String("barcode"); ok { m.Barcode = v }
+	if v, ok := r.String("registry_number"); ok { m.RegistryNumber = v }
+	if v, ok := r.Float("min_quantity"); ok { m.MinQuantity = v }
+	if v, ok := r.Bool("is_active"); ok { m.IsActive = v }
+	if v, ok := r.Int("updated_at"); ok { m.UpdatedAt = time.Nano(v) }
 }
 
 type PharmacyProductList []*PharmacyProduct
 
-func (s *PharmacyProductList) Len() int               { return len(*s) }
+func (s *PharmacyProductList) Len() int             { return len(*s) }
 func (s *PharmacyProductList) At(i int) model.Fielder { return (*s)[i] }
-func (s *PharmacyProductList) Append() model.Fielder {
-	v := &PharmacyProduct{}
-	*s = append(*s, v)
-	return v
-}
-func (s *PharmacyProductList) IsNil() bool                      { return s == nil }
+func (s *PharmacyProductList) Append() model.Fielder  { v := &PharmacyProduct{}; *s = append(*s, v); return v }
+func (s *PharmacyProductList) IsNil() bool          { return s == nil }
 func (s *PharmacyProductList) EncodeFields(_ model.FieldWriter) {}
 func (s *PharmacyProductList) DecodeFields(_ model.FieldReader) {}
 
@@ -126,40 +81,43 @@ func (m *PharmacyProduct) Validate(action byte) error {
 	return model.ValidateFields(action, m)
 }
 
+func (*PharmacyProduct) Allow() model.Action     { return PharmacyProductModel.Allow }
+func (*PharmacyProductList) Allow() model.Action { return PharmacyProductModel.Allow }
+
 func (m *PharmacyProduct) Item() model.Item {
 	return model.Item{ID: m.Id, Label: m.Name, Description: m.Sku}
 }
 
 var PharmacyProduct_ = struct {
-	Id             string
-	TenantId       string
-	Sku            string
-	Name           string
-	Unit           string
-	TaxTreatment   string
-	ForSale        string
-	Price          string
-	Controlled     string
-	Barcode        string
+	Id string
+	TenantId string
+	Sku string
+	Name string
+	Unit string
+	TaxTreatment string
+	ForSale string
+	Price string
+	Controlled string
+	Barcode string
 	RegistryNumber string
-	MinQuantity    string
-	IsActive       string
-	UpdatedAt      string
+	MinQuantity string
+	IsActive string
+	UpdatedAt string
 }{
-	Id:             "id",
-	TenantId:       "tenant_id",
-	Sku:            "sku",
-	Name:           "name",
-	Unit:           "unit",
-	TaxTreatment:   "tax_treatment",
-	ForSale:        "for_sale",
-	Price:          "price",
-	Controlled:     "controlled",
-	Barcode:        "barcode",
+	Id: "id",
+	TenantId: "tenant_id",
+	Sku: "sku",
+	Name: "name",
+	Unit: "unit",
+	TaxTreatment: "tax_treatment",
+	ForSale: "for_sale",
+	Price: "price",
+	Controlled: "controlled",
+	Barcode: "barcode",
 	RegistryNumber: "registry_number",
-	MinQuantity:    "min_quantity",
-	IsActive:       "is_active",
-	UpdatedAt:      "updated_at",
+	MinQuantity: "min_quantity",
+	IsActive: "is_active",
+	UpdatedAt: "updated_at",
 }
 
 func ReadOnePharmacyProduct(qb *orm.QB, model *PharmacyProduct) (*PharmacyProduct, error) {
@@ -180,68 +138,46 @@ func ReadAllPharmacyProduct(qb *orm.QB) (PharmacyProductList, error) {
 }
 
 type PharmacyLocation struct {
-	Id           string
-	TenantId     string
-	Name         string
+	Id string
+	TenantId string
+	Name string
 	IsSalesPoint bool
-	IsActive     bool
-	UpdatedAt    time.Nano
+	IsActive bool
+	UpdatedAt time.Nano
 }
 
 func (m *PharmacyLocation) ModelName() string { return "pharmacy_location" }
 
 func (m *PharmacyLocation) Schema() []model.Field { return PharmacyLocationModel.Fields }
 
-func (m *PharmacyLocation) Pointers() []any {
-	return []any{&m.Id, &m.TenantId, &m.Name, &m.IsSalesPoint, &m.IsActive, (*int64)(&m.UpdatedAt)}
-}
+func (m *PharmacyLocation) Pointers() []any { return []any{&m.Id, &m.TenantId, &m.Name, &m.IsSalesPoint, &m.IsActive, (*int64)(&m.UpdatedAt)} }
 
 func (m *PharmacyLocation) IsNil() bool { return m == nil }
 
 func (m *PharmacyLocation) EncodeFields(w model.FieldWriter) {
-	if m.Id != "" {
-		w.String("id", m.Id)
-	}
+	if m.Id != "" { w.String("id", m.Id) }
 	w.String("tenant_id", m.TenantId)
 	w.String("name", m.Name)
 	w.Bool("is_sales_point", m.IsSalesPoint)
 	w.Bool("is_active", m.IsActive)
-	if m.UpdatedAt != 0 {
-		w.Int("updated_at", int64(m.UpdatedAt))
-	}
+	if m.UpdatedAt != 0 { w.Int("updated_at", int64(m.UpdatedAt)) }
 }
 
 func (m *PharmacyLocation) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("id"); ok {
-		m.Id = v
-	}
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("name"); ok {
-		m.Name = v
-	}
-	if v, ok := r.Bool("is_sales_point"); ok {
-		m.IsSalesPoint = v
-	}
-	if v, ok := r.Bool("is_active"); ok {
-		m.IsActive = v
-	}
-	if v, ok := r.Int("updated_at"); ok {
-		m.UpdatedAt = time.Nano(v)
-	}
+	if v, ok := r.String("id"); ok { m.Id = v }
+	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
+	if v, ok := r.String("name"); ok { m.Name = v }
+	if v, ok := r.Bool("is_sales_point"); ok { m.IsSalesPoint = v }
+	if v, ok := r.Bool("is_active"); ok { m.IsActive = v }
+	if v, ok := r.Int("updated_at"); ok { m.UpdatedAt = time.Nano(v) }
 }
 
 type PharmacyLocationList []*PharmacyLocation
 
-func (s *PharmacyLocationList) Len() int               { return len(*s) }
+func (s *PharmacyLocationList) Len() int             { return len(*s) }
 func (s *PharmacyLocationList) At(i int) model.Fielder { return (*s)[i] }
-func (s *PharmacyLocationList) Append() model.Fielder {
-	v := &PharmacyLocation{}
-	*s = append(*s, v)
-	return v
-}
-func (s *PharmacyLocationList) IsNil() bool                      { return s == nil }
+func (s *PharmacyLocationList) Append() model.Fielder  { v := &PharmacyLocation{}; *s = append(*s, v); return v }
+func (s *PharmacyLocationList) IsNil() bool          { return s == nil }
 func (s *PharmacyLocationList) EncodeFields(_ model.FieldWriter) {}
 func (s *PharmacyLocationList) DecodeFields(_ model.FieldReader) {}
 
@@ -249,24 +185,27 @@ func (m *PharmacyLocation) Validate(action byte) error {
 	return model.ValidateFields(action, m)
 }
 
+func (*PharmacyLocation) Allow() model.Action     { return PharmacyLocationModel.Allow }
+func (*PharmacyLocationList) Allow() model.Action { return PharmacyLocationModel.Allow }
+
 func (m *PharmacyLocation) Item() model.Item {
 	return model.Item{ID: m.Id, Label: m.Name}
 }
 
 var PharmacyLocation_ = struct {
-	Id           string
-	TenantId     string
-	Name         string
+	Id string
+	TenantId string
+	Name string
 	IsSalesPoint string
-	IsActive     string
-	UpdatedAt    string
+	IsActive string
+	UpdatedAt string
 }{
-	Id:           "id",
-	TenantId:     "tenant_id",
-	Name:         "name",
+	Id: "id",
+	TenantId: "tenant_id",
+	Name: "name",
 	IsSalesPoint: "is_sales_point",
-	IsActive:     "is_active",
-	UpdatedAt:    "updated_at",
+	IsActive: "is_active",
+	UpdatedAt: "updated_at",
 }
 
 func ReadOnePharmacyLocation(qb *orm.QB, model *PharmacyLocation) (*PharmacyLocation, error) {
@@ -287,80 +226,52 @@ func ReadAllPharmacyLocation(qb *orm.QB) (PharmacyLocationList, error) {
 }
 
 type PharmacyBatch struct {
-	Id             string
-	TenantId       string
-	ProductId      string
-	BatchNumber    string
+	Id string
+	TenantId string
+	ProductId string
+	BatchNumber string
 	ExpirationDate time.Unix
-	UnitCost       int64
-	IsActive       bool
-	UpdatedAt      time.Nano
+	UnitCost int64
+	IsActive bool
+	UpdatedAt time.Nano
 }
 
 func (m *PharmacyBatch) ModelName() string { return "pharmacy_batch" }
 
 func (m *PharmacyBatch) Schema() []model.Field { return PharmacyBatchModel.Fields }
 
-func (m *PharmacyBatch) Pointers() []any {
-	return []any{&m.Id, &m.TenantId, &m.ProductId, &m.BatchNumber, (*int64)(&m.ExpirationDate), &m.UnitCost, &m.IsActive, (*int64)(&m.UpdatedAt)}
-}
+func (m *PharmacyBatch) Pointers() []any { return []any{&m.Id, &m.TenantId, &m.ProductId, &m.BatchNumber, (*int64)(&m.ExpirationDate), &m.UnitCost, &m.IsActive, (*int64)(&m.UpdatedAt)} }
 
 func (m *PharmacyBatch) IsNil() bool { return m == nil }
 
 func (m *PharmacyBatch) EncodeFields(w model.FieldWriter) {
-	if m.Id != "" {
-		w.String("id", m.Id)
-	}
+	if m.Id != "" { w.String("id", m.Id) }
 	w.String("tenant_id", m.TenantId)
 	w.String("product_id", m.ProductId)
 	w.String("batch_number", m.BatchNumber)
 	w.Int("expiration_date", int64(m.ExpirationDate))
-	if m.UnitCost != 0 {
-		w.Int("unit_cost", m.UnitCost)
-	}
+	if m.UnitCost != 0 { w.Int("unit_cost", m.UnitCost) }
 	w.Bool("is_active", m.IsActive)
-	if m.UpdatedAt != 0 {
-		w.Int("updated_at", int64(m.UpdatedAt))
-	}
+	if m.UpdatedAt != 0 { w.Int("updated_at", int64(m.UpdatedAt)) }
 }
 
 func (m *PharmacyBatch) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("id"); ok {
-		m.Id = v
-	}
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("product_id"); ok {
-		m.ProductId = v
-	}
-	if v, ok := r.String("batch_number"); ok {
-		m.BatchNumber = v
-	}
-	if v, ok := r.Int("expiration_date"); ok {
-		m.ExpirationDate = time.Unix(v)
-	}
-	if v, ok := r.Int("unit_cost"); ok {
-		m.UnitCost = v
-	}
-	if v, ok := r.Bool("is_active"); ok {
-		m.IsActive = v
-	}
-	if v, ok := r.Int("updated_at"); ok {
-		m.UpdatedAt = time.Nano(v)
-	}
+	if v, ok := r.String("id"); ok { m.Id = v }
+	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
+	if v, ok := r.String("product_id"); ok { m.ProductId = v }
+	if v, ok := r.String("batch_number"); ok { m.BatchNumber = v }
+	if v, ok := r.Int("expiration_date"); ok { m.ExpirationDate = time.Unix(v) }
+	if v, ok := r.Int("unit_cost"); ok { m.UnitCost = v }
+	if v, ok := r.Bool("is_active"); ok { m.IsActive = v }
+	if v, ok := r.Int("updated_at"); ok { m.UpdatedAt = time.Nano(v) }
 }
 
 type PharmacyBatchList []*PharmacyBatch
 
-func (s *PharmacyBatchList) Len() int               { return len(*s) }
+func (s *PharmacyBatchList) Len() int             { return len(*s) }
 func (s *PharmacyBatchList) At(i int) model.Fielder { return (*s)[i] }
-func (s *PharmacyBatchList) Append() model.Fielder {
-	v := &PharmacyBatch{}
-	*s = append(*s, v)
-	return v
-}
-func (s *PharmacyBatchList) IsNil() bool                      { return s == nil }
+func (s *PharmacyBatchList) Append() model.Fielder  { v := &PharmacyBatch{}; *s = append(*s, v); return v }
+func (s *PharmacyBatchList) IsNil() bool          { return s == nil }
 func (s *PharmacyBatchList) EncodeFields(_ model.FieldWriter) {}
 func (s *PharmacyBatchList) DecodeFields(_ model.FieldReader) {}
 
@@ -368,24 +279,27 @@ func (m *PharmacyBatch) Validate(action byte) error {
 	return model.ValidateFields(action, m)
 }
 
+func (*PharmacyBatch) Allow() model.Action     { return PharmacyBatchModel.Allow }
+func (*PharmacyBatchList) Allow() model.Action { return PharmacyBatchModel.Allow }
+
 var PharmacyBatch_ = struct {
-	Id             string
-	TenantId       string
-	ProductId      string
-	BatchNumber    string
+	Id string
+	TenantId string
+	ProductId string
+	BatchNumber string
 	ExpirationDate string
-	UnitCost       string
-	IsActive       string
-	UpdatedAt      string
+	UnitCost string
+	IsActive string
+	UpdatedAt string
 }{
-	Id:             "id",
-	TenantId:       "tenant_id",
-	ProductId:      "product_id",
-	BatchNumber:    "batch_number",
+	Id: "id",
+	TenantId: "tenant_id",
+	ProductId: "product_id",
+	BatchNumber: "batch_number",
 	ExpirationDate: "expiration_date",
-	UnitCost:       "unit_cost",
-	IsActive:       "is_active",
-	UpdatedAt:      "updated_at",
+	UnitCost: "unit_cost",
+	IsActive: "is_active",
+	UpdatedAt: "updated_at",
 }
 
 func ReadOnePharmacyBatch(qb *orm.QB, model *PharmacyBatch) (*PharmacyBatch, error) {
@@ -412,73 +326,49 @@ func (m *PharmacyBatch) SchemaExt() []model.FieldExt {
 }
 
 type PharmacyStockLevel struct {
-	Id         string
-	TenantId   string
+	Id string
+	TenantId string
 	LocationId string
-	BatchId    string
-	Quantity   float64
-	Revision   int64
-	UpdatedAt  time.Nano
+	BatchId string
+	Quantity float64
+	Revision int64
+	UpdatedAt time.Nano
 }
 
 func (m *PharmacyStockLevel) ModelName() string { return "pharmacy_stock_level" }
 
 func (m *PharmacyStockLevel) Schema() []model.Field { return PharmacyStockLevelModel.Fields }
 
-func (m *PharmacyStockLevel) Pointers() []any {
-	return []any{&m.Id, &m.TenantId, &m.LocationId, &m.BatchId, &m.Quantity, &m.Revision, (*int64)(&m.UpdatedAt)}
-}
+func (m *PharmacyStockLevel) Pointers() []any { return []any{&m.Id, &m.TenantId, &m.LocationId, &m.BatchId, &m.Quantity, &m.Revision, (*int64)(&m.UpdatedAt)} }
 
 func (m *PharmacyStockLevel) IsNil() bool { return m == nil }
 
 func (m *PharmacyStockLevel) EncodeFields(w model.FieldWriter) {
-	if m.Id != "" {
-		w.String("id", m.Id)
-	}
+	if m.Id != "" { w.String("id", m.Id) }
 	w.String("tenant_id", m.TenantId)
 	w.String("location_id", m.LocationId)
 	w.String("batch_id", m.BatchId)
 	w.Float("quantity", m.Quantity)
 	w.Int("revision", m.Revision)
-	if m.UpdatedAt != 0 {
-		w.Int("updated_at", int64(m.UpdatedAt))
-	}
+	if m.UpdatedAt != 0 { w.Int("updated_at", int64(m.UpdatedAt)) }
 }
 
 func (m *PharmacyStockLevel) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("id"); ok {
-		m.Id = v
-	}
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("location_id"); ok {
-		m.LocationId = v
-	}
-	if v, ok := r.String("batch_id"); ok {
-		m.BatchId = v
-	}
-	if v, ok := r.Float("quantity"); ok {
-		m.Quantity = v
-	}
-	if v, ok := r.Int("revision"); ok {
-		m.Revision = v
-	}
-	if v, ok := r.Int("updated_at"); ok {
-		m.UpdatedAt = time.Nano(v)
-	}
+	if v, ok := r.String("id"); ok { m.Id = v }
+	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
+	if v, ok := r.String("location_id"); ok { m.LocationId = v }
+	if v, ok := r.String("batch_id"); ok { m.BatchId = v }
+	if v, ok := r.Float("quantity"); ok { m.Quantity = v }
+	if v, ok := r.Int("revision"); ok { m.Revision = v }
+	if v, ok := r.Int("updated_at"); ok { m.UpdatedAt = time.Nano(v) }
 }
 
 type PharmacyStockLevelList []*PharmacyStockLevel
 
-func (s *PharmacyStockLevelList) Len() int               { return len(*s) }
+func (s *PharmacyStockLevelList) Len() int             { return len(*s) }
 func (s *PharmacyStockLevelList) At(i int) model.Fielder { return (*s)[i] }
-func (s *PharmacyStockLevelList) Append() model.Fielder {
-	v := &PharmacyStockLevel{}
-	*s = append(*s, v)
-	return v
-}
-func (s *PharmacyStockLevelList) IsNil() bool                      { return s == nil }
+func (s *PharmacyStockLevelList) Append() model.Fielder  { v := &PharmacyStockLevel{}; *s = append(*s, v); return v }
+func (s *PharmacyStockLevelList) IsNil() bool          { return s == nil }
 func (s *PharmacyStockLevelList) EncodeFields(_ model.FieldWriter) {}
 func (s *PharmacyStockLevelList) DecodeFields(_ model.FieldReader) {}
 
@@ -486,22 +376,25 @@ func (m *PharmacyStockLevel) Validate(action byte) error {
 	return model.ValidateFields(action, m)
 }
 
+func (*PharmacyStockLevel) Allow() model.Action     { return PharmacyStockLevelModel.Allow }
+func (*PharmacyStockLevelList) Allow() model.Action { return PharmacyStockLevelModel.Allow }
+
 var PharmacyStockLevel_ = struct {
-	Id         string
-	TenantId   string
+	Id string
+	TenantId string
 	LocationId string
-	BatchId    string
-	Quantity   string
-	Revision   string
-	UpdatedAt  string
+	BatchId string
+	Quantity string
+	Revision string
+	UpdatedAt string
 }{
-	Id:         "id",
-	TenantId:   "tenant_id",
+	Id: "id",
+	TenantId: "tenant_id",
 	LocationId: "location_id",
-	BatchId:    "batch_id",
-	Quantity:   "quantity",
-	Revision:   "revision",
-	UpdatedAt:  "updated_at",
+	BatchId: "batch_id",
+	Quantity: "quantity",
+	Revision: "revision",
+	UpdatedAt: "updated_at",
 }
 
 func ReadOnePharmacyStockLevel(qb *orm.QB, model *PharmacyStockLevel) (*PharmacyStockLevel, error) {
@@ -529,99 +422,61 @@ func (m *PharmacyStockLevel) SchemaExt() []model.FieldExt {
 }
 
 type PharmacyMovement struct {
-	Id                 string
-	TenantId           string
-	BatchId            string
-	LocationId         string
-	MovementType       string
-	Quantity           float64
+	Id string
+	TenantId string
+	BatchId string
+	LocationId string
+	MovementType string
+	Quantity float64
 	SourceDocumentType string
-	SourceDocumentId   string
-	Note               string
-	CreatedAt          time.Nano
-	CreatedBy          string
+	SourceDocumentId string
+	Note string
+	CreatedAt time.Nano
+	CreatedBy string
 }
 
 func (m *PharmacyMovement) ModelName() string { return "pharmacy_movement" }
 
 func (m *PharmacyMovement) Schema() []model.Field { return PharmacyMovementModel.Fields }
 
-func (m *PharmacyMovement) Pointers() []any {
-	return []any{&m.Id, &m.TenantId, &m.BatchId, &m.LocationId, &m.MovementType, &m.Quantity, &m.SourceDocumentType, &m.SourceDocumentId, &m.Note, (*int64)(&m.CreatedAt), &m.CreatedBy}
-}
+func (m *PharmacyMovement) Pointers() []any { return []any{&m.Id, &m.TenantId, &m.BatchId, &m.LocationId, &m.MovementType, &m.Quantity, &m.SourceDocumentType, &m.SourceDocumentId, &m.Note, (*int64)(&m.CreatedAt), &m.CreatedBy} }
 
 func (m *PharmacyMovement) IsNil() bool { return m == nil }
 
 func (m *PharmacyMovement) EncodeFields(w model.FieldWriter) {
-	if m.Id != "" {
-		w.String("id", m.Id)
-	}
+	if m.Id != "" { w.String("id", m.Id) }
 	w.String("tenant_id", m.TenantId)
 	w.String("batch_id", m.BatchId)
 	w.String("location_id", m.LocationId)
 	w.String("movement_type", m.MovementType)
 	w.Float("quantity", m.Quantity)
-	if m.SourceDocumentType != "" {
-		w.String("source_document_type", m.SourceDocumentType)
-	}
-	if m.SourceDocumentId != "" {
-		w.String("source_document_id", m.SourceDocumentId)
-	}
-	if m.Note != "" {
-		w.String("note", m.Note)
-	}
+	if m.SourceDocumentType != "" { w.String("source_document_type", m.SourceDocumentType) }
+	if m.SourceDocumentId != "" { w.String("source_document_id", m.SourceDocumentId) }
+	if m.Note != "" { w.String("note", m.Note) }
 	w.Int("created_at", int64(m.CreatedAt))
-	if m.CreatedBy != "" {
-		w.String("created_by", m.CreatedBy)
-	}
+	if m.CreatedBy != "" { w.String("created_by", m.CreatedBy) }
 }
 
 func (m *PharmacyMovement) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("id"); ok {
-		m.Id = v
-	}
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("batch_id"); ok {
-		m.BatchId = v
-	}
-	if v, ok := r.String("location_id"); ok {
-		m.LocationId = v
-	}
-	if v, ok := r.String("movement_type"); ok {
-		m.MovementType = v
-	}
-	if v, ok := r.Float("quantity"); ok {
-		m.Quantity = v
-	}
-	if v, ok := r.String("source_document_type"); ok {
-		m.SourceDocumentType = v
-	}
-	if v, ok := r.String("source_document_id"); ok {
-		m.SourceDocumentId = v
-	}
-	if v, ok := r.String("note"); ok {
-		m.Note = v
-	}
-	if v, ok := r.Int("created_at"); ok {
-		m.CreatedAt = time.Nano(v)
-	}
-	if v, ok := r.String("created_by"); ok {
-		m.CreatedBy = v
-	}
+	if v, ok := r.String("id"); ok { m.Id = v }
+	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
+	if v, ok := r.String("batch_id"); ok { m.BatchId = v }
+	if v, ok := r.String("location_id"); ok { m.LocationId = v }
+	if v, ok := r.String("movement_type"); ok { m.MovementType = v }
+	if v, ok := r.Float("quantity"); ok { m.Quantity = v }
+	if v, ok := r.String("source_document_type"); ok { m.SourceDocumentType = v }
+	if v, ok := r.String("source_document_id"); ok { m.SourceDocumentId = v }
+	if v, ok := r.String("note"); ok { m.Note = v }
+	if v, ok := r.Int("created_at"); ok { m.CreatedAt = time.Nano(v) }
+	if v, ok := r.String("created_by"); ok { m.CreatedBy = v }
 }
 
 type PharmacyMovementList []*PharmacyMovement
 
-func (s *PharmacyMovementList) Len() int               { return len(*s) }
+func (s *PharmacyMovementList) Len() int             { return len(*s) }
 func (s *PharmacyMovementList) At(i int) model.Fielder { return (*s)[i] }
-func (s *PharmacyMovementList) Append() model.Fielder {
-	v := &PharmacyMovement{}
-	*s = append(*s, v)
-	return v
-}
-func (s *PharmacyMovementList) IsNil() bool                      { return s == nil }
+func (s *PharmacyMovementList) Append() model.Fielder  { v := &PharmacyMovement{}; *s = append(*s, v); return v }
+func (s *PharmacyMovementList) IsNil() bool          { return s == nil }
 func (s *PharmacyMovementList) EncodeFields(_ model.FieldWriter) {}
 func (s *PharmacyMovementList) DecodeFields(_ model.FieldReader) {}
 
@@ -629,30 +484,33 @@ func (m *PharmacyMovement) Validate(action byte) error {
 	return model.ValidateFields(action, m)
 }
 
+func (*PharmacyMovement) Allow() model.Action     { return PharmacyMovementModel.Allow }
+func (*PharmacyMovementList) Allow() model.Action { return PharmacyMovementModel.Allow }
+
 var PharmacyMovement_ = struct {
-	Id                 string
-	TenantId           string
-	BatchId            string
-	LocationId         string
-	MovementType       string
-	Quantity           string
+	Id string
+	TenantId string
+	BatchId string
+	LocationId string
+	MovementType string
+	Quantity string
 	SourceDocumentType string
-	SourceDocumentId   string
-	Note               string
-	CreatedAt          string
-	CreatedBy          string
+	SourceDocumentId string
+	Note string
+	CreatedAt string
+	CreatedBy string
 }{
-	Id:                 "id",
-	TenantId:           "tenant_id",
-	BatchId:            "batch_id",
-	LocationId:         "location_id",
-	MovementType:       "movement_type",
-	Quantity:           "quantity",
+	Id: "id",
+	TenantId: "tenant_id",
+	BatchId: "batch_id",
+	LocationId: "location_id",
+	MovementType: "movement_type",
+	Quantity: "quantity",
 	SourceDocumentType: "source_document_type",
-	SourceDocumentId:   "source_document_id",
-	Note:               "note",
-	CreatedAt:          "created_at",
-	CreatedBy:          "created_by",
+	SourceDocumentId: "source_document_id",
+	Note: "note",
+	CreatedAt: "created_at",
+	CreatedBy: "created_by",
 }
 
 func ReadOnePharmacyMovement(qb *orm.QB, model *PharmacyMovement) (*PharmacyMovement, error) {
@@ -679,211 +537,181 @@ func (m *PharmacyMovement) SchemaExt() []model.FieldExt {
 	}
 }
 
-type ListProductsArgs struct {
-	TenantId   string
-	ActiveOnly bool
-	Limit      int64
-	Offset     int64
-}
-
-func (m *ListProductsArgs) ModelName() string { return "list_products_args" }
-
-func (m *ListProductsArgs) Schema() []model.Field { return ListProductsArgsModel.Fields }
-
-func (m *ListProductsArgs) Pointers() []any {
-	return []any{&m.TenantId, &m.ActiveOnly, &m.Limit, &m.Offset}
-}
-
-func (m *ListProductsArgs) IsNil() bool { return m == nil }
-
-func (m *ListProductsArgs) EncodeFields(w model.FieldWriter) {
-	w.String("tenant_id", m.TenantId)
-	w.Bool("active_only", m.ActiveOnly)
-	w.Int("limit", m.Limit)
-	w.Int("offset", m.Offset)
-}
-
-func (m *ListProductsArgs) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.Bool("active_only"); ok {
-		m.ActiveOnly = v
-	}
-	if v, ok := r.Int("limit"); ok {
-		m.Limit = v
-	}
-	if v, ok := r.Int("offset"); ok {
-		m.Offset = v
-	}
-}
-
-type ListProductsArgsList []*ListProductsArgs
-
-func (s *ListProductsArgsList) Len() int               { return len(*s) }
-func (s *ListProductsArgsList) At(i int) model.Fielder { return (*s)[i] }
-func (s *ListProductsArgsList) Append() model.Fielder {
-	v := &ListProductsArgs{}
-	*s = append(*s, v)
-	return v
-}
-func (s *ListProductsArgsList) IsNil() bool                      { return s == nil }
-func (s *ListProductsArgsList) EncodeFields(_ model.FieldWriter) {}
-func (s *ListProductsArgsList) DecodeFields(_ model.FieldReader) {}
-
-func (m *ListProductsArgs) Validate(action byte) error {
-	return model.ValidateFields(action, m)
-}
-
-type IdArgs struct {
+type PharmacyOperation struct {
+	Id string
 	TenantId string
-	Id       string
-}
-
-func (m *IdArgs) ModelName() string { return "id_args" }
-
-func (m *IdArgs) Schema() []model.Field { return IdArgsModel.Fields }
-
-func (m *IdArgs) Pointers() []any { return []any{&m.TenantId, &m.Id} }
-
-func (m *IdArgs) IsNil() bool { return m == nil }
-
-func (m *IdArgs) EncodeFields(w model.FieldWriter) {
-	w.String("tenant_id", m.TenantId)
-	w.String("id", m.Id)
-}
-
-func (m *IdArgs) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("id"); ok {
-		m.Id = v
-	}
-}
-
-type IdArgsList []*IdArgs
-
-func (s *IdArgsList) Len() int                         { return len(*s) }
-func (s *IdArgsList) At(i int) model.Fielder           { return (*s)[i] }
-func (s *IdArgsList) Append() model.Fielder            { v := &IdArgs{}; *s = append(*s, v); return v }
-func (s *IdArgsList) IsNil() bool                      { return s == nil }
-func (s *IdArgsList) EncodeFields(_ model.FieldWriter) {}
-func (s *IdArgsList) DecodeFields(_ model.FieldReader) {}
-
-func (m *IdArgs) Validate(action byte) error {
-	return model.ValidateFields(action, m)
-}
-
-type ListLocationsArgs struct {
-	TenantId   string
-	ActiveOnly bool
-}
-
-func (m *ListLocationsArgs) ModelName() string { return "list_locations_args" }
-
-func (m *ListLocationsArgs) Schema() []model.Field { return ListLocationsArgsModel.Fields }
-
-func (m *ListLocationsArgs) Pointers() []any { return []any{&m.TenantId, &m.ActiveOnly} }
-
-func (m *ListLocationsArgs) IsNil() bool { return m == nil }
-
-func (m *ListLocationsArgs) EncodeFields(w model.FieldWriter) {
-	w.String("tenant_id", m.TenantId)
-	w.Bool("active_only", m.ActiveOnly)
-}
-
-func (m *ListLocationsArgs) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.Bool("active_only"); ok {
-		m.ActiveOnly = v
-	}
-}
-
-type ListLocationsArgsList []*ListLocationsArgs
-
-func (s *ListLocationsArgsList) Len() int               { return len(*s) }
-func (s *ListLocationsArgsList) At(i int) model.Fielder { return (*s)[i] }
-func (s *ListLocationsArgsList) Append() model.Fielder {
-	v := &ListLocationsArgs{}
-	*s = append(*s, v)
-	return v
-}
-func (s *ListLocationsArgsList) IsNil() bool                      { return s == nil }
-func (s *ListLocationsArgsList) EncodeFields(_ model.FieldWriter) {}
-func (s *ListLocationsArgsList) DecodeFields(_ model.FieldReader) {}
-
-func (m *ListLocationsArgs) Validate(action byte) error {
-	return model.ValidateFields(action, m)
-}
-
-type ListBatchesArgs struct {
-	TenantId  string
+	Kind string
 	ProductId string
+	LocationId string
+	BatchNumber string
+	ExpirationDate time.Unix
+	UnitCost int64
+	Quantity float64
+	SourceDocumentType string
+	SourceDocumentId string
+	Note string
+	CreatedBy string
+	BatchId string
+	MovementType string
+	FromLocationId string
+	ToLocationId string
+	ActorId string
+	MovementIds string
+	CreatedAt time.Nano
 }
 
-func (m *ListBatchesArgs) ModelName() string { return "list_batches_args" }
+func (m *PharmacyOperation) ModelName() string { return "pharmacy_operation" }
 
-func (m *ListBatchesArgs) Schema() []model.Field { return ListBatchesArgsModel.Fields }
+func (m *PharmacyOperation) Schema() []model.Field { return PharmacyOperationModel.Fields }
 
-func (m *ListBatchesArgs) Pointers() []any { return []any{&m.TenantId, &m.ProductId} }
+func (m *PharmacyOperation) Pointers() []any { return []any{&m.Id, &m.TenantId, &m.Kind, &m.ProductId, &m.LocationId, &m.BatchNumber, (*int64)(&m.ExpirationDate), &m.UnitCost, &m.Quantity, &m.SourceDocumentType, &m.SourceDocumentId, &m.Note, &m.CreatedBy, &m.BatchId, &m.MovementType, &m.FromLocationId, &m.ToLocationId, &m.ActorId, &m.MovementIds, (*int64)(&m.CreatedAt)} }
 
-func (m *ListBatchesArgs) IsNil() bool { return m == nil }
+func (m *PharmacyOperation) IsNil() bool { return m == nil }
 
-func (m *ListBatchesArgs) EncodeFields(w model.FieldWriter) {
+func (m *PharmacyOperation) EncodeFields(w model.FieldWriter) {
+	if m.Id != "" { w.String("id", m.Id) }
 	w.String("tenant_id", m.TenantId)
-	w.String("product_id", m.ProductId)
+	w.String("kind", m.Kind)
+	if m.ProductId != "" { w.String("product_id", m.ProductId) }
+	if m.LocationId != "" { w.String("location_id", m.LocationId) }
+	if m.BatchNumber != "" { w.String("batch_number", m.BatchNumber) }
+	if m.ExpirationDate != 0 { w.Int("expiration_date", int64(m.ExpirationDate)) }
+	if m.UnitCost != 0 { w.Int("unit_cost", m.UnitCost) }
+	if m.Quantity != 0 { w.Float("quantity", m.Quantity) }
+	if m.SourceDocumentType != "" { w.String("source_document_type", m.SourceDocumentType) }
+	if m.SourceDocumentId != "" { w.String("source_document_id", m.SourceDocumentId) }
+	if m.Note != "" { w.String("note", m.Note) }
+	if m.CreatedBy != "" { w.String("created_by", m.CreatedBy) }
+	if m.BatchId != "" { w.String("batch_id", m.BatchId) }
+	if m.MovementType != "" { w.String("movement_type", m.MovementType) }
+	if m.FromLocationId != "" { w.String("from_location_id", m.FromLocationId) }
+	if m.ToLocationId != "" { w.String("to_location_id", m.ToLocationId) }
+	w.String("actor_id", m.ActorId)
+	w.String("movement_ids", m.MovementIds)
+	w.Int("created_at", int64(m.CreatedAt))
 }
 
-func (m *ListBatchesArgs) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("product_id"); ok {
-		m.ProductId = v
-	}
+func (m *PharmacyOperation) DecodeFields(r model.FieldReader) {
+	if v, ok := r.String("id"); ok { m.Id = v }
+	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
+	if v, ok := r.String("kind"); ok { m.Kind = v }
+	if v, ok := r.String("product_id"); ok { m.ProductId = v }
+	if v, ok := r.String("location_id"); ok { m.LocationId = v }
+	if v, ok := r.String("batch_number"); ok { m.BatchNumber = v }
+	if v, ok := r.Int("expiration_date"); ok { m.ExpirationDate = time.Unix(v) }
+	if v, ok := r.Int("unit_cost"); ok { m.UnitCost = v }
+	if v, ok := r.Float("quantity"); ok { m.Quantity = v }
+	if v, ok := r.String("source_document_type"); ok { m.SourceDocumentType = v }
+	if v, ok := r.String("source_document_id"); ok { m.SourceDocumentId = v }
+	if v, ok := r.String("note"); ok { m.Note = v }
+	if v, ok := r.String("created_by"); ok { m.CreatedBy = v }
+	if v, ok := r.String("batch_id"); ok { m.BatchId = v }
+	if v, ok := r.String("movement_type"); ok { m.MovementType = v }
+	if v, ok := r.String("from_location_id"); ok { m.FromLocationId = v }
+	if v, ok := r.String("to_location_id"); ok { m.ToLocationId = v }
+	if v, ok := r.String("actor_id"); ok { m.ActorId = v }
+	if v, ok := r.String("movement_ids"); ok { m.MovementIds = v }
+	if v, ok := r.Int("created_at"); ok { m.CreatedAt = time.Nano(v) }
 }
 
-type ListBatchesArgsList []*ListBatchesArgs
+type PharmacyOperationList []*PharmacyOperation
 
-func (s *ListBatchesArgsList) Len() int               { return len(*s) }
-func (s *ListBatchesArgsList) At(i int) model.Fielder { return (*s)[i] }
-func (s *ListBatchesArgsList) Append() model.Fielder {
-	v := &ListBatchesArgs{}
-	*s = append(*s, v)
-	return v
-}
-func (s *ListBatchesArgsList) IsNil() bool                      { return s == nil }
-func (s *ListBatchesArgsList) EncodeFields(_ model.FieldWriter) {}
-func (s *ListBatchesArgsList) DecodeFields(_ model.FieldReader) {}
+func (s *PharmacyOperationList) Len() int             { return len(*s) }
+func (s *PharmacyOperationList) At(i int) model.Fielder { return (*s)[i] }
+func (s *PharmacyOperationList) Append() model.Fielder  { v := &PharmacyOperation{}; *s = append(*s, v); return v }
+func (s *PharmacyOperationList) IsNil() bool          { return s == nil }
+func (s *PharmacyOperationList) EncodeFields(_ model.FieldWriter) {}
+func (s *PharmacyOperationList) DecodeFields(_ model.FieldReader) {}
 
-func (m *ListBatchesArgs) Validate(action byte) error {
+func (m *PharmacyOperation) Validate(action byte) error {
 	return model.ValidateFields(action, m)
+}
+
+func (*PharmacyOperation) Allow() model.Action     { return PharmacyOperationModel.Allow }
+func (*PharmacyOperationList) Allow() model.Action { return PharmacyOperationModel.Allow }
+
+var PharmacyOperation_ = struct {
+	Id string
+	TenantId string
+	Kind string
+	ProductId string
+	LocationId string
+	BatchNumber string
+	ExpirationDate string
+	UnitCost string
+	Quantity string
+	SourceDocumentType string
+	SourceDocumentId string
+	Note string
+	CreatedBy string
+	BatchId string
+	MovementType string
+	FromLocationId string
+	ToLocationId string
+	ActorId string
+	MovementIds string
+	CreatedAt string
+}{
+	Id: "id",
+	TenantId: "tenant_id",
+	Kind: "kind",
+	ProductId: "product_id",
+	LocationId: "location_id",
+	BatchNumber: "batch_number",
+	ExpirationDate: "expiration_date",
+	UnitCost: "unit_cost",
+	Quantity: "quantity",
+	SourceDocumentType: "source_document_type",
+	SourceDocumentId: "source_document_id",
+	Note: "note",
+	CreatedBy: "created_by",
+	BatchId: "batch_id",
+	MovementType: "movement_type",
+	FromLocationId: "from_location_id",
+	ToLocationId: "to_location_id",
+	ActorId: "actor_id",
+	MovementIds: "movement_ids",
+	CreatedAt: "created_at",
+}
+
+func ReadOnePharmacyOperation(qb *orm.QB, model *PharmacyOperation) (*PharmacyOperation, error) {
+	err := qb.ReadOne()
+	if err != nil {
+		return nil, err
+	}
+	return model, nil
+}
+
+func ReadAllPharmacyOperation(qb *orm.QB) (PharmacyOperationList, error) {
+	var results PharmacyOperationList
+	err := qb.ReadAll(
+		func() model.Model { return &PharmacyOperation{} },
+		func(m model.Model) { results = append(results, m.(*PharmacyOperation)) },
+	)
+	return results, err
 }
 
 type ReceiveStockArgs struct {
-	TenantId           string
-	ProductId          string
-	LocationId         string
-	BatchNumber        string
-	ExpirationDate     time.Unix
-	UnitCost           int64
-	Quantity           float64
+	TenantId string
+	ProductId string
+	LocationId string
+	BatchNumber string
+	ExpirationDate time.Unix
+	UnitCost int64
+	Quantity float64
 	SourceDocumentType string
-	SourceDocumentId   string
-	Note               string
-	CreatedBy          string
+	SourceDocumentId string
+	Note string
+	CreatedBy string
 }
 
 func (m *ReceiveStockArgs) ModelName() string { return "receive_stock_args" }
 
+func (m *ReceiveStockArgs) Wire() bool { return true }
+
 func (m *ReceiveStockArgs) Schema() []model.Field { return ReceiveStockArgsModel.Fields }
 
-func (m *ReceiveStockArgs) Pointers() []any {
-	return []any{&m.TenantId, &m.ProductId, &m.LocationId, &m.BatchNumber, (*int64)(&m.ExpirationDate), &m.UnitCost, &m.Quantity, &m.SourceDocumentType, &m.SourceDocumentId, &m.Note, &m.CreatedBy}
-}
+func (m *ReceiveStockArgs) Pointers() []any { return []any{&m.TenantId, &m.ProductId, &m.LocationId, &m.BatchNumber, (*int64)(&m.ExpirationDate), &m.UnitCost, &m.Quantity, &m.SourceDocumentType, &m.SourceDocumentId, &m.Note, &m.CreatedBy} }
 
 func (m *ReceiveStockArgs) IsNil() bool { return m == nil }
 
@@ -902,51 +730,25 @@ func (m *ReceiveStockArgs) EncodeFields(w model.FieldWriter) {
 }
 
 func (m *ReceiveStockArgs) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("product_id"); ok {
-		m.ProductId = v
-	}
-	if v, ok := r.String("location_id"); ok {
-		m.LocationId = v
-	}
-	if v, ok := r.String("batch_number"); ok {
-		m.BatchNumber = v
-	}
-	if v, ok := r.Int("expiration_date"); ok {
-		m.ExpirationDate = time.Unix(v)
-	}
-	if v, ok := r.Int("unit_cost"); ok {
-		m.UnitCost = v
-	}
-	if v, ok := r.Float("quantity"); ok {
-		m.Quantity = v
-	}
-	if v, ok := r.String("source_document_type"); ok {
-		m.SourceDocumentType = v
-	}
-	if v, ok := r.String("source_document_id"); ok {
-		m.SourceDocumentId = v
-	}
-	if v, ok := r.String("note"); ok {
-		m.Note = v
-	}
-	if v, ok := r.String("created_by"); ok {
-		m.CreatedBy = v
-	}
+	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
+	if v, ok := r.String("product_id"); ok { m.ProductId = v }
+	if v, ok := r.String("location_id"); ok { m.LocationId = v }
+	if v, ok := r.String("batch_number"); ok { m.BatchNumber = v }
+	if v, ok := r.Int("expiration_date"); ok { m.ExpirationDate = time.Unix(v) }
+	if v, ok := r.Int("unit_cost"); ok { m.UnitCost = v }
+	if v, ok := r.Float("quantity"); ok { m.Quantity = v }
+	if v, ok := r.String("source_document_type"); ok { m.SourceDocumentType = v }
+	if v, ok := r.String("source_document_id"); ok { m.SourceDocumentId = v }
+	if v, ok := r.String("note"); ok { m.Note = v }
+	if v, ok := r.String("created_by"); ok { m.CreatedBy = v }
 }
 
 type ReceiveStockArgsList []*ReceiveStockArgs
 
-func (s *ReceiveStockArgsList) Len() int               { return len(*s) }
+func (s *ReceiveStockArgsList) Len() int             { return len(*s) }
 func (s *ReceiveStockArgsList) At(i int) model.Fielder { return (*s)[i] }
-func (s *ReceiveStockArgsList) Append() model.Fielder {
-	v := &ReceiveStockArgs{}
-	*s = append(*s, v)
-	return v
-}
-func (s *ReceiveStockArgsList) IsNil() bool                      { return s == nil }
+func (s *ReceiveStockArgsList) Append() model.Fielder  { v := &ReceiveStockArgs{}; *s = append(*s, v); return v }
+func (s *ReceiveStockArgsList) IsNil() bool          { return s == nil }
 func (s *ReceiveStockArgsList) EncodeFields(_ model.FieldWriter) {}
 func (s *ReceiveStockArgsList) DecodeFields(_ model.FieldReader) {}
 
@@ -955,22 +757,22 @@ func (m *ReceiveStockArgs) Validate(action byte) error {
 }
 
 type RegisterEntryArgs struct {
-	TenantId   string
-	ProductId  string
+	TenantId string
+	ProductId string
 	LocationId string
-	BatchId    string
-	Quantity   float64
-	Note       string
-	CreatedBy  string
+	BatchId string
+	Quantity float64
+	Note string
+	CreatedBy string
 }
 
 func (m *RegisterEntryArgs) ModelName() string { return "register_entry_args" }
 
+func (m *RegisterEntryArgs) Wire() bool { return true }
+
 func (m *RegisterEntryArgs) Schema() []model.Field { return RegisterEntryArgsModel.Fields }
 
-func (m *RegisterEntryArgs) Pointers() []any {
-	return []any{&m.TenantId, &m.ProductId, &m.LocationId, &m.BatchId, &m.Quantity, &m.Note, &m.CreatedBy}
-}
+func (m *RegisterEntryArgs) Pointers() []any { return []any{&m.TenantId, &m.ProductId, &m.LocationId, &m.BatchId, &m.Quantity, &m.Note, &m.CreatedBy} }
 
 func (m *RegisterEntryArgs) IsNil() bool { return m == nil }
 
@@ -985,39 +787,21 @@ func (m *RegisterEntryArgs) EncodeFields(w model.FieldWriter) {
 }
 
 func (m *RegisterEntryArgs) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("product_id"); ok {
-		m.ProductId = v
-	}
-	if v, ok := r.String("location_id"); ok {
-		m.LocationId = v
-	}
-	if v, ok := r.String("batch_id"); ok {
-		m.BatchId = v
-	}
-	if v, ok := r.Float("quantity"); ok {
-		m.Quantity = v
-	}
-	if v, ok := r.String("note"); ok {
-		m.Note = v
-	}
-	if v, ok := r.String("created_by"); ok {
-		m.CreatedBy = v
-	}
+	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
+	if v, ok := r.String("product_id"); ok { m.ProductId = v }
+	if v, ok := r.String("location_id"); ok { m.LocationId = v }
+	if v, ok := r.String("batch_id"); ok { m.BatchId = v }
+	if v, ok := r.Float("quantity"); ok { m.Quantity = v }
+	if v, ok := r.String("note"); ok { m.Note = v }
+	if v, ok := r.String("created_by"); ok { m.CreatedBy = v }
 }
 
 type RegisterEntryArgsList []*RegisterEntryArgs
 
-func (s *RegisterEntryArgsList) Len() int               { return len(*s) }
+func (s *RegisterEntryArgsList) Len() int             { return len(*s) }
 func (s *RegisterEntryArgsList) At(i int) model.Fielder { return (*s)[i] }
-func (s *RegisterEntryArgsList) Append() model.Fielder {
-	v := &RegisterEntryArgs{}
-	*s = append(*s, v)
-	return v
-}
-func (s *RegisterEntryArgsList) IsNil() bool                      { return s == nil }
+func (s *RegisterEntryArgsList) Append() model.Fielder  { v := &RegisterEntryArgs{}; *s = append(*s, v); return v }
+func (s *RegisterEntryArgsList) IsNil() bool          { return s == nil }
 func (s *RegisterEntryArgsList) EncodeFields(_ model.FieldWriter) {}
 func (s *RegisterEntryArgsList) DecodeFields(_ model.FieldReader) {}
 
@@ -1026,25 +810,25 @@ func (m *RegisterEntryArgs) Validate(action byte) error {
 }
 
 type RegisterOutputArgs struct {
-	TenantId           string
-	ProductId          string
-	LocationId         string
-	Quantity           float64
-	MovementType       string
-	BatchId            string
+	TenantId string
+	ProductId string
+	LocationId string
+	Quantity float64
+	MovementType string
+	BatchId string
 	SourceDocumentType string
-	SourceDocumentId   string
-	Note               string
-	CreatedBy          string
+	SourceDocumentId string
+	Note string
+	CreatedBy string
 }
 
 func (m *RegisterOutputArgs) ModelName() string { return "register_output_args" }
 
+func (m *RegisterOutputArgs) Wire() bool { return true }
+
 func (m *RegisterOutputArgs) Schema() []model.Field { return RegisterOutputArgsModel.Fields }
 
-func (m *RegisterOutputArgs) Pointers() []any {
-	return []any{&m.TenantId, &m.ProductId, &m.LocationId, &m.Quantity, &m.MovementType, &m.BatchId, &m.SourceDocumentType, &m.SourceDocumentId, &m.Note, &m.CreatedBy}
-}
+func (m *RegisterOutputArgs) Pointers() []any { return []any{&m.TenantId, &m.ProductId, &m.LocationId, &m.Quantity, &m.MovementType, &m.BatchId, &m.SourceDocumentType, &m.SourceDocumentId, &m.Note, &m.CreatedBy} }
 
 func (m *RegisterOutputArgs) IsNil() bool { return m == nil }
 
@@ -1062,48 +846,24 @@ func (m *RegisterOutputArgs) EncodeFields(w model.FieldWriter) {
 }
 
 func (m *RegisterOutputArgs) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("product_id"); ok {
-		m.ProductId = v
-	}
-	if v, ok := r.String("location_id"); ok {
-		m.LocationId = v
-	}
-	if v, ok := r.Float("quantity"); ok {
-		m.Quantity = v
-	}
-	if v, ok := r.String("movement_type"); ok {
-		m.MovementType = v
-	}
-	if v, ok := r.String("batch_id"); ok {
-		m.BatchId = v
-	}
-	if v, ok := r.String("source_document_type"); ok {
-		m.SourceDocumentType = v
-	}
-	if v, ok := r.String("source_document_id"); ok {
-		m.SourceDocumentId = v
-	}
-	if v, ok := r.String("note"); ok {
-		m.Note = v
-	}
-	if v, ok := r.String("created_by"); ok {
-		m.CreatedBy = v
-	}
+	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
+	if v, ok := r.String("product_id"); ok { m.ProductId = v }
+	if v, ok := r.String("location_id"); ok { m.LocationId = v }
+	if v, ok := r.Float("quantity"); ok { m.Quantity = v }
+	if v, ok := r.String("movement_type"); ok { m.MovementType = v }
+	if v, ok := r.String("batch_id"); ok { m.BatchId = v }
+	if v, ok := r.String("source_document_type"); ok { m.SourceDocumentType = v }
+	if v, ok := r.String("source_document_id"); ok { m.SourceDocumentId = v }
+	if v, ok := r.String("note"); ok { m.Note = v }
+	if v, ok := r.String("created_by"); ok { m.CreatedBy = v }
 }
 
 type RegisterOutputArgsList []*RegisterOutputArgs
 
-func (s *RegisterOutputArgsList) Len() int               { return len(*s) }
+func (s *RegisterOutputArgsList) Len() int             { return len(*s) }
 func (s *RegisterOutputArgsList) At(i int) model.Fielder { return (*s)[i] }
-func (s *RegisterOutputArgsList) Append() model.Fielder {
-	v := &RegisterOutputArgs{}
-	*s = append(*s, v)
-	return v
-}
-func (s *RegisterOutputArgsList) IsNil() bool                      { return s == nil }
+func (s *RegisterOutputArgsList) Append() model.Fielder  { v := &RegisterOutputArgs{}; *s = append(*s, v); return v }
+func (s *RegisterOutputArgsList) IsNil() bool          { return s == nil }
 func (s *RegisterOutputArgsList) EncodeFields(_ model.FieldWriter) {}
 func (s *RegisterOutputArgsList) DecodeFields(_ model.FieldReader) {}
 
@@ -1112,22 +872,22 @@ func (m *RegisterOutputArgs) Validate(action byte) error {
 }
 
 type TransferStockArgs struct {
-	TenantId       string
-	ProductId      string
+	TenantId string
+	ProductId string
 	FromLocationId string
-	ToLocationId   string
-	Quantity       float64
-	Note           string
-	CreatedBy      string
+	ToLocationId string
+	Quantity float64
+	Note string
+	CreatedBy string
 }
 
 func (m *TransferStockArgs) ModelName() string { return "transfer_stock_args" }
 
+func (m *TransferStockArgs) Wire() bool { return true }
+
 func (m *TransferStockArgs) Schema() []model.Field { return TransferStockArgsModel.Fields }
 
-func (m *TransferStockArgs) Pointers() []any {
-	return []any{&m.TenantId, &m.ProductId, &m.FromLocationId, &m.ToLocationId, &m.Quantity, &m.Note, &m.CreatedBy}
-}
+func (m *TransferStockArgs) Pointers() []any { return []any{&m.TenantId, &m.ProductId, &m.FromLocationId, &m.ToLocationId, &m.Quantity, &m.Note, &m.CreatedBy} }
 
 func (m *TransferStockArgs) IsNil() bool { return m == nil }
 
@@ -1142,39 +902,21 @@ func (m *TransferStockArgs) EncodeFields(w model.FieldWriter) {
 }
 
 func (m *TransferStockArgs) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("product_id"); ok {
-		m.ProductId = v
-	}
-	if v, ok := r.String("from_location_id"); ok {
-		m.FromLocationId = v
-	}
-	if v, ok := r.String("to_location_id"); ok {
-		m.ToLocationId = v
-	}
-	if v, ok := r.Float("quantity"); ok {
-		m.Quantity = v
-	}
-	if v, ok := r.String("note"); ok {
-		m.Note = v
-	}
-	if v, ok := r.String("created_by"); ok {
-		m.CreatedBy = v
-	}
+	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
+	if v, ok := r.String("product_id"); ok { m.ProductId = v }
+	if v, ok := r.String("from_location_id"); ok { m.FromLocationId = v }
+	if v, ok := r.String("to_location_id"); ok { m.ToLocationId = v }
+	if v, ok := r.Float("quantity"); ok { m.Quantity = v }
+	if v, ok := r.String("note"); ok { m.Note = v }
+	if v, ok := r.String("created_by"); ok { m.CreatedBy = v }
 }
 
 type TransferStockArgsList []*TransferStockArgs
 
-func (s *TransferStockArgsList) Len() int               { return len(*s) }
+func (s *TransferStockArgsList) Len() int             { return len(*s) }
 func (s *TransferStockArgsList) At(i int) model.Fielder { return (*s)[i] }
-func (s *TransferStockArgsList) Append() model.Fielder {
-	v := &TransferStockArgs{}
-	*s = append(*s, v)
-	return v
-}
-func (s *TransferStockArgsList) IsNil() bool                      { return s == nil }
+func (s *TransferStockArgsList) Append() model.Fielder  { v := &TransferStockArgs{}; *s = append(*s, v); return v }
+func (s *TransferStockArgsList) IsNil() bool          { return s == nil }
 func (s *TransferStockArgsList) EncodeFields(_ model.FieldWriter) {}
 func (s *TransferStockArgsList) DecodeFields(_ model.FieldReader) {}
 
@@ -1182,222 +924,61 @@ func (m *TransferStockArgs) Validate(action byte) error {
 	return model.ValidateFields(action, m)
 }
 
-type ListStockArgs struct {
-	TenantId   string
-	ProductId  string
-	LocationId string
-}
-
-func (m *ListStockArgs) ModelName() string { return "list_stock_args" }
-
-func (m *ListStockArgs) Schema() []model.Field { return ListStockArgsModel.Fields }
-
-func (m *ListStockArgs) Pointers() []any { return []any{&m.TenantId, &m.ProductId, &m.LocationId} }
-
-func (m *ListStockArgs) IsNil() bool { return m == nil }
-
-func (m *ListStockArgs) EncodeFields(w model.FieldWriter) {
-	w.String("tenant_id", m.TenantId)
-	w.String("product_id", m.ProductId)
-	w.String("location_id", m.LocationId)
-}
-
-func (m *ListStockArgs) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("product_id"); ok {
-		m.ProductId = v
-	}
-	if v, ok := r.String("location_id"); ok {
-		m.LocationId = v
-	}
-}
-
-type ListStockArgsList []*ListStockArgs
-
-func (s *ListStockArgsList) Len() int               { return len(*s) }
-func (s *ListStockArgsList) At(i int) model.Fielder { return (*s)[i] }
-func (s *ListStockArgsList) Append() model.Fielder {
-	v := &ListStockArgs{}
-	*s = append(*s, v)
-	return v
-}
-func (s *ListStockArgsList) IsNil() bool                      { return s == nil }
-func (s *ListStockArgsList) EncodeFields(_ model.FieldWriter) {}
-func (s *ListStockArgsList) DecodeFields(_ model.FieldReader) {}
-
-func (m *ListStockArgs) Validate(action byte) error {
-	return model.ValidateFields(action, m)
-}
-
-type ListMovementsArgs struct {
-	TenantId  string
-	ProductId string
-	BatchId   string
-	From      time.Nano
-	To        time.Nano
-	Limit     int64
-}
-
-func (m *ListMovementsArgs) ModelName() string { return "list_movements_args" }
-
-func (m *ListMovementsArgs) Schema() []model.Field { return ListMovementsArgsModel.Fields }
-
-func (m *ListMovementsArgs) Pointers() []any {
-	return []any{&m.TenantId, &m.ProductId, &m.BatchId, (*int64)(&m.From), (*int64)(&m.To), &m.Limit}
-}
-
-func (m *ListMovementsArgs) IsNil() bool { return m == nil }
-
-func (m *ListMovementsArgs) EncodeFields(w model.FieldWriter) {
-	w.String("tenant_id", m.TenantId)
-	w.String("product_id", m.ProductId)
-	w.String("batch_id", m.BatchId)
-	w.Int("from", int64(m.From))
-	w.Int("to", int64(m.To))
-	w.Int("limit", m.Limit)
-}
-
-func (m *ListMovementsArgs) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("product_id"); ok {
-		m.ProductId = v
-	}
-	if v, ok := r.String("batch_id"); ok {
-		m.BatchId = v
-	}
-	if v, ok := r.Int("from"); ok {
-		m.From = time.Nano(v)
-	}
-	if v, ok := r.Int("to"); ok {
-		m.To = time.Nano(v)
-	}
-	if v, ok := r.Int("limit"); ok {
-		m.Limit = v
-	}
-}
-
-type ListMovementsArgsList []*ListMovementsArgs
-
-func (s *ListMovementsArgsList) Len() int               { return len(*s) }
-func (s *ListMovementsArgsList) At(i int) model.Fielder { return (*s)[i] }
-func (s *ListMovementsArgsList) Append() model.Fielder {
-	v := &ListMovementsArgs{}
-	*s = append(*s, v)
-	return v
-}
-func (s *ListMovementsArgsList) IsNil() bool                      { return s == nil }
-func (s *ListMovementsArgsList) EncodeFields(_ model.FieldWriter) {}
-func (s *ListMovementsArgsList) DecodeFields(_ model.FieldReader) {}
-
-func (m *ListMovementsArgs) Validate(action byte) error {
-	return model.ValidateFields(action, m)
-}
-
-type ListExpiringArgs struct {
-	TenantId   string
+type ExpiringFilter struct {
+	TenantId string
 	WithinDays int64
 }
 
-func (m *ListExpiringArgs) ModelName() string { return "list_expiring_args" }
+func (m *ExpiringFilter) ModelName() string { return "expiring_filter" }
 
-func (m *ListExpiringArgs) Schema() []model.Field { return ListExpiringArgsModel.Fields }
+func (m *ExpiringFilter) Wire() bool { return true }
 
-func (m *ListExpiringArgs) Pointers() []any { return []any{&m.TenantId, &m.WithinDays} }
+func (m *ExpiringFilter) Schema() []model.Field { return ExpiringFilterModel.Fields }
 
-func (m *ListExpiringArgs) IsNil() bool { return m == nil }
+func (m *ExpiringFilter) Pointers() []any { return []any{&m.TenantId, &m.WithinDays} }
 
-func (m *ListExpiringArgs) EncodeFields(w model.FieldWriter) {
-	w.String("tenant_id", m.TenantId)
-	w.Int("within_days", m.WithinDays)
+func (m *ExpiringFilter) IsNil() bool { return m == nil }
+
+func (m *ExpiringFilter) EncodeFields(w model.FieldWriter) {
+	if m.TenantId != "" { w.String("tenant_id", m.TenantId) }
+	if m.WithinDays != 0 { w.Int("within_days", m.WithinDays) }
 }
 
-func (m *ListExpiringArgs) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.Int("within_days"); ok {
-		m.WithinDays = v
-	}
+func (m *ExpiringFilter) DecodeFields(r model.FieldReader) {
+	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
+	if v, ok := r.Int("within_days"); ok { m.WithinDays = v }
 }
 
-type ListExpiringArgsList []*ListExpiringArgs
+type ExpiringFilterList []*ExpiringFilter
 
-func (s *ListExpiringArgsList) Len() int               { return len(*s) }
-func (s *ListExpiringArgsList) At(i int) model.Fielder { return (*s)[i] }
-func (s *ListExpiringArgsList) Append() model.Fielder {
-	v := &ListExpiringArgs{}
-	*s = append(*s, v)
-	return v
-}
-func (s *ListExpiringArgsList) IsNil() bool                      { return s == nil }
-func (s *ListExpiringArgsList) EncodeFields(_ model.FieldWriter) {}
-func (s *ListExpiringArgsList) DecodeFields(_ model.FieldReader) {}
+func (s *ExpiringFilterList) Len() int             { return len(*s) }
+func (s *ExpiringFilterList) At(i int) model.Fielder { return (*s)[i] }
+func (s *ExpiringFilterList) Append() model.Fielder  { v := &ExpiringFilter{}; *s = append(*s, v); return v }
+func (s *ExpiringFilterList) IsNil() bool          { return s == nil }
+func (s *ExpiringFilterList) EncodeFields(_ model.FieldWriter) {}
+func (s *ExpiringFilterList) DecodeFields(_ model.FieldReader) {}
 
-func (m *ListExpiringArgs) Validate(action byte) error {
-	return model.ValidateFields(action, m)
-}
-
-type ListLowStockArgs struct {
-	TenantId string
-}
-
-func (m *ListLowStockArgs) ModelName() string { return "list_low_stock_args" }
-
-func (m *ListLowStockArgs) Schema() []model.Field { return ListLowStockArgsModel.Fields }
-
-func (m *ListLowStockArgs) Pointers() []any { return []any{&m.TenantId} }
-
-func (m *ListLowStockArgs) IsNil() bool { return m == nil }
-
-func (m *ListLowStockArgs) EncodeFields(w model.FieldWriter) {
-	w.String("tenant_id", m.TenantId)
-}
-
-func (m *ListLowStockArgs) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-}
-
-type ListLowStockArgsList []*ListLowStockArgs
-
-func (s *ListLowStockArgsList) Len() int               { return len(*s) }
-func (s *ListLowStockArgsList) At(i int) model.Fielder { return (*s)[i] }
-func (s *ListLowStockArgsList) Append() model.Fielder {
-	v := &ListLowStockArgs{}
-	*s = append(*s, v)
-	return v
-}
-func (s *ListLowStockArgsList) IsNil() bool                      { return s == nil }
-func (s *ListLowStockArgsList) EncodeFields(_ model.FieldWriter) {}
-func (s *ListLowStockArgsList) DecodeFields(_ model.FieldReader) {}
-
-func (m *ListLowStockArgs) Validate(action byte) error {
+func (m *ExpiringFilter) Validate(action byte) error {
 	return model.ValidateFields(action, m)
 }
 
 type ExpiringStock struct {
-	ProductId      string
-	ProductName    string
-	BatchId        string
-	BatchNumber    string
-	LocationId     string
-	Quantity       float64
+	ProductId string
+	ProductName string
+	BatchId string
+	BatchNumber string
+	LocationId string
+	Quantity float64
 	ExpirationDate time.Unix
-	Expired        bool
+	Expired bool
+	WithinDays int64
 }
 
 func (m *ExpiringStock) ModelName() string { return "expiring_stock" }
 
 func (m *ExpiringStock) Schema() []model.Field { return ExpiringStockModel.Fields }
 
-func (m *ExpiringStock) Pointers() []any {
-	return []any{&m.ProductId, &m.ProductName, &m.BatchId, &m.BatchNumber, &m.LocationId, &m.Quantity, (*int64)(&m.ExpirationDate), &m.Expired}
-}
+func (m *ExpiringStock) Pointers() []any { return []any{&m.ProductId, &m.ProductName, &m.BatchId, &m.BatchNumber, &m.LocationId, &m.Quantity, (*int64)(&m.ExpirationDate), &m.Expired, &m.WithinDays} }
 
 func (m *ExpiringStock) IsNil() bool { return m == nil }
 
@@ -1410,45 +991,27 @@ func (m *ExpiringStock) EncodeFields(w model.FieldWriter) {
 	w.Float("quantity", m.Quantity)
 	w.Int("expiration_date", int64(m.ExpirationDate))
 	w.Bool("expired", m.Expired)
+	if m.WithinDays != 0 { w.Int("within_days", m.WithinDays) }
 }
 
 func (m *ExpiringStock) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("product_id"); ok {
-		m.ProductId = v
-	}
-	if v, ok := r.String("product_name"); ok {
-		m.ProductName = v
-	}
-	if v, ok := r.String("batch_id"); ok {
-		m.BatchId = v
-	}
-	if v, ok := r.String("batch_number"); ok {
-		m.BatchNumber = v
-	}
-	if v, ok := r.String("location_id"); ok {
-		m.LocationId = v
-	}
-	if v, ok := r.Float("quantity"); ok {
-		m.Quantity = v
-	}
-	if v, ok := r.Int("expiration_date"); ok {
-		m.ExpirationDate = time.Unix(v)
-	}
-	if v, ok := r.Bool("expired"); ok {
-		m.Expired = v
-	}
+	if v, ok := r.String("product_id"); ok { m.ProductId = v }
+	if v, ok := r.String("product_name"); ok { m.ProductName = v }
+	if v, ok := r.String("batch_id"); ok { m.BatchId = v }
+	if v, ok := r.String("batch_number"); ok { m.BatchNumber = v }
+	if v, ok := r.String("location_id"); ok { m.LocationId = v }
+	if v, ok := r.Float("quantity"); ok { m.Quantity = v }
+	if v, ok := r.Int("expiration_date"); ok { m.ExpirationDate = time.Unix(v) }
+	if v, ok := r.Bool("expired"); ok { m.Expired = v }
+	if v, ok := r.Int("within_days"); ok { m.WithinDays = v }
 }
 
 type ExpiringStockList []*ExpiringStock
 
-func (s *ExpiringStockList) Len() int               { return len(*s) }
+func (s *ExpiringStockList) Len() int             { return len(*s) }
 func (s *ExpiringStockList) At(i int) model.Fielder { return (*s)[i] }
-func (s *ExpiringStockList) Append() model.Fielder {
-	v := &ExpiringStock{}
-	*s = append(*s, v)
-	return v
-}
-func (s *ExpiringStockList) IsNil() bool                      { return s == nil }
+func (s *ExpiringStockList) Append() model.Fielder  { v := &ExpiringStock{}; *s = append(*s, v); return v }
+func (s *ExpiringStockList) IsNil() bool          { return s == nil }
 func (s *ExpiringStockList) EncodeFields(_ model.FieldWriter) {}
 func (s *ExpiringStockList) DecodeFields(_ model.FieldReader) {}
 
@@ -1456,10 +1019,13 @@ func (m *ExpiringStock) Validate(action byte) error {
 	return model.ValidateFields(action, m)
 }
 
+func (*ExpiringStock) Allow() model.Action     { return ExpiringStockModel.Allow }
+func (*ExpiringStockList) Allow() model.Action { return ExpiringStockModel.Allow }
+
 type LowStock struct {
-	ProductId   string
+	ProductId string
 	ProductName string
-	Total       float64
+	Total float64
 	MinQuantity float64
 }
 
@@ -1467,9 +1033,7 @@ func (m *LowStock) ModelName() string { return "low_stock" }
 
 func (m *LowStock) Schema() []model.Field { return LowStockModel.Fields }
 
-func (m *LowStock) Pointers() []any {
-	return []any{&m.ProductId, &m.ProductName, &m.Total, &m.MinQuantity}
-}
+func (m *LowStock) Pointers() []any { return []any{&m.ProductId, &m.ProductName, &m.Total, &m.MinQuantity} }
 
 func (m *LowStock) IsNil() bool { return m == nil }
 
@@ -1481,29 +1045,105 @@ func (m *LowStock) EncodeFields(w model.FieldWriter) {
 }
 
 func (m *LowStock) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("product_id"); ok {
-		m.ProductId = v
-	}
-	if v, ok := r.String("product_name"); ok {
-		m.ProductName = v
-	}
-	if v, ok := r.Float("total"); ok {
-		m.Total = v
-	}
-	if v, ok := r.Float("min_quantity"); ok {
-		m.MinQuantity = v
-	}
+	if v, ok := r.String("product_id"); ok { m.ProductId = v }
+	if v, ok := r.String("product_name"); ok { m.ProductName = v }
+	if v, ok := r.Float("total"); ok { m.Total = v }
+	if v, ok := r.Float("min_quantity"); ok { m.MinQuantity = v }
 }
 
 type LowStockList []*LowStock
 
-func (s *LowStockList) Len() int                         { return len(*s) }
-func (s *LowStockList) At(i int) model.Fielder           { return (*s)[i] }
-func (s *LowStockList) Append() model.Fielder            { v := &LowStock{}; *s = append(*s, v); return v }
-func (s *LowStockList) IsNil() bool                      { return s == nil }
+func (s *LowStockList) Len() int             { return len(*s) }
+func (s *LowStockList) At(i int) model.Fielder { return (*s)[i] }
+func (s *LowStockList) Append() model.Fielder  { v := &LowStock{}; *s = append(*s, v); return v }
+func (s *LowStockList) IsNil() bool          { return s == nil }
 func (s *LowStockList) EncodeFields(_ model.FieldWriter) {}
 func (s *LowStockList) DecodeFields(_ model.FieldReader) {}
 
 func (m *LowStock) Validate(action byte) error {
 	return model.ValidateFields(action, m)
+}
+
+func (*LowStock) Allow() model.Action     { return LowStockModel.Allow }
+func (*LowStockList) Allow() model.Action { return LowStockModel.Allow }
+
+// ModelName is the module identity: Definition.Name.
+const ModelName = "pharmacy_manager"
+
+func (m *Module) ModelName() string { return ModelName }
+
+// Definition is the module's declaration (definition.go); crud.Mount compares it with what MountOperations mounted.
+func (m *Module) Definition() model.ModuleDefinition { return Definition }
+
+// MountOperations offers every entity of the module: the actions its model allows, with crud's validation and the rules written in rule_*.go.
+func (m *Module) MountOperations(reg crud.Registry) {
+	reg.AddStoredEntity(crud.StoredEntity{
+		Model: &PharmacyProduct{},
+		NewList: func() model.ModelSlice { return &PharmacyProductList{} },
+		Store: m.StorePharmacyProduct(),
+		Rules: PharmacyProductModel.Rules,
+		MFA: PharmacyProductModel.MFA,
+		Create: func(a crud.CurrentUser, tx crud.Tx, rec model.Model) (crud.RuleAnswer, error) {
+			return rec.(*PharmacyProduct).Create(a, tx, m)
+		},
+		Update: func(a crud.CurrentUser, tx crud.Tx, old, next model.Model, fields []string) (crud.RuleAnswer, error) {
+			return next.(*PharmacyProduct).Update(a, tx, old.(*PharmacyProduct), fields, m)
+		},
+		Delete: func(a crud.CurrentUser, tx crud.Tx, rec model.Model) (crud.RuleAnswer, error) {
+			return rec.(*PharmacyProduct).Delete(a, tx, m)
+		},
+	})
+	reg.AddStoredEntity(crud.StoredEntity{
+		Model: &PharmacyLocation{},
+		NewList: func() model.ModelSlice { return &PharmacyLocationList{} },
+		Store: m.StorePharmacyLocation(),
+		Rules: PharmacyLocationModel.Rules,
+		MFA: PharmacyLocationModel.MFA,
+		Create: func(a crud.CurrentUser, tx crud.Tx, rec model.Model) (crud.RuleAnswer, error) {
+			return rec.(*PharmacyLocation).Create(a, tx, m)
+		},
+		Update: func(a crud.CurrentUser, tx crud.Tx, old, next model.Model, fields []string) (crud.RuleAnswer, error) {
+			return next.(*PharmacyLocation).Update(a, tx, old.(*PharmacyLocation), fields, m)
+		},
+		Delete: func(a crud.CurrentUser, tx crud.Tx, rec model.Model) (crud.RuleAnswer, error) {
+			return rec.(*PharmacyLocation).Delete(a, tx, m)
+		},
+	})
+	reg.AddStoredEntity(crud.StoredEntity{
+		Model: &PharmacyBatch{},
+		NewList: func() model.ModelSlice { return &PharmacyBatchList{} },
+		Store: m.StorePharmacyBatch(),
+		Rules: PharmacyBatchModel.Rules,
+		MFA: PharmacyBatchModel.MFA,
+	})
+	reg.AddStoredEntity(crud.StoredEntity{
+		Model: &PharmacyStockLevel{},
+		NewList: func() model.ModelSlice { return &PharmacyStockLevelList{} },
+		Store: m.StorePharmacyStockLevel(),
+		Rules: PharmacyStockLevelModel.Rules,
+		MFA: PharmacyStockLevelModel.MFA,
+	})
+	reg.AddStoredEntity(crud.StoredEntity{
+		Model: &PharmacyMovement{},
+		NewList: func() model.ModelSlice { return &PharmacyMovementList{} },
+		Store: m.StorePharmacyMovement(),
+		Rules: PharmacyMovementModel.Rules,
+		MFA: PharmacyMovementModel.MFA,
+	})
+	reg.AddStoredEntity(crud.StoredEntity{
+		Model: &PharmacyOperation{},
+		NewList: func() model.ModelSlice { return &PharmacyOperationList{} },
+		Store: m.StorePharmacyOperation(),
+		Rules: PharmacyOperationModel.Rules,
+		MFA: PharmacyOperationModel.MFA,
+		Create: func(a crud.CurrentUser, tx crud.Tx, rec model.Model) (crud.RuleAnswer, error) {
+			return rec.(*PharmacyOperation).Create(a, tx, m)
+		},
+	})
+	reg.AddReadOnlyEntity(&ExpiringStock{}, nil, func(a crud.CurrentUser, args crud.ReadArgs, _ model.Model) (model.ModelSlice, error) {
+		return (&ExpiringStock{}).Read(a, args, m)
+	})
+	reg.AddReadOnlyEntity(&LowStock{}, nil, func(a crud.CurrentUser, args crud.ReadArgs, _ model.Model) (model.ModelSlice, error) {
+		return (&LowStock{}).Read(a, args, m)
+	})
 }

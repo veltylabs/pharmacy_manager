@@ -3,32 +3,29 @@ module github.com/veltylabs/pharmacy_manager
 go 1.26.8
 
 require (
-	webtyp.com/ddl v0.0.46
-	webtyp.com/dom v0.13.29
-	webtyp.com/events v0.1.0
+	webtyp.com/crud v0.0.11
+	webtyp.com/ddl v0.0.49
+	webtyp.com/events v0.1.8
 	webtyp.com/fmt v1.0.0
-	webtyp.com/html v0.0.30
 	webtyp.com/input v0.0.36
-	webtyp.com/lang v0.1.14
-	webtyp.com/model v0.2.12
+	webtyp.com/lang v0.1.16
+	webtyp.com/model v0.2.18
 	webtyp.com/money v0.2.0
 	webtyp.com/msgtype v0.1.0
 	webtyp.com/notify v0.2.2
-	webtyp.com/orm v0.12.26
-	webtyp.com/router v0.4.17
-	webtyp.com/rpc v0.2.14
+	webtyp.com/orm v0.12.31
+	webtyp.com/router v0.4.21
 	webtyp.com/stock v0.1.4
-	webtyp.com/storage v0.1.18
+	webtyp.com/storage v0.2.1
 	webtyp.com/svg v0.3.30
 	webtyp.com/time v0.6.4
-	webtyp.com/unixid v0.3.1
-	webtyp.com/view v0.6.65
+	webtyp.com/view v0.6.72
 )
 
 require (
 	webtyp.com/calendar v0.1.0 // indirect
+	webtyp.com/definitioncheck v0.0.3 // indirect
+	webtyp.com/dom v0.13.29 // indirect
 	webtyp.com/escape v0.1.0 // indirect
-	webtyp.com/fetch v0.1.29 // indirect
-	webtyp.com/filepath v0.1.0 // indirect
 	webtyp.com/json v0.5.40 // indirect
 )

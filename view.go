@@ -11,23 +11,18 @@ const (
 	titleLocations = "Locations"
 )
 
-// NewProductView construye el Presenter de los productos: el motor que un renderizador (crudview u otro) envuelve. La app elige
-// el renderizador; este módulo solo importa view, model y router.
-// Ejemplo: view := NewProductView(caller)
 func NewProductView(caller router.Caller, opts ...view.Option) view.Presenter {
 	b := view.NewCallerLister(view.NewRecords().Caller(caller),
-		view.Ops{Module: ModelName, List: OpListProducts, Save: OpUpsertProduct, Update: OpUpdateProduct, Delete: OpDeleteProduct, Page: view.Page{First: view.All}},
-		func() model.ModelSlice { return &PharmacyProductList{} })
+		view.Ops{Module: ModelName, Page: view.Page{First: view.All}},
+		func() model.TableSlice { return &PharmacyProductList{} })
 	allOpts := append([]view.Option{view.WithTitle(titleProducts)}, opts...)
 	return view.New(b, &PharmacyProduct{}, allOpts...)
 }
 
-// NewLocationView construye el Presenter de las ubicaciones.
-// Ejemplo: view := NewLocationView(caller)
 func NewLocationView(caller router.Caller, opts ...view.Option) view.Presenter {
 	b := view.NewCallerLister(view.NewRecords().Caller(caller),
-		view.Ops{Module: ModelName, List: OpListLocations, Save: OpUpsertLocation, Update: OpUpdateLocation, Delete: OpDeleteLocation, Page: view.Page{First: view.All}},
-		func() model.ModelSlice { return &PharmacyLocationList{} })
+		view.Ops{Module: ModelName, Page: view.Page{First: view.All}},
+		func() model.TableSlice { return &PharmacyLocationList{} })
 	allOpts := append([]view.Option{view.WithTitle(titleLocations)}, opts...)
 	return view.New(b, &PharmacyLocation{}, allOpts...)
 }

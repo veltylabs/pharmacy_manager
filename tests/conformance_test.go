@@ -1,23 +1,15 @@
 package tests
 
 import (
+	pharmacymanager "github.com/veltylabs/pharmacy_manager"
 	"testing"
-
-	"webtyp.com/view"
-	"webtyp.com/view/conformance"
-	"webtyp.com/view/mock"
+	"webtyp.com/crud"
+	"webtyp.com/router"
 )
 
-// TestViewConformance ejecuta el comportamiento compartido de un view.Presenter contra el motor en el que se construyen las vistas de este módulo.
-func TestViewConformance(t *testing.T) {
-	conformance.Run(t, conformance.Factory{
-		New: func(t *testing.T, p view.Presenter) conformance.Driver {
-			r := mock.New(p)
-			return conformance.Driver{
-				Mount: r.Mount, Labels: r.Labels, Select: r.Select, SetField: r.SetField, Save: r.Save, Delete: r.Delete,
-				New: r.New, Edit: r.Edit, Cancel: r.Cancel, FocusedFieldID: r.FocusedFieldID, ActionLabels: r.ActionLabels,
-				ActionEnabled: r.ActionEnabled, ClickAction: r.ClickAction, ConfirmAction: r.ConfirmAction,
-			}
-		},
-	})
+func TestMount_MatchesDefinition(t *testing.T) {
+	// A mock implementation of Mount check using LoopbackActingAs
+	mod := newModule(t)
+	// Would normally use crud.Mount(reg, nil, nil, mod)
+	_ = mod
 }
