@@ -51,7 +51,7 @@ func (r *recordingCompiler) CompileDDL(s ddl.Stmt, _ model.Model) (string, []any
 
 // migrationModels are this repo's tables in foreign-key order: the order Migrate uses.
 func migrationModels() []model.Model {
-	return []model.Model{&pharmacymanager.PharmacyProduct{}, &pharmacymanager.PharmacyLocation{}, &pharmacymanager.PharmacyBatch{}, &pharmacymanager.PharmacyStockLevel{}, &pharmacymanager.PharmacyMovement{}}
+	return []model.Model{&pharmacymanager.PharmacyProduct{}, &pharmacymanager.PharmacyLocation{}, &pharmacymanager.PharmacyBatch{}, &pharmacymanager.PharmacyStockLevel{}, &pharmacymanager.PharmacyMovement{}, &pharmacymanager.PharmacyOperation{}}
 }
 
 func columnsOf(m model.Model) []string {

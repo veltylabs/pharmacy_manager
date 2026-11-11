@@ -8,6 +8,7 @@ import (
 )
 
 // Data es lo que Load creó, para las demos que se construyen sobre ello.
+// Ejemplo: uso de Data
 type Data struct {
 	Locations []pharmacymanager.PharmacyLocation
 	Products  []pharmacymanager.PharmacyProduct

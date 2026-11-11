@@ -26,6 +26,7 @@ const (
 
 // AlertKinds es el catálogo de alertas que lanza este módulo, para el notify.Registry de la aplicación.
 // area es el código notify.Area de la aplicación (el mismo valor que Deps.AlertArea).
+// Ejemplo: uso de AlertKinds
 func AlertKinds(area string) []notify.Kind {
 	return []notify.Kind{
 		{Code: AlertBelowMinimum, Name: textBelowMinimumName, Help: textBelowMinimumHelp, Area: area},

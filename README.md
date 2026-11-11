@@ -1,103 +1,49 @@
 # pharmacy_manager
 <img src="docs/img/badges.svg">
 
-La farmacia de la clínica, abierta al público: los medicamentos, los lotes en los que vienen (cada lote tiene una fecha de caducidad obligatoria), las ubicaciones en las que se guardan y el libro mayor (solo de anexos) de cada movimiento de existencias. Las reglas de existencias (primero en caducar primero en salir, lotes caducados no utilizados, nunca negativo) provienen de la biblioteca `webtyp.com/stock`.
+## ¿Por qué existe?
+`pharmacy_manager` gestiona la farmacia clínica abierta al público: medicamentos, los lotes en los que vienen con su caducidad, dónde se mantienen y cada movimiento de stock.
+**Sin esto vs. Con esto**: Sin esto la clínica necesitaría herramientas de inventario externas desvinculadas. Con esto se integran las reglas complejas de [stock](https://github.com/webtyp/stock) y operaciones estandarizadas a través de [crud](https://github.com/webtyp/crud), orquestados como describe [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-No es un módulo de ventas, facturación o contabilidad y no sabe nada sobre servicios, especialidades o pacientes. Una venta es un movimiento de salida (`stock.Sale`) que lleva el id del documento que la provocó; el documento pertenece a otro módulo.
+## Antes de comenzar
+Requiere Go configurado y librerías privadas `GOPRIVATE=webtyp.com/*,github.com/veltylabs/*`.
+Instanciar con base de datos `*orm.DB` que contenga las tablas creadas por [migrate/migrate.go](migrate/migrate.go).
+Dependencias de configuración `Deps`: `Deps.IDs` y `Deps.TenantID` son obligatorias. Opcionales: `Deps.Publisher`, `Deps.MoneyScope`, `Deps.AlertArea`.
 
-## Inicio rápido
+## Guía paso a paso
 
+Paso 1:
 ```go
+package main
+
 import (
+	"webtyp.com/orm"
+	"webtyp.com/storage/mem"
 	pharmacymanager "github.com/veltylabs/pharmacy_manager"
-	"webtyp.com/stock"
 )
 
-pm, err := pharmacymanager.New(db, pharmacymanager.Deps{IDs: ids, Publisher: broker, MoneyScope: "pharmacy"})
-if err != nil {
-	return err
+func main() {
+    db := orm.New(mem.New())
+	m, _ := pharmacymanager.New(db, pharmacymanager.Deps{TenantID: "demo", IDs: myIDGen})
+	p, _ := m.CreateProduct(pharmacymanager.PharmacyProduct{Sku: "P1", Name: "Med"})
+	l, _ := m.CreateLocation(pharmacymanager.PharmacyLocation{Name: "Almacen"})
+	m.ReceiveStock(pharmacymanager.ReceiveStockArgs{ProductId: p.Id, LocationId: l.Id, Quantity: 10, BatchNumber: "L1"})
+    // fmt.Print(m.ListStock(...))
 }
-counter, _ := pm.CreateLocation(pharmacymanager.PharmacyLocation{TenantId: tenant, Name: "Mostrador", IsSalesPoint: true, IsActive: true})
-para, _ := pm.CreateProduct(pharmacymanager.PharmacyProduct{
-	TenantId: tenant, Sku: "PARA500", Name: "Paracetamol 500 mg", Unit: pharmacymanager.UnitBox,
-	TaxTreatment: pharmacymanager.TaxTaxed, ForSale: true, Price: 2990, IsActive: true,
-})
-// Las fechas de caducidad son SEGUNDOS Unix; webtyp.com/time.Now() cuenta nanosegundos.
-expiry := time.Now()/1000000000 + 365*stock.SecondsPerDay
-pm.ReceiveStock(pharmacymanager.ReceiveStockArgs{
-	TenantId: tenant, ProductId: para.Id, LocationId: counter.Id, BatchNumber: "L-2026-01",
-	ExpirationDate: expiry, UnitCost: 300, Quantity: 40,
-})
-pm.RegisterOutput(pharmacymanager.RegisterOutputArgs{
-	TenantId: tenant, ProductId: para.Id, LocationId: counter.Id, Quantity: 2,
-	MovementType: string(stock.Sale), SourceDocumentType: "sale", SourceDocumentId: saleID,
-})
 ```
 
-## Operaciones
+Paso 2: También expuesto a través de operaciones asertivas (ver [tests/rules_test.go](tests/rules_test.go)).
+Paso 3: Ver en la interfaz con la demo de webtyp, ver [seed/demo.go](seed/demo.go).
 
-Cada operación se llama `pharmacy.<nombre>` y declara su recurso y acción RBAC en `MountOperations`.
+## Mapa de documentación
+| Orden | Documento | Qué pregunta responde y cuándo leerlo |
+|---|---|---|
+| 1 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Visión general del modelo de datos y diseño. |
+| 2 | [docs/diagrams/STOCK_OPERATION.md](docs/diagrams/STOCK_OPERATION.md) | ¿Qué flujo interno sigue un movimiento de stock? |
+| 3 | [docs/TESTS.md](docs/TESTS.md) | Reglas de dominio implementadas. |
 
-| Operación | Constante | Recurso | Acción |
-|---|---|---|---|
-| `list_products` | `OpListProducts` | `pharmacy_product` | read |
-| `get_product` | `OpGetProduct` | `pharmacy_product` | read |
-| `create_product` | `OpCreateProduct` | `pharmacy_product` | create |
-| `update_product` | `OpUpdateProduct` | `pharmacy_product` | update |
-| `upsert_product` | `OpUpsertProduct` | `pharmacy_product` | create + update |
-| `deactivate_product` | `OpDeactivateProduct` | `pharmacy_product` | update |
-| `delete_product` | `OpDeleteProduct` | `pharmacy_product` | delete |
-| `list_locations` | `OpListLocations` | `pharmacy_location` | read |
-| `upsert_location` | `OpUpsertLocation` | `pharmacy_location` | create + update |
-| `update_location` | `OpUpdateLocation` | `pharmacy_location` | update |
-| `delete_location` | `OpDeleteLocation` | `pharmacy_location` | delete |
-| `list_batches` | `OpListBatches` | `pharmacy_batch` | read |
-| `receive_stock` | `OpReceiveStock` | `pharmacy_movement` | create |
-| `register_entry` | `OpRegisterEntry` | `pharmacy_movement` | create |
-| `register_output` | `OpRegisterOutput` | `pharmacy_movement` | create |
-| `transfer_stock` | `OpTransferStock` | `pharmacy_movement` | create |
-| `list_stock` | `OpListStock` | `pharmacy_stock_level` | read |
-| `list_movements` | `OpListMovements` | `pharmacy_movement` | read |
-| `list_expiring` | `OpListExpiring` | `pharmacy_stock_level` | read |
-| `list_low_stock` | `OpListLowStock` | `pharmacy_stock_level` | read |
-
-## Lectores para otros módulos
-
-`ProductExists(tenantId, productId) (bool, error)` — el producto existe en el inquilino y está activo.
-`ProductCard(tenantId, productId) (name, unit, taxTreatment string, price int64, active bool, err error)` — lo que otro
-módulo captura sobre un producto; un producto ausente o extranjero es `ErrNotFound`. Un módulo que los necesita declara el
-método en una interfaz estrecha propia; `*Module` la satisface sin importar ese módulo.
-
-## Alertas
-
-Con `Deps.AlertArea` y `Deps.Publisher` establecidos, el módulo lanza eventos `notify.Alert` para dos reglas:
-- **Por debajo del mínimo:** Después de una salida, si el stock total de un producto pasa de estar por encima a estar en o por debajo de su `min_quantity`, se lanza una alerta para ese producto (`pharmacy.below_minimum`).
-- **A punto de caducar:** La aplicación llama a `ReviewExpiring(tenantId, withinDays)` una vez al día para revisar los lotes a punto de caducar. Lanza una alerta de resumen (`pharmacy.expiring`) cuando los lotes han caducado o caducan dentro de `withinDays`.
-El catálogo de alertas es devuelto por `AlertKinds(area string)`.
-
-## Datos de costos
-
-Con `Deps.Publisher` y `Deps.MoneyScope` establecidos, cada movimiento de salida cuyo lote tiene un `unit_cost` publica un
-hecho `money.Consumed` a través de `money.Publish`: costo × cantidad en pesos enteros, redondeado a la mitad desde cero (333 × 2,5 =
-833). Un lote sin costo (0) no publica nada. Una compra nunca es un hecho de este módulo. Cada movimiento también
-publica `pharmacy.movement.registered` con el movimiento como carga útil, después de que se confirma la transacción.
-
-## Archivos clave
-
-| Archivo | Qué es |
-|---|---|
-| `model.go`, `model_orm.go` | las cinco tablas y cada modelo de argumento; `model_orm.go` es generado por `ormc`, nunca lo edite |
-| `errors.go` | cada constante de error (todos los mensajes comienzan con `pharmacy: `), `statusOf`, `writeError` |
-| `module.go` | `Deps`, `Module`, `New`, las cuatro operaciones de existencias `ReceiveStock`, `RegisterEntry`, `RegisterOutput`, `TransferStock`, datos de costos y eventos |
-| `crud.go` | actualización, inserción/actualización (upsert), parche, desactivación y eliminación de productos y ubicaciones |
-| `queries.go`, `reports.go` | las listas, `ListExpiring`, `ListLowStock` y los lectores |
-| `ops.go` | nombres de operaciones, las formas de cableado que envía la vista genérica, `MountOperations` y cada manejador |
-| `view.go` | `NewProductView`, `NewLocationView` |
-| `migrate/migrate.go` | concilia el esquema usando ddl.Sync (flujo: https://github.com/webtyp/ddl/blob/main/docs/diagrams/SYNC_FLOW.md) |
-| `ui/`, `seed/`, `web/` | las pantallas, los datos de demostración, la demostración en el navegador |
-| Listas | las listas se cargan según lo declara su `view.Page` y buscan en el servidor. |
-| `lang.json` | Español de las etiquetas y opciones |
-| `conflict_internal_test.go` | la prueba de revisión obsoleta (nivel raíz, justificado) |
-| `tests/` | las pruebas, incluida la suite de conformidad compartida `stocktest` (`ledger_test.go`) |
-
-Más: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/diagrams/database.md](docs/diagrams/database.md).
+Antes / Después de las operaciones CRUD: Todo movimiento expuesto en `pharmacy_operation`.
+Permisos:
+- `pharmacy_product`, `pharmacy_location`: crear, leer, actualizar, borrar.
+- `pharmacy_operation`: crear, leer.
+- `pharmacy_batch`, `pharmacy_stock_level`, `pharmacy_movement`, `expiring_stock`, `low_stock`: leer.

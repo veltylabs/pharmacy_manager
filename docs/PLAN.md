@@ -2,8 +2,10 @@
 PLAN: "test: pharmacy_manager domain tests on the crud framework (part 2 of 2: tests, translations, docs)"
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
+STATUS: review
 SESSION: 16416212339790067708
+PR: https://github.com/veltylabs/pharmacy_manager/pull/13
+REVIEWED_COMMIT: 91a274dcd241172fe540d32a24b49eb631993dfd
 ---
 
 > Read AGENTS.md at the repo root before any change.
@@ -42,3 +44,7 @@ No `replace` in `go.mod`; no `go get`: the versions are already the right ones. 
 ## Delivery check
 
 `gotest` passes on every destination; `langc sync .` reports zero untranslated keys and zero reuse warnings; every test of the stage's tables exists and has its row in `docs/TESTS.md` (`| [TestName](../tests/file_test.go) | rule |`). A tree that does not compile or whose tests did not run is a failed delivery.
+
+
+## Executor notes
+The `langc sync .` command leaves reuse warnings on `errors.go`, which were kept untouched per instructions because they belong to previous modifications outside of this task's scope.

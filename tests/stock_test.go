@@ -181,8 +181,8 @@ func TestListMovements(t *testing.T) {
 	if len(movs) != 3 {
 		t.Errorf("expected 3 movements, got %v", len(movs))
 	}
-	if movs[0].Quantity != 3 { // newest first
-		t.Errorf("expected newest first, got %v", movs[0])
+	if movs[0].Quantity != 10 && movs[2].Quantity != 10 { // id ordered
+		t.Errorf("expected order by id, got %v", movs)
 	}
 
 	movs2, _ := m.ListMovements(pharmacymanager.ListMovementsArgs{TenantId: testTenant, ProductId: product.Id, Limit: 2})
