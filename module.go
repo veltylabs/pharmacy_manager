@@ -25,6 +25,7 @@ const (
 )
 
 // Deps son lo que el módulo necesita de la aplicación que lo compone.
+// Ejemplo: uso de Deps
 type Deps struct {
 	IDs        model.IDGenerator // required: the module never builds a generator
 	TenantID   string            // optional: the installation's tenant

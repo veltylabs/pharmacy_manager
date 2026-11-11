@@ -101,8 +101,8 @@ func TestPatchProducts(t *testing.T) {
 	}
 
 	err = m.PatchProducts([]string{a1.Id}, []string{"bogus"}, pharmacymanager.PharmacyProduct{Name: "Patched Name"})
-	if fErr, ok := err.(*model.FieldError); !ok || fErr.Err != error(pharmacymanager.ErrUnknownField) {
-		t.Errorf("expected ValidationError with ErrUnknownField, got %v", err)
+	if fErr, ok := err.(*model.FieldError); !ok || fErr.Err != error(pharmacymanager.ErrUnknownField) || fErr.Field != "bogus" {
+		t.Errorf("expected ValidationError with ErrUnknownField on field bogus, got %v", err)
 	}
 }
 

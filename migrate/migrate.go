@@ -19,5 +19,6 @@ func Migrate(conn ddl.Execer, ddlCompiler ddl.Compiler) error {
 		&pharmacymanager.PharmacyBatch{},
 		&pharmacymanager.PharmacyStockLevel{},
 		&pharmacymanager.PharmacyMovement{},
+		&pharmacymanager.PharmacyOperation{},
 	)
 }
