@@ -175,11 +175,11 @@ func TestListProducts_PagedAndFiltered(t *testing.T) {
 	m := newModule(t)
 	// A, B, C created in order; B deactivated
 	a := pharmacymanager.PharmacyProduct{TaxTreatment: pharmacymanager.TaxTaxed, TenantId: testTenant, Sku: "1", Name: "A", Unit: "BOX", IsActive: true}
-	a, _ = m.CreateProduct(a)
+	_, _ = m.CreateProduct(a)
 	b := pharmacymanager.PharmacyProduct{TaxTreatment: pharmacymanager.TaxTaxed, TenantId: testTenant, Sku: "2", Name: "B", Unit: "BOX", IsActive: true}
 	b, _ = m.CreateProduct(b)
 	c := pharmacymanager.PharmacyProduct{TaxTreatment: pharmacymanager.TaxTaxed, TenantId: testTenant, Sku: "3", Name: "C", Unit: "BOX", IsActive: true}
-	c, _ = m.CreateProduct(c)
+	_, _ = m.CreateProduct(c)
 
 	_ = m.DeactivateProduct(testTenant, b.Id)
 
