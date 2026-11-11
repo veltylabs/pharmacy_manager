@@ -2,6 +2,8 @@
 PLAN: "test: pharmacy_manager domain tests on the crud framework (part 2 of 2: tests, translations, docs)"
 EXECUTOR: jules
 REVIEWER: none
+STATUS: running
+SESSION: 16416212339790067708
 ---
 
 > Read AGENTS.md at the repo root before any change.
