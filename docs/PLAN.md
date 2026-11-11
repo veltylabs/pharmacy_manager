@@ -2,8 +2,10 @@
 PLAN: "test: pharmacy_manager domain tests on the crud framework (part 2 of 2: tests, translations, docs)"
 EXECUTOR: jules
 REVIEWER: none
-STATUS: done
+STATUS: review
 SESSION: 16416212339790067708
+PR: https://github.com/veltylabs/pharmacy_manager/pull/13
+REVIEWED_COMMIT: 91a274dcd241172fe540d32a24b49eb631993dfd
 ---
 
 > Read AGENTS.md at the repo root before any change.
