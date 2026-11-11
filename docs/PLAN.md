@@ -2,8 +2,10 @@
 PLAN: "refactor!: pharmacy_manager on the crud-by-declaration framework — Allow and Rules in definition.go, persistence by crud, only domain rules in rule files"
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
+STATUS: review
 SESSION: 14112497100722200581
+PR: https://github.com/veltylabs/pharmacy_manager/pull/12
+REVIEWED_COMMIT: 9d5164b330c1e9a36e8af6f58100cdded655e2bc
 ---
 
 > Read AGENTS.md at the repo root before any change.
