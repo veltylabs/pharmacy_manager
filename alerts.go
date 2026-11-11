@@ -43,14 +43,3 @@ func (m *Module) raise(a notify.Alert) error {
 }
 
 // totalProduct es el stock del producto en cada ubicación y lote.
-func (m *Module) totalProduct(tenantId, id string) (float64, error) {
-	levels, err := m.ListStock(ListStockArgs{TenantId: tenantId, ProductId: id})
-	if err != nil {
-		return 0, err
-	}
-	var total float64
-	for _, l := range levels {
-		total += l.Quantity
-	}
-	return total, nil
-}

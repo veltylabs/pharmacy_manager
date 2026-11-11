@@ -6,7 +6,6 @@ import (
 )
 
 // ModelName es el prefijo wire y RBAC del módulo: las operaciones se llaman "<ModelName>.<op>".
-const ModelName = "pharmacy"
 
 // Unidades en las que se cuenta un producto. El select del formulario toma sus opciones de aquí (ui/browser.go, SetOptions).
 const (
@@ -25,10 +24,12 @@ const (
 
 // PharmacyProductModel es una medicina o artículo que la farmacia almacena. Los precios son en pesos chilenos enteros, impuestos incluidos.
 var PharmacyProductModel = model.Definition{
-	Name: "pharmacy_product",
+	Name:  "pharmacy_product",
+	Allow: model.Create | model.Read | model.Update | model.Delete,
+	Rules: model.Rules{Create: model.AddMyBusinessRule, Read: model.HaveNoBusinessRule, Update: model.AddMyBusinessRule, Delete: model.AddMyBusinessRule},
 	Fields: model.Fields{
-		{Name: "id", Type: model.Text(), DB: &model.FieldDB{PK: true}, OmitEmpty: true},
-		{Name: "tenant_id", Type: model.Text(), NotNull: true},
+		{Name: "id", Type: model.Text(), DB: &model.FieldDB{PK: true}, OmitEmpty: true, ServerOnly: true},
+		{Name: "tenant_id", Type: model.Text(), NotNull: true, ServerOnly: true},
 		{Name: "sku", Type: input.Text(), Label: "SKU", NotNull: true, Item: model.ItemDescription, Permitted: model.Permitted{Letters: true, Numbers: true, Extra: []rune{'-'}, Minimum: 1, Maximum: 50}},
 		{Name: "name", Type: input.Text(), Label: "Name", NotNull: true, Item: model.ItemLabel, Permitted: model.Permitted{Letters: true, Numbers: true, Spaces: true, Tilde: true, Extra: []rune{'.', ',', '(', ')', '-', '/', '%', '+'}, Minimum: 1, Maximum: 255}},
 		{Name: "unit", Type: input.Select(), Label: "Unit", NotNull: true},
@@ -46,10 +47,12 @@ var PharmacyProductModel = model.Definition{
 
 // PharmacyLocationModel es un lugar donde se mantiene el stock: un almacén, el mostrador.
 var PharmacyLocationModel = model.Definition{
-	Name: "pharmacy_location",
+	Name:  "pharmacy_location",
+	Allow: model.Create | model.Read | model.Update | model.Delete,
+	Rules: model.Rules{Create: model.AddMyBusinessRule, Read: model.HaveNoBusinessRule, Update: model.AddMyBusinessRule, Delete: model.AddMyBusinessRule},
 	Fields: model.Fields{
-		{Name: "id", Type: model.Text(), DB: &model.FieldDB{PK: true}, OmitEmpty: true},
-		{Name: "tenant_id", Type: model.Text(), NotNull: true},
+		{Name: "id", Type: model.Text(), DB: &model.FieldDB{PK: true}, OmitEmpty: true, ServerOnly: true},
+		{Name: "tenant_id", Type: model.Text(), NotNull: true, ServerOnly: true},
 		{Name: "name", Type: input.Text(), Label: "Name", NotNull: true, Item: model.ItemLabel, Permitted: model.Permitted{Letters: true, Numbers: true, Spaces: true, Tilde: true, Minimum: 1, Maximum: 100}},
 		{Name: "is_sales_point", Type: input.Checkbox(), Label: "Sales point"},
 		{Name: "is_active", Type: input.Checkbox(), Label: "Active"},
@@ -61,8 +64,8 @@ var PharmacyLocationModel = model.Definition{
 var PharmacyBatchModel = model.Definition{
 	Name: "pharmacy_batch",
 	Fields: model.Fields{
-		{Name: "id", Type: model.Text(), DB: &model.FieldDB{PK: true}, OmitEmpty: true},
-		{Name: "tenant_id", Type: model.Text(), NotNull: true},
+		{Name: "id", Type: model.Text(), DB: &model.FieldDB{PK: true}, OmitEmpty: true, ServerOnly: true},
+		{Name: "tenant_id", Type: model.Text(), NotNull: true, ServerOnly: true},
 		{Name: "product_id", Type: model.Text(), Ref: &PharmacyProductModel, DB: &model.FieldDB{RefColumn: "id"}, NotNull: true},
 		{Name: "batch_number", Type: model.Text(), NotNull: true},
 		{Name: "expiration_date", Type: model.UnixTime()},
@@ -77,8 +80,8 @@ var PharmacyBatchModel = model.Definition{
 var PharmacyStockLevelModel = model.Definition{
 	Name: "pharmacy_stock_level",
 	Fields: model.Fields{
-		{Name: "id", Type: model.Text(), DB: &model.FieldDB{PK: true}, OmitEmpty: true},
-		{Name: "tenant_id", Type: model.Text(), NotNull: true},
+		{Name: "id", Type: model.Text(), DB: &model.FieldDB{PK: true}, OmitEmpty: true, ServerOnly: true},
+		{Name: "tenant_id", Type: model.Text(), NotNull: true, ServerOnly: true},
 		{Name: "location_id", Type: model.Text(), Ref: &PharmacyLocationModel, DB: &model.FieldDB{RefColumn: "id"}, NotNull: true},
 		{Name: "batch_id", Type: model.Text(), Ref: &PharmacyBatchModel, DB: &model.FieldDB{RefColumn: "id"}, NotNull: true},
 		{Name: "quantity", Type: model.Float()},
@@ -92,8 +95,8 @@ var PharmacyStockLevelModel = model.Definition{
 var PharmacyMovementModel = model.Definition{
 	Name: "pharmacy_movement",
 	Fields: model.Fields{
-		{Name: "id", Type: model.Text(), DB: &model.FieldDB{PK: true}, OmitEmpty: true},
-		{Name: "tenant_id", Type: model.Text(), NotNull: true},
+		{Name: "id", Type: model.Text(), DB: &model.FieldDB{PK: true}, OmitEmpty: true, ServerOnly: true},
+		{Name: "tenant_id", Type: model.Text(), NotNull: true, ServerOnly: true},
 		{Name: "batch_id", Type: model.Text(), Ref: &PharmacyBatchModel, DB: &model.FieldDB{RefColumn: "id"}, NotNull: true},
 		{Name: "location_id", Type: model.Text(), Ref: &PharmacyLocationModel, DB: &model.FieldDB{RefColumn: "id"}, NotNull: true},
 		{Name: "movement_type", Type: model.Text(), NotNull: true},
@@ -111,7 +114,7 @@ var PharmacyMovementModel = model.Definition{
 var ListProductsArgsModel = model.Definition{
 	Name: "list_products_args",
 	Fields: model.Fields{
-		{Name: "tenant_id", Type: model.Text()},
+		{Name: "tenant_id", Type: model.Text(), ServerOnly: true},
 		{Name: "active_only", Type: model.Bool()},
 		{Name: "limit", Type: model.Int()},
 		{Name: "offset", Type: model.Int()},
@@ -122,7 +125,7 @@ var ListProductsArgsModel = model.Definition{
 var IdArgsModel = model.Definition{
 	Name: "id_args",
 	Fields: model.Fields{
-		{Name: "tenant_id", Type: model.Text()},
+		{Name: "tenant_id", Type: model.Text(), ServerOnly: true},
 		{Name: "id", Type: model.Text()},
 	},
 }
@@ -130,7 +133,7 @@ var IdArgsModel = model.Definition{
 var ListLocationsArgsModel = model.Definition{
 	Name: "list_locations_args",
 	Fields: model.Fields{
-		{Name: "tenant_id", Type: model.Text()},
+		{Name: "tenant_id", Type: model.Text(), ServerOnly: true},
 		{Name: "active_only", Type: model.Bool()},
 	},
 }
@@ -138,7 +141,7 @@ var ListLocationsArgsModel = model.Definition{
 var ListBatchesArgsModel = model.Definition{
 	Name: "list_batches_args",
 	Fields: model.Fields{
-		{Name: "tenant_id", Type: model.Text()},
+		{Name: "tenant_id", Type: model.Text(), ServerOnly: true},
 		{Name: "product_id", Type: model.Text()},
 	},
 }
@@ -146,7 +149,7 @@ var ListBatchesArgsModel = model.Definition{
 var ReceiveStockArgsModel = model.Definition{
 	Name: "receive_stock_args",
 	Fields: model.Fields{
-		{Name: "tenant_id", Type: model.Text()},
+		{Name: "tenant_id", Type: model.Text(), ServerOnly: true},
 		{Name: "product_id", Type: model.Text()},
 		{Name: "location_id", Type: model.Text()},
 		{Name: "batch_number", Type: model.Text()},
@@ -163,7 +166,7 @@ var ReceiveStockArgsModel = model.Definition{
 var RegisterEntryArgsModel = model.Definition{
 	Name: "register_entry_args",
 	Fields: model.Fields{
-		{Name: "tenant_id", Type: model.Text()},
+		{Name: "tenant_id", Type: model.Text(), ServerOnly: true},
 		{Name: "product_id", Type: model.Text()},
 		{Name: "location_id", Type: model.Text()},
 		{Name: "batch_id", Type: model.Text()},
@@ -176,7 +179,7 @@ var RegisterEntryArgsModel = model.Definition{
 var RegisterOutputArgsModel = model.Definition{
 	Name: "register_output_args",
 	Fields: model.Fields{
-		{Name: "tenant_id", Type: model.Text()},
+		{Name: "tenant_id", Type: model.Text(), ServerOnly: true},
 		{Name: "product_id", Type: model.Text()},
 		{Name: "location_id", Type: model.Text()},
 		{Name: "quantity", Type: model.Float()},
@@ -192,7 +195,7 @@ var RegisterOutputArgsModel = model.Definition{
 var TransferStockArgsModel = model.Definition{
 	Name: "transfer_stock_args",
 	Fields: model.Fields{
-		{Name: "tenant_id", Type: model.Text()},
+		{Name: "tenant_id", Type: model.Text(), ServerOnly: true},
 		{Name: "product_id", Type: model.Text()},
 		{Name: "from_location_id", Type: model.Text(), Label: "Origin location"},
 		{Name: "to_location_id", Type: model.Text(), Label: "Target location"},
@@ -205,7 +208,7 @@ var TransferStockArgsModel = model.Definition{
 var ListStockArgsModel = model.Definition{
 	Name: "list_stock_args",
 	Fields: model.Fields{
-		{Name: "tenant_id", Type: model.Text()},
+		{Name: "tenant_id", Type: model.Text(), ServerOnly: true},
 		{Name: "product_id", Type: model.Text()},
 		{Name: "location_id", Type: model.Text()},
 	},
@@ -214,7 +217,7 @@ var ListStockArgsModel = model.Definition{
 var ListMovementsArgsModel = model.Definition{
 	Name: "list_movements_args",
 	Fields: model.Fields{
-		{Name: "tenant_id", Type: model.Text()},
+		{Name: "tenant_id", Type: model.Text(), ServerOnly: true},
 		{Name: "product_id", Type: model.Text()},
 		{Name: "batch_id", Type: model.Text()},
 		{Name: "from", Type: model.NanoTime()},
@@ -226,7 +229,7 @@ var ListMovementsArgsModel = model.Definition{
 var ListExpiringArgsModel = model.Definition{
 	Name: "list_expiring_args",
 	Fields: model.Fields{
-		{Name: "tenant_id", Type: model.Text()},
+		{Name: "tenant_id", Type: model.Text(), ServerOnly: true},
 		{Name: "within_days", Type: model.Int()},
 	},
 }
@@ -234,7 +237,7 @@ var ListExpiringArgsModel = model.Definition{
 var ListLowStockArgsModel = model.Definition{
 	Name: "list_low_stock_args",
 	Fields: model.Fields{
-		{Name: "tenant_id", Type: model.Text()},
+		{Name: "tenant_id", Type: model.Text(), ServerOnly: true},
 	},
 }
 
@@ -242,26 +245,77 @@ var ListLowStockArgsModel = model.Definition{
 
 // ExpiringStockModel es una fila de list_expiring: stock que caduca dentro de los días solicitados, o ya caducado.
 var ExpiringStockModel = model.Definition{
-	Name: "expiring_stock",
+	Name:  "expiring_stock",
+	Wire:  true,
+	Allow: model.Read,
+	Rules: model.Rules{Read: model.AddMyBusinessRule},
 	Fields: model.Fields{
-		{Name: "product_id", Type: model.Text()},
-		{Name: "product_name", Type: model.Text()},
-		{Name: "batch_id", Type: model.Text()},
-		{Name: "batch_number", Type: model.Text()},
-		{Name: "location_id", Type: model.Text()},
-		{Name: "quantity", Type: model.Float()},
-		{Name: "expiration_date", Type: model.UnixTime()},
-		{Name: "expired", Type: model.Bool()},
+		{Name: "within_days", Type: model.Int(), OmitEmpty: true}, // filtro: lo que envía quien llama
+		{Name: "product_id", Type: model.Text(), OmitEmpty: true},
+		{Name: "product_name", Type: model.Text(), OmitEmpty: true},
+		{Name: "batch_id", Type: model.Text(), OmitEmpty: true},
+		{Name: "batch_number", Type: model.Text(), OmitEmpty: true},
+		{Name: "location_id", Type: model.Text(), OmitEmpty: true},
+		{Name: "quantity", Type: model.Float(), OmitEmpty: true},
+		{Name: "expiration_date", Type: model.UnixTime(), OmitEmpty: true},
+		{Name: "expired", Type: model.Bool(), OmitEmpty: true},
 	},
 }
 
 // LowStockModel es una fila de list_low_stock: un producto activo cuyo total está en o por debajo de su min_quantity.
 var LowStockModel = model.Definition{
-	Name: "low_stock",
+	Name:  "low_stock",
+	Wire:  true,
+	Allow: model.Read,
+	Rules: model.Rules{Read: model.AddMyBusinessRule},
 	Fields: model.Fields{
-		{Name: "product_id", Type: model.Text()},
-		{Name: "product_name", Type: model.Text()},
-		{Name: "total", Type: model.Float()},
-		{Name: "min_quantity", Type: model.Float()},
+		{Name: "product_id", Type: model.Text(), OmitEmpty: true},
+		{Name: "product_name", Type: model.Text(), OmitEmpty: true},
+		{Name: "total", Type: model.Float(), OmitEmpty: true},
+		{Name: "min_quantity", Type: model.Float(), OmitEmpty: true},
+	},
+}
+
+// Tipos de operación de stock: lo que una fila de pharmacy_operation hace al crearse.
+const (
+	OperationReceive  = "receive"  // entra mercadería nueva (crea o repone un lote)
+	OperationEntry    = "entry"    // corrección entrante de un conteo sobre un lote existente
+	OperationOutput   = "output"   // venta, uso interno o descarte
+	OperationTransfer = "transfer" // mueve stock entre dos ubicaciones
+)
+
+// PharmacyOperationModel es una operación de stock: crear una fila la ejecuta (su regla Create corre la lógica de stock
+// dentro de la transacción) y deja los ids de los movimientos que produjo.
+var PharmacyOperationModel = model.Definition{
+	Name:  "pharmacy_operation",
+	Allow: model.Create | model.Read,
+	Rules: model.Rules{Create: model.AddMyBusinessRule, Read: model.HaveNoBusinessRule},
+	Fields: model.Fields{
+		{Name: "id", Type: model.Text(), DB: &model.FieldDB{PK: true}, OmitEmpty: true, ServerOnly: true},
+		{Name: "tenant_id", Type: model.Text(), NotNull: true, ServerOnly: true},
+		{Name: "kind", Type: input.Select(), Label: "Kind", NotNull: true},
+		{Name: "product_id", Type: model.Text(), NotNull: true, Ref: &PharmacyProductModel, DB: &model.FieldDB{RefColumn: "id"}},
+		{Name: "location_id", Type: model.Text(), NotNull: true, Ref: &PharmacyLocationModel, DB: &model.FieldDB{RefColumn: "id"}},
+		{Name: "to_location_id", Type: model.Text(), Label: "Target location", OmitEmpty: true},
+		{Name: "batch_id", Type: model.Text(), OmitEmpty: true},
+		{Name: "batch_number", Type: model.Text(), OmitEmpty: true},
+		{Name: "expiration_date", Type: model.UnixTime(), OmitEmpty: true},
+		{Name: "unit_cost", Type: model.Int(), OmitEmpty: true},
+		{Name: "quantity", Type: model.Float(), OmitEmpty: true},
+		{Name: "movement_type", Type: model.Text(), OmitEmpty: true},
+		{Name: "source_document_type", Type: model.Text(), Label: "Document type", OmitEmpty: true},
+		{Name: "source_document_id", Type: model.Text(), Label: "Document ID", OmitEmpty: true},
+		{Name: "note", Type: model.Text(), OmitEmpty: true},
+		{Name: "actor_id", Type: model.Text(), OmitEmpty: true, ServerOnly: true},
+		{Name: "movement_ids", Type: model.Text(), OmitEmpty: true, ServerOnly: true},
+		{Name: "created_at", Type: model.NanoTime(), OmitEmpty: true, ServerOnly: true},
+	},
+}
+
+var Definition = model.ModuleDefinition{
+	Name: "pharmacy",
+	Entities: []model.Definition{
+		PharmacyProductModel, PharmacyLocationModel, PharmacyBatchModel, PharmacyStockLevelModel, PharmacyMovementModel,
+		PharmacyOperationModel, ExpiringStockModel, LowStockModel,
 	},
 }

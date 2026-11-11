@@ -1,6 +1,8 @@
 package tests
 
 import (
+	"webtyp.com/storage"
+
 	"errors"
 	"testing"
 
@@ -25,7 +27,7 @@ type tableColumns struct {
 
 var errIntrospect = errors.New("introspection failed")
 
-func (c *migrateConn) Exec(string, ...any) error { return nil }
+func (c *migrateConn) Exec(string, ...any) (storage.Result, error) { return nil, nil }
 
 func (c *migrateConn) TableColumns(table string) ([]string, error) {
 	if table == c.failTable {

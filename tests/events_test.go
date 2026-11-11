@@ -16,7 +16,7 @@ import (
 
 func TestEvents_OnePerMovement(t *testing.T) {
 	broker := &mock.Broker{}
-	m, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{IDs: &testIDGen{}, Publisher: broker})
+	m, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{TenantID: testTenant, IDs: &testIDGen{}, Publisher: broker})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -78,7 +78,7 @@ func TestEvents_NilPublisherIsSilent(t *testing.T) {
 
 func TestEvents_FailedOperationPublishesNothing(t *testing.T) {
 	broker := &mock.Broker{}
-	m, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{IDs: &testIDGen{}, Publisher: broker})
+	m, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{TenantID: testTenant, IDs: &testIDGen{}, Publisher: broker})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -113,7 +113,7 @@ func TestCostFacts_OnlyWithScopeAndCost(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	m, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{IDs: &testIDGen{}, Publisher: broker})
+	m, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{TenantID: testTenant, IDs: &testIDGen{}, Publisher: broker})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -136,7 +136,7 @@ func TestCostFacts_OnlyWithScopeAndCost(t *testing.T) {
 	}
 
 	// retiro de un lote con costo 0 y MoneyScope: "x"
-	m2, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{IDs: &testIDGen{}, Publisher: broker, MoneyScope: "x"})
+	m2, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{TenantID: testTenant, IDs: &testIDGen{}, Publisher: broker, MoneyScope: "x"})
 	if err != nil {
 		t.Fatalf("setup: %v", err)
 	}
@@ -156,7 +156,7 @@ func TestCostFacts_OnlyWithScopeAndCost(t *testing.T) {
 	}
 
 	// transferencia y entrada con costo y alcance
-	m3, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{IDs: &testIDGen{}, Publisher: broker, MoneyScope: "x"})
+	m3, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{TenantID: testTenant, IDs: &testIDGen{}, Publisher: broker, MoneyScope: "x"})
 	if err != nil {
 		t.Fatalf("setup: %v", err)
 	}

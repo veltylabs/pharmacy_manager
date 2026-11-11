@@ -68,7 +68,7 @@ func TestAlerts_RegisterOutput(t *testing.T) {
 				pub = broker
 			}
 
-			m, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{
+			m, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{TenantID: testTenant,
 				IDs:       &testIDGen{},
 				Publisher: pub,
 				AlertArea: c.alertArea,
@@ -197,7 +197,7 @@ func TestAlerts_ReviewExpiring(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			broker := &mock.Broker{}
-			m, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{
+			m, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{TenantID: testTenant,
 				IDs:       &testIDGen{},
 				Publisher: broker,
 				AlertArea: c.alertArea,

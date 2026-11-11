@@ -111,7 +111,7 @@ func TestRegisterOutput_PublishesTheCostAtCost(t *testing.T) {
 	if err := money.Subscribe(broker, sink, func(err error) { t.Errorf("money: %v", err) }); err != nil {
 		t.Fatal(err)
 	}
-	m, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{IDs: &testIDGen{}, Publisher: broker, MoneyScope: "pharmacy"})
+	m, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{TenantID: testTenant, IDs: &testIDGen{}, Publisher: broker, MoneyScope: "pharmacy"})
 	if err != nil {
 		t.Fatal(err)
 	}

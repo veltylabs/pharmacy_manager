@@ -1,17 +1,18 @@
 package tests
 
 import (
-	"testing"
+	"webtyp.com/crud"
+
 	pharmacymanager "github.com/veltylabs/pharmacy_manager"
 	"github.com/veltylabs/pharmacy_manager/ui"
+	"testing"
 	"webtyp.com/model"
-	"webtyp.com/router/loopback"
 	"webtyp.com/view"
 )
 
 func TestScreenSaveAndDelete(t *testing.T) {
 	m := newModule(t)
-	caller := view.NewRecords().Caller(loopback.ActingAs(testTenant, "u1", m))
+	caller := view.NewRecords().Caller(crud.LoopbackActingAs(nil, "u1", m))
 	screens := ui.Screens(caller)
 	if len(screens) == 0 || len(screens[0].Children) < 2 {
 		t.Fatal("expected screens with children")
@@ -22,7 +23,6 @@ func TestScreenSaveAndDelete(t *testing.T) {
 	prodDeleter := screens[0].Children[0].Presenter.(view.Deleter)
 
 	p := &pharmacymanager.PharmacyProduct{
-		TenantId:     testTenant,
 		Sku:          "p-screen-1",
 		Name:         "Aspirin 500mg",
 		Unit:         pharmacymanager.UnitBox,
@@ -40,7 +40,6 @@ func TestScreenSaveAndDelete(t *testing.T) {
 
 	// Duplicate product conflict
 	pDup := &pharmacymanager.PharmacyProduct{
-		TenantId:     testTenant,
 		Sku:          "p-screen-1",
 		Name:         "Aspirin Duplicate",
 		Unit:         pharmacymanager.UnitBox,
@@ -70,7 +69,6 @@ func TestScreenSaveAndDelete(t *testing.T) {
 	locDeleter := screens[0].Children[1].Presenter.(view.Deleter)
 
 	loc := &pharmacymanager.PharmacyLocation{
-		TenantId: testTenant,
 		Name:     "Central Warehouse",
 		IsActive: true,
 	}
@@ -81,7 +79,6 @@ func TestScreenSaveAndDelete(t *testing.T) {
 
 	// Duplicate location conflict
 	locDup := &pharmacymanager.PharmacyLocation{
-		TenantId: testTenant,
 		Name:     "Central Warehouse",
 		IsActive: true,
 	}
