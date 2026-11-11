@@ -1,4 +1,5 @@
 # pharmacy_manager
+<img src="docs/img/badges.svg">
 
 ## ¿Por qué existe?
 `pharmacy_manager` gestiona la farmacia clínica abierta al público: medicamentos, los lotes en los que vienen con su caducidad, dónde se mantienen y cada movimiento de stock.
