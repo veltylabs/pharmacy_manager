@@ -40,4 +40,7 @@ const (
 	ErrUnknownField         model.Invalid = "pharmacy: unknown field in the update"
 	ErrDays                 model.Invalid = "pharmacy: the days cannot be negative"
 	ErrCannotRead           model.Invalid = "pharmacy_manager: cannot read the request"
+	ErrOperationKind        model.Invalid = "pharmacy: unknown kind of operation"
+	ErrFieldNotEditable     model.Invalid = "pharmacy: this field cannot be changed"
+	ErrTenantRequired       model.Invalid = "pharmacy: the tenant is required"
 )

@@ -3,6 +3,8 @@
 package pharmacymanager
 
 import (
+	"webtyp.com/crud"
+
 	"testing"
 
 	"webtyp.com/events/mock"
@@ -21,7 +23,7 @@ func (g *countingIDs) NewID() string {
 }
 
 func TestApplyToLevel_StaleRevisionIsAConflict(t *testing.T) {
-	m, err := New(orm.New(mem.New()), Deps{IDs: &countingIDs{}, Publisher: &mock.Broker{}})
+	m, err := New(orm.New(mem.New()), Deps{IDs: &countingIDs{}, Publisher: &mock.Broker{}, TenantID: "t1"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -46,14 +48,14 @@ func TestApplyToLevel_StaleRevisionIsAConflict(t *testing.T) {
 	read := level.Revision // what a concurrent writer read
 
 	// alguien más cambia la fila primero: la revisión avanza
-	err = m.db.Tx(func(tx *orm.DB) error { return applyToLevel(tx, &level, read, stock.In, 1, time.NowNano()) })
+	err = m.store.Atomic(func(tx crud.Tx) error { return applyToLevel(tx, &level, read, stock.In, 1, time.NowNano()) })
 	if err != nil {
 		t.Fatalf("the first writer must succeed: %v", err)
 	}
 
 	// el segundo escritor todavía tiene la revisión vieja
 	stale := level
-	err = m.db.Tx(func(tx *orm.DB) error { return applyToLevel(tx, &stale, read, stock.In, 1, time.NowNano()) })
+	err = m.store.Atomic(func(tx crud.Tx) error { return applyToLevel(tx, &stale, read, stock.In, 1, time.NowNano()) })
 	if err != ErrConflict {
 		t.Errorf("a stale revision: got %v, want ErrConflict", err)
 	}

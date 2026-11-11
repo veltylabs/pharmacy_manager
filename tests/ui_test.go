@@ -7,16 +7,17 @@ import (
 
 	"github.com/veltylabs/pharmacy_manager/ui"
 	"webtyp.com/model"
+	"webtyp.com/router"
 	"webtyp.com/view"
 )
 
 // mockCaller es un router.Caller que graba la última llamada y la responde con onCall.
 type mockCaller struct {
-	lastOp string
-	onCall func(op string, args model.Encodable, into model.Decodable) error
+	lastOp router.Operation
+	onCall func(op router.Operation, args model.Encodable, into model.Decodable) error
 }
 
-func (m *mockCaller) Call(op string, args model.Encodable, into model.Decodable, done func(err error)) {
+func (m *mockCaller) Call(op router.Operation, args model.Encodable, into model.Decodable, done func(err error)) {
 	m.lastOp = op
 	if m.onCall != nil {
 		done(m.onCall(op, args, into))
@@ -25,7 +26,7 @@ func (m *mockCaller) Call(op string, args model.Encodable, into model.Decodable,
 	done(nil)
 }
 
-func (m *mockCaller) Dispatch(op string, args model.Encodable) { m.lastOp = op }
+func (m *mockCaller) Dispatch(op router.Operation, args model.Encodable) { m.lastOp = op }
 
 func TestScreens(t *testing.T) {
 	caller := &mockCaller{}

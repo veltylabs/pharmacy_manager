@@ -28,7 +28,7 @@ func (g *testIDGen) NewID() string {
 // newModule es un Module sobre una base de datos en memoria, sin eventos.
 func newModule(t *testing.T) *pharmacymanager.Module {
 	t.Helper()
-	m, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{IDs: &testIDGen{}, TenantID: testTenant})
+	m, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{TenantID: testTenant, IDs: &testIDGen{}})
 	if err != nil {
 		t.Fatalf("New: %v", err)
 	}

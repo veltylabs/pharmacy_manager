@@ -2,6 +2,7 @@ package pharmacymanager
 
 import (
 	"slices"
+	"webtyp.com/crud"
 
 	"webtyp.com/fmt"
 	"webtyp.com/notify"
@@ -43,26 +44,37 @@ func (m *Module) ReviewExpiring(tenantId string, withinDays int) ([]ExpiringStoc
 // ListExpiring devuelve las existencias (cantidad > 0) cuyo lote ha caducado o caduca dentro de WithinDays (días), los más próximos primero.
 // La regla es stock.Lot.ExpiresWithin; este módulo no la repite.
 // Ejemplo: expiring, err := module.ListExpiring(ListExpiringArgs{TenantId: "t1", WithinDays: 30})
+
 func (m *Module) ListExpiring(a ListExpiringArgs) ([]ExpiringStock, error) {
-	if a.WithinDays < 0 {
+	store, err := m.storeFor(a.TenantId)
+	if err != nil {
+		return nil, err
+	}
+	return m.expiringOn(store, a.WithinDays)
+}
+
+// expiringOn lo comparten ListExpiring y la regla de leer expiring_stock: el stock cuyo lote ya caducó o caduca dentro de
+// withinDays días, los más próximos primero. La regla es stock.Lot.ExpiresWithin.
+func (m *Module) expiringOn(tx crud.Tx, withinDays int64) ([]ExpiringStock, error) {
+	if withinDays < 0 {
 		return nil, ErrDays
 	}
 	now := time.NowUnix()
-	levels, err := m.ListStock(ListStockArgs{TenantId: a.TenantId})
+	levels, err := stockOn(tx, "", "")
 	if err != nil {
 		return nil, err
 	}
 	var out []ExpiringStock
 	for _, level := range levels {
-		batch, err := getBatch(m.db, a.TenantId, level.BatchId)
+		batch, err := getBatch(tx, level.BatchId)
 		if err != nil {
 			return nil, err
 		}
 		lot := stock.Lot{ID: batch.Id, Expiry: batch.ExpirationDate, Quantity: level.Quantity}
-		if !lot.ExpiresWithin(now, int(a.WithinDays)) {
+		if !lot.ExpiresWithin(now, int(withinDays)) {
 			continue
 		}
-		product, err := getProduct(m.db, a.TenantId, batch.ProductId)
+		product, err := getProduct(tx, batch.ProductId)
 		if err != nil {
 			return nil, err
 		}
@@ -83,17 +95,24 @@ func (m *Module) ListExpiring(a ListExpiringArgs) ([]ExpiringStock, error) {
 	return out, nil
 }
 
-// ListLowStock devuelve los productos activos con una cantidad mínima (> 0) cuyo total, en todas las ubicaciones y lotes, está en
-// o por debajo de ella, por nombre. Un módulo de alertas posterior lo llama; este módulo no lanza alertas.
-// Ejemplo: low, err := module.ListLowStock(ListLowStockArgs{TenantId: "t1"})
 func (m *Module) ListLowStock(a ListLowStockArgs) ([]LowStock, error) {
-	products, err := m.ListProducts(ListProductsArgs{TenantId: a.TenantId, ActiveOnly: true})
+	store, err := m.storeFor(a.TenantId)
+	if err != nil {
+		return nil, err
+	}
+	return m.lowStockOn(store)
+}
+
+// lowStockOn lo comparten ListLowStock y la regla de leer low_stock: los productos activos con mínimo (> 0) cuyo total
+// está en o por debajo de él, por nombre.
+func (m *Module) lowStockOn(tx crud.Tx) ([]LowStock, error) {
+	products, err := productsOn(tx, true)
 	if err != nil {
 		return nil, err
 	}
 	var out []LowStock
 	for _, p := range products {
-		levels, err := m.ListStock(ListStockArgs{TenantId: a.TenantId, ProductId: p.Id})
+		levels, err := stockOn(tx, p.Id, "")
 		if err != nil {
 			return nil, err
 		}
@@ -108,11 +127,12 @@ func (m *Module) ListLowStock(a ListLowStockArgs) ([]LowStock, error) {
 	return out, nil
 }
 
-// ProductExists indica si un producto existe en el inquilino y está activo. Otros módulos declaran el mismo método en una
-// interfaz estrecha propia; *Module la satisface sin importarlos.
-// Ejemplo: exists, err := module.ProductExists("tenant1", "prod1")
 func (m *Module) ProductExists(tenantId, productId string) (bool, error) {
-	p, err := getProduct(m.db, tenantId, productId)
+	store, err := m.storeFor(tenantId)
+	if err != nil {
+		return false, err
+	}
+	p, err := getProduct(store, productId)
 	if err == ErrProductNotFound {
 		return false, nil
 	}
@@ -122,10 +142,12 @@ func (m *Module) ProductExists(tenantId, productId string) (bool, error) {
 	return p.IsActive, nil
 }
 
-// ProductCard devuelve lo que otro módulo captura sobre un producto. Un producto ausente o extranjero es ErrNotFound.
-// Ejemplo: name, unit, tax, price, active, err := module.ProductCard("tenant1", "prod1")
 func (m *Module) ProductCard(tenantId, productId string) (name, unit, taxTreatment string, price int64, active bool, err error) {
-	p, err := getProduct(m.db, tenantId, productId)
+	store, err := m.storeFor(tenantId)
+	if err != nil {
+		return "", "", "", 0, false, err
+	}
+	p, err := getProduct(store, productId)
 	if err == ErrProductNotFound {
 		return "", "", "", 0, false, ErrNotFound
 	}
