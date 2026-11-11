@@ -1,4 +1,4 @@
-← [Stage 6](PLAN_STAGE_6_BROWSER.md)
+← [Index](PLAN.md)
 
 # Stage 7 — tests, translations, documentation
 
