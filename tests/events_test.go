@@ -7,7 +7,7 @@ import (
 
 	pharmacymanager "github.com/veltylabs/pharmacy_manager"
 	"webtyp.com/events"
-	"webtyp.com/events/mock"
+	"webtyp.com/events/inprocess"
 	"webtyp.com/money"
 	"webtyp.com/orm"
 	"webtyp.com/stock"
@@ -15,7 +15,7 @@ import (
 )
 
 func TestEvents_OnePerMovement(t *testing.T) {
-	broker := &mock.Broker{}
+	broker := &inprocess.Broker{}
 	m, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{TenantID: testTenant, IDs: &testIDGen{}, Publisher: broker})
 	if err != nil {
 		t.Fatal(err)
@@ -77,7 +77,7 @@ func TestEvents_NilPublisherIsSilent(t *testing.T) {
 }
 
 func TestEvents_FailedOperationPublishesNothing(t *testing.T) {
-	broker := &mock.Broker{}
+	broker := &inprocess.Broker{}
 	m, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{TenantID: testTenant, IDs: &testIDGen{}, Publisher: broker})
 	if err != nil {
 		t.Fatal(err)
@@ -107,7 +107,7 @@ func TestEvents_FailedOperationPublishesNothing(t *testing.T) {
 }
 
 func TestCostFacts_OnlyWithScopeAndCost(t *testing.T) {
-	broker := &mock.Broker{}
+	broker := &inprocess.Broker{}
 	sink := &recordingSink{}
 	if err := money.Subscribe(broker, sink, func(err error) { t.Errorf("money: %v", err) }); err != nil {
 		t.Fatal(err)

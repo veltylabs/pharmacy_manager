@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	pharmacymanager "github.com/veltylabs/pharmacy_manager"
-	"webtyp.com/events/mock"
+	"webtyp.com/events/inprocess"
 	"webtyp.com/money"
 	"webtyp.com/orm"
 	"webtyp.com/stock"
@@ -106,7 +106,7 @@ type recordingSink struct{ facts []money.Fact }
 func (s *recordingSink) Accept(f money.Fact) error { s.facts = append(s.facts, f); return nil }
 
 func TestRegisterOutput_PublishesTheCostAtCost(t *testing.T) {
-	broker := &mock.Broker{}
+	broker := &inprocess.Broker{}
 	sink := &recordingSink{}
 	if err := money.Subscribe(broker, sink, func(err error) { t.Errorf("money: %v", err) }); err != nil {
 		t.Fatal(err)

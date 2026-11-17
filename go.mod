@@ -32,3 +32,5 @@ require (
 	webtyp.com/filetype v0.1.1 // indirect
 	webtyp.com/json v0.5.40 // indirect
 )
+
+replace webtyp.com/events => ../../../webtyp/events

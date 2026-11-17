@@ -5,7 +5,7 @@ import (
 
 	pharmacymanager "github.com/veltylabs/pharmacy_manager"
 	"webtyp.com/events"
-	"webtyp.com/events/mock"
+	"webtyp.com/events/inprocess"
 	"webtyp.com/notify"
 	"webtyp.com/orm"
 	"webtyp.com/stock"
@@ -62,9 +62,9 @@ func TestAlerts_RegisterOutput(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			var pub events.Publisher
-			var broker *mock.Broker
+			var broker *inprocess.Broker
 			if c.publisher {
-				broker = &mock.Broker{}
+				broker = &inprocess.Broker{}
 				pub = broker
 			}
 
@@ -196,7 +196,7 @@ func TestAlerts_ReviewExpiring(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			broker := &mock.Broker{}
+			broker := &inprocess.Broker{}
 			m, err := pharmacymanager.New(orm.New(mem.New()), pharmacymanager.Deps{TenantID: testTenant,
 				IDs:       &testIDGen{},
 				Publisher: broker,

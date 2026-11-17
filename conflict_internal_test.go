@@ -7,7 +7,7 @@ import (
 
 	"testing"
 
-	"webtyp.com/events/mock"
+	"webtyp.com/events/inprocess"
 	"webtyp.com/fmt"
 	"webtyp.com/orm"
 	"webtyp.com/stock"
@@ -23,7 +23,7 @@ func (g *countingIDs) NewID() string {
 }
 
 func TestApplyToLevel_StaleRevisionIsAConflict(t *testing.T) {
-	m, err := New(orm.New(mem.New()), Deps{IDs: &countingIDs{}, Publisher: &mock.Broker{}, TenantID: "t1"})
+	m, err := New(orm.New(mem.New()), Deps{IDs: &countingIDs{}, Publisher: &inprocess.Broker{}, TenantID: "t1"})
 	if err != nil {
 		t.Fatal(err)
 	}
